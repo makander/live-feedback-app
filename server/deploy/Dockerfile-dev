@@ -1,0 +1,14 @@
+FROM mhart/alpine-node:latest
+
+RUN addgroup -g 1000 -S node && \
+    adduser -u 1000 -S node -G node
+
+WORKDIR /usr/app
+
+COPY package.json .
+
+RUN npm install --quiet
+
+COPY . .
+
+CMD ["npm", "start"]

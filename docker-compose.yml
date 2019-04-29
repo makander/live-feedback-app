@@ -1,0 +1,49 @@
+version: '3.5'
+
+services:
+  express_server:
+    container_name: 'server'
+    build:
+      context: ./server
+      dockerfile: ./deploy/Dockerfile
+    image: express_server
+    user: node
+    volumes:
+      - ${LOCAL_SERVER_PATH}:/home/node/app
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    depends_on:
+      - database
+    env_file:
+      - ./server/deploy/.env
+
+  react_client:
+    container_name: 'client'
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: react_client
+    volumes:
+      - ${LOCAL_CLIENT_PATH}:/home/node/app
+    ports:
+      - ${CLIENT_PORT}:${CLIENT_PORT}
+    env_file:
+      - ./client/deploy/.env
+
+  database:
+    container_name: 'mongodb'
+    image: mongo
+    ports:
+      - ${MONGO_PORT}:27017
+    env_file:
+      - ./server/deploy/.env
+    volumes:
+      - ./server/deploy/mongo/001_create-users.js:/docker-entrypoint-initdb.d/001_create-users.js:ro
+
+  adminmongo:
+    container_name: 'mongodb-admin'
+    image: mrvautin/adminmongo
+    ports:
+      - ${ADMINMONGO_PORT}:1234
+volumes:
+  database:
