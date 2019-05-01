@@ -1,13 +1,14 @@
-import User from '../../../models/User';
-import { authLocal, authJwt } from '../../../passport';
+import User from "../../../models/User";
+import { authLocal, authJwt } from "../../../passport";
 
 class UserServices {
+  // eslint-disable-next-line consistent-return
   register = async function(req, res, next) {
     try {
       const existingUser = await User.findOne({ email: req.body.email });
 
-      if (!existingUser) {
-        return res.status(400).json({ email: 'Email already exists' });
+      if (existingUser) {
+        return res.status(400).json({ email: "Email already exists" });
       }
 
       const newUser = new User({

@@ -10,4 +10,4 @@
 ### Using the mongodb admin
 1. Go to http://localhost:1234
 2. Input the following string into the "Connection string" input:
-`mongodb://admin:password@database:27017/imposterious?authMechanism=SCRAM-SHA-1&authSource=admin`
+`mongodb://admin:password@database:27017/impostrious?authMechanism=SCRAM-SHA-1&authSource=admin`

@@ -1,13 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable camelcase */
-import passport from 'passport';
+import passport from "passport";
 import LocalStrategy from "passport-local";
-import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
-import User from '../models/User';
+import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
+import User from "../models/User";
 
 /** Local strategy for singup and login */
 const localOpts = {
-  usernameField: 'email'
+  usernameField: "email"
 };
 
 const localLogin = new LocalStrategy(
@@ -17,7 +17,8 @@ const localLogin = new LocalStrategy(
       const user = await User.findOne({ email });
       if (!user) {
         return done(null, false);
-      } if (!user._comparePassword(password)) {
+      }
+      if (!user._comparePassword(password)) {
         return done(null, false);
       }
       return done(null, user);
@@ -28,8 +29,8 @@ const localLogin = new LocalStrategy(
 );
 
 const jwtOpts = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT'),
-  secretOrKey: process.env.JWT_SECRET
+  jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("JWT"),
+  secretOrKey: process.env.JWT_SECRET || "secret"
 };
 
 const jwtLogin = new JWTStrategy(jwtOpts, async (payload, done) => {
@@ -48,4 +49,4 @@ passport.use(localLogin);
 passport.use(jwtLogin);
 
 export const authLocal = passport.authenticate("local", { session: false });
-export const authJwt = passport.authenticate('jwt', { session: false });
+export const authJwt = passport.authenticate("jwt", { session: false });
