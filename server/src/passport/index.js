@@ -7,13 +7,15 @@ import User from "../models/User";
 
 /** Local strategy for singup and login */
 const localOpts = {
-  usernameField: "email"
+  usernameField: "email",
+  passwordField: "password"
 };
 
 const localLogin = new LocalStrategy(
   localOpts,
   async (email, password, done) => {
     try {
+      console.log(email);
       const user = await User.findOne({ email });
       if (!user) {
         return done(null, false);

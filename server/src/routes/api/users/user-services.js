@@ -18,8 +18,21 @@ class UserServices {
       });
 
       const savedUser = await newUser.save();
-
       return res.status(200).json({ ok: true, data: savedUser });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // eslint-disable-next-line consistent-return
+  login = async function(req, res, next) {
+    try {
+      const existingUser = await User.findOne({ email: req.body.email });
+
+      if (existingUser) {
+        return existingUser;
+      }
+      return res.status(400).json({ ok: false, data: "no such user" });
     } catch (err) {
       next(err);
     }

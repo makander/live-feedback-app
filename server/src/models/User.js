@@ -1,6 +1,6 @@
-import mongoose, { Schema } from 'mongoose';
-import { hashSync, compareSync } from 'bcrypt-nodejs';
-import jwt from 'jsonwebtoken';
+import mongoose, { Schema } from "mongoose";
+import { hashSync, compareSync } from "bcrypt-nodejs";
+import jwt from "jsonwebtoken";
 
 // Create Schema
 const UserSchema = new Schema({
@@ -23,11 +23,11 @@ const UserSchema = new Schema({
 });
 
 /** Before insert into database, hash the password */
-UserSchema.pre('save', async function(next) {
+UserSchema.pre("save", async function(next) {
   const user = this;
 
   try {
-    if (!user.isModified('password')) {
+    if (!user.isModified("password")) {
       return next();
     }
 
@@ -53,8 +53,9 @@ UserSchema.methods = {
     return jwt.sign(
       {
         sub: this._id,
-        expiresIn: '1 days',
-        issuer: 'rent out'
+        ...this.toRegJSON(),
+        expiresIn: "1 days",
+        issuer: "rent out"
       },
       process.env.JWT_SECRET
     );
@@ -64,7 +65,7 @@ UserSchema.methods = {
   /** Attach the token into responses */
   toAuthJSON() {
     return {
-      ...this.toRegJSON(),
+      user: { ...this.toRegJSON() },
       token: `JWT ${this.createToken()}`
     };
   },
@@ -74,10 +75,10 @@ UserSchema.methods = {
   toRegJSON() {
     return {
       _id: this._id,
-      username: this.username,
+      name: this.name,
       email: this.email
     };
   }
 };
 
-export default mongoose.model('User', UserSchema);
+export default mongoose.model("User", UserSchema);
