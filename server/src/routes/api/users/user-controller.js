@@ -1,7 +1,7 @@
-import UserServices from './user-services';
+import UserServices from "./user-services";
 
 // Load validation
-import { validateRegisterInput, validateLoginInput } from '../../../validation';
+import { validateRegisterInput, validateLoginInput } from "../../../validation";
 
 export const register = async function(req, res, next) {
   try {
@@ -17,24 +17,34 @@ export const register = async function(req, res, next) {
     if (!result.ok) {
       return res.status(400).json(result.error);
     }
-    
+
     return res.status(200).json({ ok: true, data: result.data.toRegJSON() });
   } catch (error) {
     return res.json(error);
   }
 };
 
-export const login = function(req, res, next) {
-  const { errors, isValid } = validateLoginInput(req.body);
+export const login = async function(req, res, next) {
+  try {
+    const { errors, isValid } = validateLoginInput(req.body);
 
-  // Check validation
-  if (!isValid) {
-    return res.status(400).json(errors);
+    // Check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    // @TODO: actually login.
+    const result = await UserServices.login(req, res, next);
+
+    if (!result.ok) {
+      return res.status(400).json(result.error);
+    }
+    return res.status(200).json({ ok: true, data: result.data.toRegJSON() });
+  } catch (error) {
+    return res.json(error);
+  } finally {
+    next();
   }
-
-  // @TODO: actually login.
-
-  return next();
 };
 
 export const getUser = function(req, res, next) {

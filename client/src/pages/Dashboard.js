@@ -6,8 +6,8 @@ import { logoutUser } from "../actions/auth";
 class Dashboard extends Component {
   onLogoutClick = e => {
     e.preventDefault();
-    const { logout } = this.props;
-    logout();
+    const { logout, history } = this.props;
+    logout(history);
   };
 
   render() {
@@ -48,11 +48,12 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   logout: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
-  logout: () => dispatch(logoutUser)
+  logout: history => dispatch(logoutUser(history))
 });
 
 const mapStateToProps = state => ({

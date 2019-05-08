@@ -88,6 +88,7 @@ class Login extends Component {
                     className={classnames("", {
                       invalid: errors.email || errors.emailnotfound
                     })}
+                    autoComplete="email"
                   />
                 </label>
                 <span className="red-text">
@@ -107,6 +108,7 @@ class Login extends Component {
                     className={classnames("", {
                       invalid: errors.password || errors.passwordincorrect
                     })}
+                    autoComplete="password"
                   />
                 </label>
                 <span className="red-text">
@@ -144,7 +146,7 @@ Login.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => ({
-  login: () => dispatch(loginUser)
+  login: user => dispatch(loginUser(user))
 });
 
 const mapStateToProps = state => ({
