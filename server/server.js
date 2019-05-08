@@ -41,7 +41,7 @@ router.use("/api/users", users);
 
 app.use(errorLogger);
 
-app.use(function(err, req, res) {
+app.use(function(err, req, res, next) {
   console.error(err); // Log error message in our server's console
   // eslint-disable-next-line no-param-reassign
   if (!err.statusCode) err.statusCode = 500; // If err has no specified error code, set error code to 'Internal Server Error (500)'
@@ -50,4 +50,4 @@ app.use(function(err, req, res) {
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server up and running on port ${port} !`));
+app.listen(port, () => console.log(`Server up and running on port ${port} test!`));

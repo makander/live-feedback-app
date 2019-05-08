@@ -11,7 +11,7 @@
     "build-babel": "babel -d ./build ./src -s",
     "build": "npm run clean && npm run build-babel",
     "start": "node ./build/server.js",
-    "dev": "nodemon server.js --exec babel-node"
+    "dev": "nodemon -L server.js --exec babel-node"
   },
   "lint-staged": {
     "**/*.js": [
