@@ -9,6 +9,11 @@ class Dashboard extends Component {
     const { logout, history } = this.props;
     logout(history);
   };
+  onManageRoomClick = e => {
+    e.preventDefault();
+    const { history } = this.props;
+    history.push("/rooms");
+  };
 
   render() {
     const {
@@ -39,6 +44,20 @@ class Dashboard extends Component {
             >
               Logout
             </button>
+            <button
+              type="button"
+              style={{
+                width: "150px",
+                borderRadius: "3px",
+                letterSpacing: "1.5px",
+                marginTop: "1rem"
+              }}
+              onClick={this.onManageRoomClick}
+              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+            >
+              Manage Rooms
+            </button>
+            
           </div>
         </div>
       </div>

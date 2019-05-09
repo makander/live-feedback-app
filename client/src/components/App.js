@@ -11,6 +11,7 @@ import PrivateRoute from "./PrivateRoute";
 
 // Pages
 import { Landing, Register, Login, Dashboard } from "../pages";
+import ManageRooms from "../pages/ManageRooms";
 
 const App = () => (
   <Provider store={store}>
@@ -22,6 +23,7 @@ const App = () => (
         <Route exact path="/login" component={Login} />
         <Switch>
           <PrivateRoute exact path="/dashboard" component={Dashboard} />
+          <PrivateRoute exact path="/rooms" component={ManageRooms} />
         </Switch>
       </>
     </Router>
