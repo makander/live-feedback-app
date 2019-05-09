@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
 import { toggleLiveSession } from "../actions/room";
 
+// Components
+import LiveSession from "../components/LiveSession";
+
 /* ---------TODO--------- 
 
 IMPLEMENT ROUTING ELEMENTS
@@ -18,13 +21,17 @@ IMPLEMENT ROUTING ELEMENTS
 
 
 
-function ManageRooms(props) {
+function NewSession(props) {
 return (
   <div>
-    <h1>Welcome to the Create Room view</h1>
+    <h1>Welcome to the New Session view</h1>
     <p>Session_State: {(props.session_live)?"on":"off"}</p>
     
     <button onClick={props.handleClickNewSession}>New Session</button>
+      {(props.session_live) 
+      ?<LiveSession />
+      : null
+      }
       <div style={{margin:"10px"}}>
       <button>
         <Link
@@ -50,12 +57,14 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => (
 {
-  session_live: state.room.session_live
+  session_live: state.room.session_live,
+  current_room: {
+    id: null,
+    average_score: null
+  }
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withRouter(ManageRooms));
-
-
+)(withRouter(NewSession));

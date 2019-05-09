@@ -2,17 +2,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../actions/auth";
+import { Link } from "react-router-dom";
 
 class Dashboard extends Component {
   onLogoutClick = e => {
     e.preventDefault();
     const { logout, history } = this.props;
     logout(history);
-  };
-  onManageRoomClick = e => {
-    e.preventDefault();
-    const { history } = this.props;
-    history.push("/rooms");
   };
 
   render() {
@@ -31,6 +27,35 @@ class Dashboard extends Component {
                 <span style={{ fontFamily: "monospace" }}>MERN</span> app 👏
               </p>
             </h4>
+            <nav>
+              <button>
+              <Link
+                to="/my-sessions"
+                style={{
+                  width: "140px",
+                  borderRadius: "3px",
+                  letterSpacing: "1.5px",
+                  textDecoration: "none"
+                }}
+              >
+                My Sessions
+              </Link>
+              </button>
+              <button>
+              <Link
+                to="/new-session"
+                style={{
+                  width: "140px",
+                  borderRadius: "3px",
+                  letterSpacing: "1.5px",
+                  textDecoration: "none"
+                }}
+              >
+                New Session
+              </Link>
+              </button>
+              
+            </nav>
             <button
               type="button"
               style={{
@@ -44,20 +69,6 @@ class Dashboard extends Component {
             >
               Logout
             </button>
-            <button
-              type="button"
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem"
-              }}
-              onClick={this.onManageRoomClick}
-              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-            >
-              Manage Rooms
-            </button>
-            
           </div>
         </div>
       </div>
