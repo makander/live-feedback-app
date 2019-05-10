@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  express_server:
+  api:
     image: registry.chas.school/server:latest
     working_dir: /app
     command: node server.js
