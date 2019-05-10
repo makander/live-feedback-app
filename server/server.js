@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
-
 import users from "./src/routes/api/users";
 import { errorLogger, logger } from "./src/loggers";
 
@@ -50,4 +49,31 @@ app.use(function(err, req, res, next) {
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server up and running on port ${port} test!`));
+const server = app.listen(port, () =>
+  console.log(`Server up and running on port ${port} test!`)
+);
+
+//SOCKET.IO 
+//THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT 
+const socket = require("socket.io");
+const io = socket(server);
+
+let roomParticipants = []; 
+
+io.on("connection", socket => {
+  console.log("made socket connection ", socket.id);
+  socket.on("connectToNewSession", (roomName, isAdmin) => {
+    console.log("room name: ", roomName, "isAdmin: ", isAdmin);
+    roomParticipants = [];
+    socket.join(roomName);
+    roomParticipants.push({
+      userId: socket.id,
+      value: null,
+      room: roomName,
+      role: isAdmin ? "teacher" : "student"
+    });
+    console.log(roomParticipants);
+    io.emit("sessionCreated", roomParticipants);
+  })
+});
+//--------------------------------------------------
