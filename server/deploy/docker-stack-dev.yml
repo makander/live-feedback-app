@@ -4,7 +4,7 @@ services:
   express_server:
     image: registry.chas.school/server:latest
     working_dir: /app
-    command: node build/server.js
+    command: node server.js
     depends_on:
       - database
     env_file:
