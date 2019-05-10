@@ -8,6 +8,7 @@ import store from "../stores";
 // Components
 import Navbar from "./Layout/Navbar";
 import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
 
 // Pages
 import { Landing, Register, Login, Dashboard } from "../pages";
@@ -19,9 +20,12 @@ const App = () => (
     <Router>
       <>
         <Navbar />
-        <Route exact path="/" component={Landing} />
+
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
+        <Switch>
+          <PublicRoute exact path="/" component={Landing} />
+        </Switch>
         <Switch>
           <PrivateRoute exact path="/dashboard" component={Dashboard} />
           <PrivateRoute exact path="/my-sessions" component={MySessions} />
