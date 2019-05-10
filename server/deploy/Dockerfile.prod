@@ -25,4 +25,4 @@ COPY --from=builder /app/deploy/.env /app/deploy/.env
 
 EXPOSE 5005
 
-CMD ["npm", "start"]
+CMD ["node", "./build/server.js"]

@@ -2,16 +2,16 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "./src/server.js",
   "scripts": {
     "lint": "eslint 'src/**/*.js' --fix; exit 0",
     "format": "prettier-eslint 'server/**/*.{js,json}' --write",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf build && mkdir build",
-    "build-babel": "babel -d ./build ./src -s",
+    "build-babel": "babel ./src -d build",
     "build": "npm run clean && npm run build-babel",
     "start": "node ./build/server.js",
-    "dev": "nodemon -L server.js --exec babel-node"
+    "dev": "nodemon -L ./src/server.js --exec babel-node"
   },
   "lint-staged": {
     "**/*.js": [

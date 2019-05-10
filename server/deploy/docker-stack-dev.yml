@@ -2,9 +2,9 @@ version: '3.5'
 
 services:
   api:
-    image: registry.chas.school/express_server:latest
+    image: registry.chas.school/impostrious-dev-api:latest
     working_dir: /app
-    command: node server.js
+    command: node build/server.js
     depends_on:
       - database
     env_file:
