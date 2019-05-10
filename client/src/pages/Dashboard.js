@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../actions/auth";
+import { Link } from "react-router-dom";
 
 class Dashboard extends Component {
   onLogoutClick = e => {
@@ -26,6 +27,35 @@ class Dashboard extends Component {
                 <span style={{ fontFamily: "monospace" }}>MERN</span> app 👏
               </p>
             </h4>
+            <nav>
+              <button>
+              <Link
+                to="/my-sessions"
+                style={{
+                  width: "140px",
+                  borderRadius: "3px",
+                  letterSpacing: "1.5px",
+                  textDecoration: "none"
+                }}
+              >
+                My Sessions
+              </Link>
+              </button>
+              <button>
+              <Link
+                to="/new-session"
+                style={{
+                  width: "140px",
+                  borderRadius: "3px",
+                  letterSpacing: "1.5px",
+                  textDecoration: "none"
+                }}
+              >
+                New Session
+              </Link>
+              </button>
+              
+            </nav>
             <button
               type="button"
               style={{
