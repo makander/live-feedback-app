@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   api:
-    image: registry.chas.school/server:latest
+    image: registry.chas.school/express_server:latest
     working_dir: /app
     command: node server.js
     depends_on:
