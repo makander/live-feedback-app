@@ -17,7 +17,7 @@ services:
         traefik.port: '5005'
         traefik.backend: 'dev-impostrious'
         traefik.docker.network: 'traefik'
-        traefik.frontend.rule: 'Host:impostrious-dev.chas.school'
+        traefik.frontend.rule: 'Host:impostrious-dev-api.chas.school'
   database:
     image: 'mongo'
     volumes:
