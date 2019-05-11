@@ -15,7 +15,7 @@ services:
     deploy:
       labels:
         traefik.port: '5005'
-        traefik.backend: 'dev-impostrious'
+        traefik.backend: 'impostrious_dev_api'
         traefik.docker.network: 'traefik'
         traefik.frontend.rule: 'Host:impostrious-dev-api.chas.school'
   database:
