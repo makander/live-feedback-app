@@ -13,11 +13,11 @@ function Landing(props) {
   });
 
   return (
-    <div style={{ height: "75vh" }} className="container valign-wrapper">
-      <div className="row">
+    <div className="d-flex justify-content-center pt-2">
+      <div style={{ height: "75vh" }} className="container valign-wrapper">
         <div className="col s12 center-align">
           <header>
-            <h2>Feedback App - Team Impostrious BIG</h2>
+            <h1 className="display-2">Feedback App - Team Impostrious BIG</h1>
           </header>
           <main>
             <section>

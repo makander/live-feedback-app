@@ -5,6 +5,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 // Redux store
 import store from "../stores";
 
+// import fonts
+import "../styles.css";
+
 // Components
 import Navbar from "./Layout/Navbar";
 import PrivateRoute from "./PrivateRoute";
@@ -21,16 +24,23 @@ const App = () => (
       <>
         <Navbar />
 
-        <Route exact path="/register" component={Register} />
-        <Route exact path="/login" component={Login} />
-        <Switch>
-          <PublicRoute exact path="/" component={Landing} />
-        </Switch>
-        <Switch>
-          <PrivateRoute exact path="/dashboard" component={Dashboard} />
-          <PrivateRoute exact path="/my-sessions" component={MySessions} />
-          <PrivateRoute exact path="/new-session" component={NewSession} />
-        </Switch>
+        <div
+          style={{
+            backgroundImage:
+              "linear-gradient(radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100% background-blend-mode: screen;)"
+          }}
+        >
+          <Route exact path="/register" component={Register} />
+          <Route exact path="/login" component={Login} />
+          <Switch>
+            <PublicRoute exact path="/" component={Landing} />
+          </Switch>
+          <Switch>
+            <PrivateRoute exact path="/dashboard" component={Dashboard} />
+            <PrivateRoute exact path="/my-sessions" component={MySessions} />
+            <PrivateRoute exact path="/new-session" component={NewSession} />
+          </Switch>
+        </div>
       </>
     </Router>
   </Provider>
