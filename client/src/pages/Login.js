@@ -58,80 +58,78 @@ class Login extends Component {
   render() {
     const { errors, email, password } = this.state;
 
+    //style={{marginRight: spacing + 'em'}} when using JSX.
+
     return (
-      <div className="container">
-        <div style={{ marginTop: "4rem" }} className="row">
-          <div className="col s8 offset-s2">
-            <Link to="/" className="btn-flat waves-effect">
-              <i className="material-icons left">keyboard_backspace</i>
-              Back to home
-            </Link>
-            <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-              <h4>
-                <b>Login</b>
-                below
-              </h4>
-              <p className="grey-text text-darken-1">
-                {"Don't have an account?"} <Link to="/register">Register</Link>
-              </p>
-            </div>
-            <form noValidate onSubmit={this.onSubmit}>
-              <div className="input-field col s12">
-                <label htmlFor="email">
-                  Email
-                  <input
-                    onChange={this.onChange}
-                    value={email}
-                    error={errors.email}
-                    id="email"
-                    type="email"
-                    className={classnames("", {
-                      invalid: errors.email || errors.emailnotfound
-                    })}
-                    autoComplete="email"
-                  />
-                </label>
+      <div className="d-flex justify-content-center pt-2">
+        <div
+          className="border border-info px-5 pt-5"
+          style={{ marginBottom: 8 + "rem" }}
+        >
+          <div>
+            <h1 className="text-center">Login</h1>
+          </div>
+          <form noValidate onSubmit={this.onSubmit}>
+            <div class="form-group row" style={{ marginTop: 3 + "rem" }}>
+              <label htmlFor="inputEmail3" class="col-sm-3 col-form-label">
+                Email
+              </label>
+              <div class="col-sm-8 p-2">
+                <input
+                  onChange={this.onChange}
+                  value={email}
+                  error={errors.email}
+                  id="email"
+                  type="email"
+                  className={classnames("form-control", {
+                    invalid: errors.email || errors.emailnotfound
+                  })}
+                  autoComplete="email"
+                  placeholder="Enter email"
+                />
                 <span className="red-text">
                   {errors.email}
                   {errors.emailnotfound}
                 </span>
               </div>
-              <div className="input-field col s12">
-                <label htmlFor="password">
-                  Password
-                  <input
-                    onChange={this.onChange}
-                    value={password}
-                    error={errors.password}
-                    id="password"
-                    type="password"
-                    className={classnames("", {
-                      invalid: errors.password || errors.passwordincorrect
-                    })}
-                    autoComplete="password"
-                  />
-                </label>
-                <span className="red-text">
-                  {errors.password}
-                  {errors.passwordincorrect}
-                </span>
+            </div>
+            <div class="form-group row">
+              <label htmlFor="inputPassword3" class="col-sm-3 col-form-label">
+                Password
+              </label>
+              <div class="col-sm-8">
+                <input
+                  onChange={this.onChange}
+                  value={password}
+                  error={errors.password}
+                  id="password"
+                  type="password"
+                  className={classnames("form-control", {
+                    invalid: errors.password || errors.passwordincorrect
+                  })}
+                  autoComplete="password"
+                  placeholder="Enter password"
+                />
               </div>
-              <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                <button
-                  style={{
-                    width: "150px",
-                    borderRadius: "3px",
-                    letterSpacing: "1.5px",
-                    marginTop: "1rem"
-                  }}
-                  type="submit"
-                  className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-                >
-                  Login
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div>
+              <span className="red-text">
+                {errors.password}
+                {errors.passwordincorrect}
+              </span>
+            </div>
+            <div style={{ marginTop: 3 + "rem" }}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg btn-block"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+          <p style={{ marginTop: 3 + "rem" }} className="text-center">
+            Don't have an account? <Link to="/register">Register</Link>
+          </p>
         </div>
       </div>
     );
