@@ -21,7 +21,7 @@ services:
   database:
     image: 'mongo'
     volumes:
-      - ./server/deploy/mongo/001_create-users.js:/docker-entrypoint-initdb.d/001_create-users.js:ro
+      - ./mongo/001_create-users.js:/docker-entrypoint-initdb.d/001_create-users.js:ro
     env_file:
       - .env.dev
     networks:

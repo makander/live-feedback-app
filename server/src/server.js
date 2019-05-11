@@ -30,7 +30,11 @@ app.use(
   })
 );
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.ALLOW_ORIGIN
+  })
+);
 
 app.use(bodyParser.json());
 
