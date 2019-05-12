@@ -1,25 +1,25 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-const handleSlider = e => {
-  const sliderValue = e.target.value;
-  console.log(sliderValue);
-};
+import { sliderInput } from "../actions/room";
 
-export default function GuestFeedback() {
+function GuestFeedback(props) {
   return (
     <div className="jumbotron bg-light">
     <h2>Feedback Component</h2>
+    <p>Slider value: {props.sliderValue}</p>
     <form>
     <div className="form-group row" style={{ marginTop: 3 + "rem" }}>
           <div class="col-sm-8 p-2 mx-auto d-flex">
           <div className="p-2 mx-2">0</div>
             <input
               name="feedback-slider" 
-              onChange={handleSlider}
+              onChange={props.handleSlider}
               id="feedback-slider"
               type="range"
               max="10"
               min="0"
+              value={props.sliderValue}
               className="form-control"
             />
             <div className="p-2 mx-2">10</div>
@@ -29,3 +29,16 @@ export default function GuestFeedback() {
     </div>
   )
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  handleSlider: (e) => {
+    const sliderValue = e.target.value;
+    sliderInput(dispatch, sliderValue);
+  }
+});
+
+const mapStateToProps = state => ({
+  sliderValue: state.room.slider_value
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GuestFeedback);
