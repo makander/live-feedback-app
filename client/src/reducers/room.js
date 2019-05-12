@@ -1,9 +1,10 @@
-import { TOGGLE_LIVE_SESSION, CREATE_ROOM } from "../actions/types";
+import { TOGGLE_LIVE_SESSION, CREATE_ROOM, GUEST_JOINED_ROOM } from "../actions/types";
 
 const initialState = {
   session_live: false,
   room_name: null,
-  rooms: []
+  rooms: [],
+  joined_room: false
 };
 
 export default function(state = initialState, action) {
@@ -18,7 +19,13 @@ export default function(state = initialState, action) {
     case CREATE_ROOM:
       return {
         ...state,
-        rooms: action.value
+        rooms: action.value,
+        joined_room: true
+      };
+    case GUEST_JOINED_ROOM:
+      return {
+        ...state,
+        joined_room: true
       };
 
     default:
