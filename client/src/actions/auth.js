@@ -20,7 +20,7 @@ export const setUserLoading = () => ({
 export const loginUser = userData => dispatch => {
   console.log("login");
   axios
-    .post("api/users/login", userData)
+    .post(`${process.env.REACT_APP_API_BASE_URL}/api/users/login`, userData)
     .then(res => {
       // Set token to localStorage
       const { token } = res.data.data;
@@ -42,7 +42,7 @@ export const loginUser = userData => dispatch => {
 // Register User
 export const registerUser = (userData, history) => dispatch => {
   axios
-    .post("/api/users/register", userData)
+    .post(`${process.env.REACT_APP_API_BASE_URL}/api/users/register`, userData)
     .then(() => {
       history.push("/login");
       loginUser(userData);

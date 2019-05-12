@@ -1,9 +1,12 @@
+/* eslint-disable no-console */
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
-import users from "./src/routes/api/users";
-import { errorLogger, logger } from "./src/loggers";
+import cors from "cors";
+
+import users from "./routes/api/users";
+import { errorLogger, logger } from "./loggers";
 
 config({ path: "./deploy/.env" });
 
@@ -27,6 +30,12 @@ app.use(
   })
 );
 
+app.use(
+  cors({
+    origin: process.env.ALLOW_ORIGIN
+  })
+);
+
 app.use(bodyParser.json());
 
 mongoose.connect(db, { useNewUrlParser: true });
@@ -40,6 +49,7 @@ router.use("/api/users", users);
 
 app.use(errorLogger);
 
+// eslint-disable-next-line no-unused-vars
 app.use(function(err, req, res, next) {
   console.error(err); // Log error message in our server's console
   // eslint-disable-next-line no-param-reassign
@@ -53,16 +63,18 @@ const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
 );
 
-//SOCKET.IO 
-//THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT 
+// SOCKET.IO
+// THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
 const socket = require("socket.io");
+
 const io = socket(server);
 
-let roomParticipants = []; 
+let roomParticipants = [];
 
+// eslint-disable-next-line no-shadow
 io.on("connection", socket => {
   console.log("made socket connection ", socket.id);
-  socket.on("connectToNewSession", (roomName, isAdmin) => {
+  socket.on("connectToNewSession", (roomName, isAdmin) => {
     console.log("room name: ", roomName, "isAdmin: ", isAdmin);
     roomParticipants = [];
     socket.join(roomName);
@@ -74,6 +86,6 @@ io.on("connection", socket => {
     });
     console.log(roomParticipants);
     io.emit("sessionCreated", roomParticipants);
-  })
+  });
 });
 //--------------------------------------------------
