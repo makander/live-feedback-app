@@ -69,23 +69,38 @@ const socket = require("socket.io");
 
 const io = socket(server);
 
-let roomParticipants = [];
+const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
 io.on("connection", socket => {
-  console.log("made socket connection ", socket.id);
-  socket.on("connectToNewSession", (roomName, isAdmin) => {
-    console.log("room name: ", roomName, "isAdmin: ", isAdmin);
-    roomParticipants = [];
-    socket.join(roomName);
-    roomParticipants.push({
-      userId: socket.id,
-      value: null,
-      room: roomName,
-      role: isAdmin ? "teacher" : "student"
-    });
-    console.log(roomParticipants);
-    io.emit("sessionCreated", roomParticipants);
+  // Check if user is admin- if true create new session
+  // Otherwise check rooms to see if the user is connecting
+  // to an existing room.
+  socket.on("connectToNewSession", (roomId, isAdmin) => {
+    if (isAdmin) {
+      socket.join(roomId);
+      socket.join(roomId);
+      roomParticipants.push({
+        userId: socket.id,
+        value: null,
+        room: roomId,
+        role: isAdmin ? "teacher" : "student"
+      });
+      socket.emit("newSessionCreated");
+    } else {
+      roomParticipants.forEach(data => {
+        if (data.room === roomId) {
+          socket.join(roomId);
+          roomParticipants.push({
+            userId: socket.id,
+            value: null,
+            room: roomId,
+            role: isAdmin ? "teacher" : "student"
+          });
+          socket.emit("joinedRoom");
+        }
+      });
+    }
   });
 });
 //--------------------------------------------------
