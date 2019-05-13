@@ -1,19 +1,19 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import { connect } from "react-redux";
 
-import { sliderInput } from "../actions/room";
+import { sliderInput, lectureStarted } from "../actions/room";
 
 function GuestFeedback(props) {
   return (
     <div className="jumbotron bg-light">
-    <h2>Feedback Component</h2>
-    <p>Slider value: {props.sliderValue}</p>
-    <form>
-    <div className="form-group row" style={{ marginTop: 3 + "rem" }}>
+      <h2>Feedback Component</h2>
+      <p>Slider value: {props.sliderValue}</p>
+      <form>
+        <div className="form-group row" style={{ marginTop: 3 + "rem" }}>
           <div class="col-sm-8 p-2 mx-auto d-flex">
-          <div className="p-2 mx-2">0</div>
+            <div className="p-2 mx-2">0</div>
             <input
-              name="feedback-slider" 
+              name="feedback-slider"
               onChange={props.handleSlider}
               id="feedback-slider"
               type="range"
@@ -23,15 +23,15 @@ function GuestFeedback(props) {
               className="form-control"
             />
             <div className="p-2 mx-2">10</div>
-            </div>
-            </div>
-    </form>
+          </div>
+        </div>
+      </form>
     </div>
-  )
+  );
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  handleSlider: (e) => {
+const mapDispatchToProps = dispatch => ({
+  handleSlider: e => {
     const sliderValue = e.target.value;
     sliderInput(dispatch, sliderValue);
     const io = require("socket.io-client");
@@ -44,4 +44,7 @@ const mapStateToProps = state => ({
   sliderValue: state.room.slider_value
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GuestFeedback);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GuestFeedback);

@@ -1,11 +1,18 @@
-import { TOGGLE_LIVE_SESSION, CREATE_ROOM, GUEST_JOINED_ROOM, CHANGE_SLIDER } from "../actions/types";
+import {
+  TOGGLE_LIVE_SESSION,
+  CREATE_ROOM,
+  GUEST_JOINED_ROOM,
+  CHANGE_SLIDER,
+  LECTURE_STARTED
+} from "../actions/types";
 
 const initialState = {
   session_live: false,
   room_name: null,
   rooms: [],
   joined_room: false,
-  slider_value: 5
+  slider_value: 5,
+  lectureStarted: false
 };
 
 export default function(state = initialState, action) {
@@ -33,9 +40,13 @@ export default function(state = initialState, action) {
         ...state,
         slider_value: action.value
       };
+    case LECTURE_STARTED:
+      return {
+        ...state,
+        lectureStarted: true
+      };
 
     default:
       return state;
   }
 }
-

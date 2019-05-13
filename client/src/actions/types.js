@@ -7,3 +7,4 @@ export const CREATE_ROOM = "CREATE_ROOM";
 export const GUEST_JOINED_ROOM = "GUEST_JOINED_ROOM";
 
 export const CHANGE_SLIDER = "CHANGE_SLIDER";
+export const LECTURE_STARTED = "LECTURE_STARTED";

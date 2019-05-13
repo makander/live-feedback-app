@@ -6,19 +6,6 @@ import { toggleLiveSession, createRoom } from "../actions/room";
 // Components
 import LiveSession from "../components/LiveSession";
 
-/* ---------TODO--------- 
-
-IMPLEMENT ROUTING ELEMENTS
-
---------------------------
-  STORE VALUES REQUIRED
-    SESSION_LIVE: false ----> Initial state needs to have this as false, trigger when pressing button
-    CURRENT_ROOM: null ----> Which room is being monitored by user
-    CURRENT_ROOM: null ----> Which room is being monitored by user
-    CURRENT_ROOM_DATA: null ----> Input from the current room users that will be displayed and later sent to MONGODB
-    AVERAGE_SCORE: null ----> The current calculated score from the users
----------------------  */
-
 function NewSession(props) {
   return (
     <div className="justify-content-center pt-2">
@@ -53,7 +40,7 @@ const mapDispatchToProps = dispatch => ({
     const room_name = e.target[0].value;
     const roomId = `${userId}-${room_name}`;
     const io = require("socket.io-client");
-    const socket = io("http://localhost:5000/");
+    const socket = io(`http://192.168.99.100:5000/`);
     socket.emit("connectToNewSession", roomId, true);
     socket.on("newSessionCreated", roomParticipants => {
       createRoom(dispatch, roomParticipants);
