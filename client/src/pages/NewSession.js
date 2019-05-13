@@ -53,7 +53,7 @@ const mapDispatchToProps = dispatch => ({
   handleClickNewSession: e => {
     e.preventDefault();
     const roomName = e.target[0].value;
-    const socket = io("http://localhost:5000/");
+    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("connectToNewSession", roomName, true);
     socket.on("sessionCreated", roomParticipants => {
       createRoom(dispatch, roomParticipants);
