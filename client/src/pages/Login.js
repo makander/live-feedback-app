@@ -64,7 +64,7 @@ class Login extends Component {
       <div className="d-flex justify-content-center pt-2">
         <div
           className="border border-info px-5 pt-5"
-          style={{ marginBottom: "8rem", "justify-content": "space-around" }}
+          style={{ marginBottom: "8rem" }}
         >
           <div>
             <h1 className="text-center">Login</h1>
