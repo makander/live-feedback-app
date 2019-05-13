@@ -69,10 +69,21 @@ const mapStateToProps = state => ({
 });
 
 NewSession.propTypes = {
-  session_live: PropTypes.bool.isRequired,
-  room_name: PropTypes.string.isRequired,
-  handleClickNewSession: PropTypes.func.isRequired,
-  handleInputChange: PropTypes.func.isRequired
+  session_live: PropTypes.bool,
+  room_name: PropTypes.string,
+  handleClickNewSession: PropTypes.func,
+  handleInputChange: PropTypes.func
+};
+
+NewSession.defaultProps = {
+  session_live: false,
+  room_name: "",
+  handleClickNewSession: () => {
+    return null;
+  },
+  handleInputChange: () => {
+    return null;
+  }
 };
 
 export default connect(
