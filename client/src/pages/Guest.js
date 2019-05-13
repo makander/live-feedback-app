@@ -60,6 +60,8 @@ class Guest extends Component {
             ) : (
               <p>Lecture have not yet started</p>
             )}
+
+            <button onClick={props.getstate}>Try</button>
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>
@@ -73,6 +75,8 @@ const mapDispatchToProps = dispatch => ({
   joinedRoom: () => {
     joinedRoom(dispatch);
   }
+
+  getstate: () =>
 });
 
 const mapStateToProps = state => ({
