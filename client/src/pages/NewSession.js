@@ -47,16 +47,17 @@ function NewSession(props) {
 }
 
 const mapDispatchToProps = dispatch => ({
-  handleClickNewSession: e => {
+  handleClickNewSession: (e, userId) => {
     e.preventDefault();
-    const roomName = e.target[0].value;
+    const room_name = e.target[0].value;
+    const roomId = `${userId}-${room_name}`;
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
-    socket.emit("connectToNewSession", roomName, true);
+    socket.emit("connectToNewSession", roomId, true);
     socket.on("sessionCreated", roomParticipants => {
       createRoom(dispatch, roomParticipants);
     });
 
-    toggleLiveSession(dispatch, roomName);
+    toggleLiveSession(dispatch, room_name);
   }
 });
 

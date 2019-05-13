@@ -8,17 +8,16 @@ class Guest extends Component {
   constructor(props) {
     super(props);
     this.io = require("socket.io-client");
-    this.socket = this.io(`http://192.168.99.100:5000/`);
+    this.socket = this.io(`http://localhost:5000/`);
   }
 
   componentWillMount() {
     this.socket.emit(
-      "connectToNewSession",
-      this.props.match.params.roomId,
-      false
-    );
+      "connectToNewSession", 
+    this.props.match.params.roomId,
+     false
+     );
     this.socket.on("joinedRoom", this.props.joinedRoom);
-    console.log(this.props);
   }
 
   render() {
@@ -60,7 +59,6 @@ class Guest extends Component {
             {/*  ) : (
               <p>Lecture have not yet started</p>
             )} */}
-            <button onClick={() => console.log(this.props)}>Test</button>
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>

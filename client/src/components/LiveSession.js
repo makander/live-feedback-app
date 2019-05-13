@@ -5,8 +5,6 @@ import { lectureStarted } from "../actions/room";
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
 function LiveSession(props) {
-  const CORRECT_IP = process.env.REACT_APP_CORRECT_IP;
-
   return (
     <div>
       <h2>Session Active in Room {props.room_name}</h2>
@@ -15,9 +13,9 @@ function LiveSession(props) {
         Room Link:
         <a
           rel="noopener noreferrer"
-          href={`http://192.168.99.100:3000/guest/${props.roomId}`}
+          href={`http://localhost:3000/guest/${props.roomId}`}
           target="_blank"
-        >{`http://192.168.99.100:3000/guest/${props.roomId}`}</a>
+        >{`http://localhost:3000/guest/${props.roomId}`}</a>
       </p>
       <p>Average Score: 5</p>
       <p>Timer: 00:00</p>
@@ -42,7 +40,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   startLecture: e => {
     e.preventDefault();
     const io = require("socket.io-client");
-    const socket = io(`http://192.168.99.100:5000/`);
+    const socket = io(`http://localhost:5000/`);
     socket.emit("startLecture");
     lectureStarted(dispatch, ownProps.room_name);
   }

@@ -79,6 +79,7 @@ io.on("connection", socket => {
   socket.on("connectToNewSession", (roomId, isAdmin) => {
     if (isAdmin) {
       socket.join(roomId);
+
       // NOT DRY SEE LINE 92 REFACTOR INTO SINGLE FUNCTION WITH CALLBACK HERE
       roomParticipants.push({
         userId: socket.id,
@@ -98,7 +99,6 @@ io.on("connection", socket => {
             role: isAdmin ? "teacher" : "student"
           });
           socket.emit("joinedRoom");
-          console.log("joined room triggeraction");
         }
       });
     }
