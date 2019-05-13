@@ -1,6 +1,9 @@
+/* eslint-disable camelcase */
 import React from "react";
 import { connect } from "react-redux";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import io from "socket.io-client";
+import PropTypes from "prop-types";
 import { toggleLiveSession, createRoom } from "../actions/room";
 
 // Components
@@ -20,20 +23,28 @@ IMPLEMENT ROUTING ELEMENTS
 ---------------------  */
 
 function NewSession(props) {
+  const {
+    session_live,
+    room_name,
+    handleClickNewSession,
+    handleInputChange
+  } = props;
 
   return (
     <div className="cotainer p-2">
       <h1>Welcome to the New Session view</h1>
-      <p>Session_State: {props.session_live ? "on" : "off"}</p>
-      <button onClick={() =>console.log(props)}>Check State</button>
-      <p>{props.room_name}</p>
-      {!props.session_live ? (
-        <form onSubmit={props.handleClickNewSession}>
-          <input type="text" onChange={props.handleInputChange} required />
+      <p>Session_State: {session_live ? "on" : "off"}</p>
+      <button type="button" onClick={() => console.log(props)}>
+        Check State
+      </button>
+      <p>{room_name}</p>
+      {!session_live ? (
+        <form onSubmit={handleClickNewSession}>
+          <input type="text" onChange={handleInputChange} required />
           <button type="submit">New Session</button>
         </form>
       ) : null}
-      {props.session_live ? <LiveSession  room_name={props.room_name} /> : null}
+      {session_live ? <LiveSession room_name={room_name} /> : null}
     </div>
   );
 }
@@ -42,10 +53,9 @@ const mapDispatchToProps = dispatch => ({
   handleClickNewSession: e => {
     e.preventDefault();
     const roomName = e.target[0].value;
-    const io = require("socket.io-client");
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("connectToNewSession", roomName, true);
-    socket.on("sessionCreated", (roomParticipants) => {
+    socket.on("sessionCreated", roomParticipants => {
       createRoom(dispatch, roomParticipants);
     });
 
@@ -55,9 +65,26 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
-  room_name: state.room.room_name,
-  rooms: state.room.rooms
-  });
+  room_name: state.room.room_name
+});
+
+NewSession.propTypes = {
+  session_live: PropTypes.bool,
+  room_name: PropTypes.string,
+  handleClickNewSession: PropTypes.func,
+  handleInputChange: PropTypes.func
+};
+
+NewSession.defaultProps = {
+  session_live: false,
+  room_name: "",
+  handleClickNewSession: () => {
+    return null;
+  },
+  handleInputChange: () => {
+    return null;
+  }
+};
 
 export default connect(
   mapStateToProps,

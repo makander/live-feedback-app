@@ -58,58 +58,63 @@ class Login extends Component {
   render() {
     const { errors, email, password } = this.state;
 
-    //style={{marginRight: spacing + 'em'}} when using JSX.
+    // style={{marginRight: spacing + 'em'}} when using JSX.
 
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
           className="border border-info px-5 pt-5"
-          style={{ marginBottom: 8 + "rem" }}
+          style={{ marginBottom: "8rem" }}
         >
           <div>
             <h1 className="text-center">Login</h1>
           </div>
           <form noValidate onSubmit={this.onSubmit}>
-            <div class="form-group row" style={{ marginTop: 3 + "rem" }}>
-              <label htmlFor="inputEmail3" class="col-sm-3 col-form-label">
-                Email
-              </label>
-              <div class="col-sm-8 p-2">
-                <input
-                  onChange={this.onChange}
-                  value={email}
-                  error={errors.email}
-                  id="email"
-                  type="email"
-                  className={classnames("form-control", {
-                    invalid: errors.email || errors.emailnotfound
-                  })}
-                  autoComplete="email"
-                  placeholder="Enter email"
-                />
-                <span className="red-text">
-                  {errors.email}
-                  {errors.emailnotfound}
-                </span>
+            <div className="form-group row" style={{ marginTop: "3rem" }}>
+              <div className="col-sm-12">
+                <label htmlFor="email" className="col-sm-12 col-form-label">
+                  Email
+                  <input
+                    onChange={this.onChange}
+                    value={email}
+                    error={errors.email}
+                    id="email"
+                    type="email"
+                    className={classnames("form-control", {
+                      invalid: errors.email || errors.emailnotfound,
+                      "w-9": true
+                    })}
+                    autoComplete="email"
+                    placeholder="Enter email"
+                  />
+                  <span className="red-text">
+                    {errors.email}
+                    {errors.emailnotfound}
+                  </span>
+                </label>
               </div>
             </div>
-            <div class="form-group row">
-              <label htmlFor="inputPassword3" class="col-sm-3 col-form-label">
-                Password
-              </label>
-              <div class="col-sm-8">
-                <input
-                  onChange={this.onChange}
-                  value={password}
-                  error={errors.password}
-                  id="password"
-                  type="password"
-                  className={classnames("form-control", {
-                    invalid: errors.password || errors.passwordincorrect
-                  })}
-                  autoComplete="password"
-                  placeholder="Enter password"
-                />
+            <div className="form-group row">
+              <div className="col-sm-12">
+                <label
+                  id="passwordlabel"
+                  htmlFor="password"
+                  className="col-form-label col-sm-12"
+                >
+                  Password
+                  <input
+                    onChange={this.onChange}
+                    value={password}
+                    error={errors.password}
+                    id="password"
+                    type="password"
+                    className={classnames("form-control", {
+                      invalid: errors.password || errors.passwordincorrect
+                    })}
+                    autoComplete="password"
+                    placeholder="Enter password"
+                  />
+                </label>
               </div>
             </div>
             <div>
@@ -118,7 +123,7 @@ class Login extends Component {
                 {errors.passwordincorrect}
               </span>
             </div>
-            <div style={{ marginTop: 3 + "rem" }}>
+            <div style={{ marginTop: `3rem` }}>
               <button
                 type="submit"
                 className="btn btn-primary btn-lg btn-block"
@@ -127,8 +132,8 @@ class Login extends Component {
               </button>
             </div>
           </form>
-          <p style={{ marginTop: 3 + "rem" }} className="text-center">
-            Don't have an account? <Link to="/register">Register</Link>
+          <p style={{ marginTop: `${3}rem` }} className="text-center">
+            {"Don't have an account?"} <Link to="/register">Register</Link>
           </p>
         </div>
       </div>
