@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  api:
+    image: registry.chas.school/impostrious-api:latest
+    working_dir: /app
+    command: node build/server.js
+    depends_on:
+      - database
+    env_file:
+      - .env.prod
+    networks:
+      - traefik
+      - backend
+    deploy:
+      labels:
+        traefik.port: '5005'
+        traefik.backend: 'impostrious_api'
+        traefik.docker.network: 'traefik'
+        traefik.frontend.rule: 'Host:impostrious-api.chas.school'
+  database:
+    image: 'mongo'
+    volumes:
+      - ./mongo/001_create-users.js:/docker-entrypoint-initdb.d/001_create-users.js:ro
+    env_file:
+      - .env.prod
+    networks:
+      - backend
+    deploy:
+      labels:
+        traefik.enable: 'false'
+
+volumes:
+  database:
+
+networks:
+  traefik:
+    external: true
+  backend:
+    external: false
