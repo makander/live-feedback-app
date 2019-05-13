@@ -98,20 +98,15 @@ io.on("connection", socket => {
             role: isAdmin ? "teacher" : "student"
           });
           socket.emit("joinedRoom");
+          console.log("joined room triggeraction");
         }
       });
     }
   });
 
   socket.on("changeSlider", sliderValue => {
-    console.log(
-      "socket: ",
-      socket.id,
-      "slider: ",
-      sliderValue,
-      "rooms: ",
-      roomParticipants
-    );
+    console.log(sliderValue);
+    console.log(roomParticipants);
   });
 });
 //--------------------------------------------------

@@ -11,9 +11,8 @@ function LiveSession(props) {
     <div>
       <h2>Session Active in Room {props.room_name}</h2>
       <p>Room ID: {props.roomId}</p>
-      {console.log(CORRECT_IP)};{console.log("test")}
       <p>
-        Room Link:{" "}
+        Room Link:
         <a
           rel="noopener noreferrer"
           href={`http://192.168.99.100:3000/guest/${props.roomId}`}

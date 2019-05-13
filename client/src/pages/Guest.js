@@ -55,13 +55,12 @@ class Guest extends Component {
                 </li>
               </ul>
             </div>
-            {this.props.lectureStarted ? (
-              <GuestFeedback />
-            ) : (
+            {/* {this.props.lectureStarted ? ( */}
+            <GuestFeedback />
+            {/*  ) : (
               <p>Lecture have not yet started</p>
-            )}
-
-            <button onClick={props.getstate}>Try</button>
+            )} */}
+            <button onClick={() => console.log(this.props)}>Test</button>
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>
@@ -75,8 +74,6 @@ const mapDispatchToProps = dispatch => ({
   joinedRoom: () => {
     joinedRoom(dispatch);
   }
-
-  getstate: () =>
 });
 
 const mapStateToProps = state => ({

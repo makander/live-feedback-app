@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
+import io from "socket.io-client";
 
-import { sliderInput, lectureStarted } from "../actions/room";
+import { sliderInput } from "../actions/room";
 
 function GuestFeedback(props) {
   return (
@@ -34,8 +35,7 @@ const mapDispatchToProps = dispatch => ({
   handleSlider: e => {
     const sliderValue = e.target.value;
     sliderInput(dispatch, sliderValue);
-    const io = require("socket.io-client");
-    const socket = io("http://localhost:5000/");
+    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("changeSlider", sliderValue);
   }
 });
