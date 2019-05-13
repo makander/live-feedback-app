@@ -63,7 +63,7 @@ const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
 );
 
-// SOCKET.IO
+// ----------------SOCKET.IO------------------------
 // THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
 const socket = require("socket.io");
 
@@ -79,7 +79,7 @@ io.on("connection", socket => {
   socket.on("connectToNewSession", (roomId, isAdmin) => {
     if (isAdmin) {
       socket.join(roomId);
-      socket.join(roomId);
+      // NOT DRY SEE LINE 92 REFACTOR INTO SINGLE FUNCTION WITH CALLBACK HERE
       roomParticipants.push({
         userId: socket.id,
         value: null,
@@ -101,6 +101,17 @@ io.on("connection", socket => {
         }
       });
     }
+  });
+
+  socket.on("changeSlider", sliderValue => {
+    console.log(
+      "socket: ",
+      socket.id,
+      "slider: ",
+      sliderValue,
+      "rooms: ",
+      roomParticipants
+    );
   });
 });
 //--------------------------------------------------

@@ -34,6 +34,9 @@ const mapDispatchToProps = (dispatch) => ({
   handleSlider: (e) => {
     const sliderValue = e.target.value;
     sliderInput(dispatch, sliderValue);
+    const io = require("socket.io-client");
+    const socket = io("http://localhost:5000/");
+    socket.emit("changeSlider", sliderValue);
   }
 });
 
