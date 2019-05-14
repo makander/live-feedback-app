@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const setAuthToken = token => {
+export const setAuthToken = token => {
+  console.log(token);
   if (token) {
     // Apply authorization token to every request if logged in
     axios.defaults.headers.common.Authorization = token;
@@ -10,4 +11,18 @@ const setAuthToken = token => {
   }
 };
 
-export default setAuthToken;
+export const getConfirm = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (token) return true;
+  return false;
+};
+
+export const loggedIn = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (token) return !!token;
+  return false;
+};
+
+export const logout = () => {
+  console.log("logout auth helper af");
+};

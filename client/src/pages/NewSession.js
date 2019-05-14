@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import io from "socket.io-client";
 import PropTypes from "prop-types";
+import withAuth from "../hocs/withAuth";
 import { toggleLiveSession, createRoom } from "../actions/room";
 
 // Components
@@ -89,4 +90,4 @@ NewSession.defaultProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withRouter(NewSession));
+)(withRouter(withAuth(NewSession)));
