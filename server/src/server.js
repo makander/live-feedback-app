@@ -178,8 +178,8 @@ io.on("connection", socket => {
       console.log(sessionData);
 
       const roomSession = new roomData({
-        sessionData: sessionData,
-        roomId: roomId
+        sessionData,
+        roomId
       });
       console.log("här kommer ett nytt room document");
       console.log(roomSession);
@@ -187,7 +187,7 @@ io.on("connection", socket => {
       // save model to database
       roomSession.save(function(err, test) {
         if (err) return console.error(err);
-        console.log(test.name + " saved to bookstore collection.");
+        console.log(`${test.name  } saved to bookstore collection.`);
       });
     });
   });
