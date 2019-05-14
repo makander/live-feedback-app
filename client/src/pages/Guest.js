@@ -18,7 +18,6 @@ class Guest extends Component {
       false
     );
     this.socket.on("joinedRoom", this.props.joinedRoom);
-    console.log(this.props);
   }
 
   render() {
@@ -60,7 +59,6 @@ class Guest extends Component {
             {/*  ) : (
               <p>Lecture have not yet started</p>
             )} */}
-            <button onClick={() => console.log(this.props)}>Test</button>
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>
@@ -77,8 +75,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  isConnected: state.room.joined_room,
-  lectureStarted: state.room.lectureStarted
+  isConnected: state.room.joined_room
 });
 
 export default connect(

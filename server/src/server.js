@@ -5,6 +5,9 @@ import bodyParser from "body-parser";
 import { config } from "dotenv";
 import cors from "cors";
 
+// room imports
+import roomData from "./models/roomData";
+
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
 
@@ -69,6 +72,7 @@ const socket = require("socket.io");
 
 const io = socket(server);
 
+const roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
@@ -78,35 +82,114 @@ io.on("connection", socket => {
   // to an existing room.
   socket.on("connectToNewSession", (roomId, isAdmin) => {
     if (isAdmin) {
+      console.log("denne är admin");
       socket.join(roomId);
-      // NOT DRY SEE LINE 92 REFACTOR INTO SINGLE FUNCTION WITH CALLBACK HERE
       roomParticipants.push({
         userId: socket.id,
         value: null,
-        room: roomId,
-        role: isAdmin ? "teacher" : "student"
+        room_id: roomId,
+        role: "teacher"
       });
+      const newRoom = {
+        id: roomId,
+        isActive: false,
+        users: roomParticipants
+      };
+      roomArrays.push(newRoom);
+      console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
     } else {
-      roomParticipants.forEach(data => {
-        if (data.room === roomId) {
+      roomArrays.map(room => {
+        if (room.id === roomId) {
           socket.join(roomId);
-          roomParticipants.push({
+          room.users.push({
             userId: socket.id,
             value: null,
-            room: roomId,
-            role: isAdmin ? "teacher" : "student"
+            room_id: roomId,
+            role: "student"
           });
           socket.emit("joinedRoom");
-          console.log("joined room triggeraction");
         }
+        return room;
       });
     }
   });
 
+  socket.on("sessionStart", roomId => {
+    console.log("Start");
+    roomArrays.map(room => {
+      if (room.id === roomId) {
+        room.isActive = true;
+      }
+    });
+    return roomArrays;
+  });
+
+  socket.on("sessionStop", roomId => {
+    console.log("Stop");
+    roomArrays.map(room => {
+      if (room.id === roomId) {
+        room.isActive = false;
+      }
+    });
+    return roomArrays;
+  });
+
   socket.on("changeSlider", sliderValue => {
     console.log(sliderValue);
-    console.log(roomParticipants);
+    console.log(roomArrays);
+  });
+
+  socket.on("test", () => {
+    console.log(roomArrays);
+  });
+
+  // Triggered by button in LiveSession, establishes connection to mongoDB
+  // and saves room data for specicied room
+  socket.on("sendToDB", roomId => {
+    // DB Config
+
+    const dbz =
+      "mongodb+srv://ruben:ruben@devconnector-k3pw0.mongodb.net/chatapp?retryWrites=true";
+
+    // Connect to MongoDB
+    mongoose
+      .connect(dbz, { useNewUrlParser: true })
+      .then(() => console.log("MongoDB connected!"))
+      .catch(err => console.log(err));
+
+    const dbs = mongoose.connection;
+
+    dbs.on("error", console.error.bind(console, "connection error:"));
+    dbs.once("open", function(data) {
+      console.log("inside once");
+      console.log(roomArrays);
+      console.log("Connection Successful!");
+
+      const sessionData = [];
+      roomArrays.map(room => {
+        if (room.id === roomId) {
+          console.log("här kommer room inuti map");
+          console.log(room);
+          sessionData.push(room);
+        }
+      });
+      console.log("här kommer session data");
+      console.log(sessionData);
+
+      const roomSession = new roomData({
+        sessionData: sessionData,
+        roomId: roomId
+      });
+      console.log("här kommer ett nytt room document");
+      console.log(roomSession);
+
+      // save model to database
+      roomSession.save(function(err, test) {
+        if (err) return console.error(err);
+        console.log(test.name + " saved to bookstore collection.");
+      });
+    });
   });
 });
 //--------------------------------------------------

@@ -1,15 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import dotenv from "dotenv";
-import { lectureStarted } from "../actions/room";
+import { sessionStarted, sessionStopped } from "../actions/room";
 
 dotenv.config({ path: "../.env" });
 
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
 function LiveSession(props) {
-  const CORRECT_IP = process.env.REACT_APP_SOCKET_CLIENT_CONNECTION;
-  console.log(CORRECT_IP);
   return (
     <div>
       <h2>Session Active in Room {props.room_name}</h2>
@@ -25,35 +23,55 @@ function LiveSession(props) {
       <p>Average Score: 5</p>
 
       <p>Timer: 00:00</p>
-      {props.lectureStarted ? (
-        <p>Lecture Started</p>
+      {props.session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
+      {!props.session_active ? (
+        <button
+          type="button"
+          onClick={e => {
+            props.startSession(e);
+          }}
+        >
+          Start Session
+        </button>
       ) : (
         <button
           type="button"
           onClick={e => {
-            props.startLecture(e);
+            props.stopSession(e);
           }}
         >
-          Start Lecture
+          Stop Session
         </button>
       )}
-      <button type="button">Cancel Lecture</button>
+      <button onClick={props.sendToDB}>Send to DB</button>
     </div>
   );
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  startLecture: e => {
+  startSession: e => {
     e.preventDefault();
     const io = require("socket.io-client");
     const socket = io(`http://192.168.99.100:5000/`);
-    socket.emit("startLecture");
-    lectureStarted(dispatch, ownProps.room_name);
+    socket.emit("sessionStart", ownProps.roomId);
+    sessionStarted(dispatch, ownProps.room_name);
+  },
+  stopSession: e => {
+    e.preventDefault();
+    const io = require("socket.io-client");
+    const socket = io(`http://192.168.99.100:5000/`);
+    socket.emit("sessionStop", ownProps.roomId);
+    sessionStopped(dispatch, ownProps.room_name);
+  },
+  sendToDB: () => {
+    const io = require("socket.io-client");
+    const socket = io(`http://192.168.99.100:5000/`);
+    socket.emit("sendToDB", ownProps.roomId);
   }
 });
 
 const mapStateToProps = state => ({
-  lectureStarted: state.room.lectureStarted
+  session_active: state.room.session_active
 });
 
 export default connect(
