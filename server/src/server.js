@@ -82,7 +82,6 @@ io.on("connection", socket => {
   // to an existing room.
   socket.on("connectToNewSession", (roomId, isAdmin) => {
     if (isAdmin) {
-      console.log("denne är admin");
       socket.join(roomId);
       roomParticipants.push({
         userId: socket.id,
@@ -140,8 +139,27 @@ io.on("connection", socket => {
     console.log(roomArrays);
   });
 
-  socket.on("test", () => {
-    console.log(roomArrays);
+  // Load all sessions
+  socket.on("loadSessions", () => {
+    console.log("hej");
+    const connection =
+      "mongodb+srv://ruben:ruben@devconnector-k3pw0.mongodb.net/chatapp?retryWrites=true";
+
+    // Connect to MongoDB
+    mongoose
+      .connect(connection, { useNewUrlParser: true })
+      .then(() => console.log("MongoDB connected!"))
+      .catch(err => console.log(err));
+
+    const dbs = mongoose.connection;
+
+    dbs.on("error", console.error.bind(console, "connection error:"));
+
+    const allRoomData = roomData.find({
+      roomId: "5cdad654848207005215643d-1234"
+    });
+    socket.emit("sendData", allRoomData);
+    console.log(allRoomData);
   });
 
   // Triggered by button in LiveSession, establishes connection to mongoDB
@@ -187,7 +205,7 @@ io.on("connection", socket => {
       // save model to database
       roomSession.save(function(err, test) {
         if (err) return console.error(err);
-        console.log(`${test.name  } saved to bookstore collection.`);
+        console.log(`${test.name} saved to bookstore collection.`);
       });
     });
   });
