@@ -20,7 +20,7 @@ function LiveSession(props) {
           rel="noopener noreferrer"
           href={`http://192.168.99.100:3000/guest/${props.roomId}`}
           target="_blank"
-        >{`$http://192.168.99.100:3000/guest/${props.roomId}`}</a>
+        >{`http://192.168.99.100:3000/guest/${props.roomId}`}</a>
       </p>
       <p>Average Score: 5</p>
 
