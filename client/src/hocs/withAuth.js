@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import AuthHelperMethods from "../utils/AuthHelper";
+import { getConfirm, loggedIn, logout } from "../utils/AuthHelper";
 
 /* A higher order component is frequently written as a function that returns a class. */
 export default function withAuth(AuthComponent) {
-  const Auth = new AuthHelperMethods();
-
   class AuthWrapped extends Component {
     state = {
       confirm: null,
@@ -14,16 +12,14 @@ export default function withAuth(AuthComponent) {
 
     /* In the componentDidMount, we would want to do a couple of important tasks in order to verify the current users authentication status
         prior to granting them enterance into the app. */
-    componentWillMount() {
+    componentDidMount() {
       const { history } = this.props;
-
-      if (!Auth.loggedIn()) {
+      if (!loggedIn()) {
         history.replace("/login");
       } else {
         /* Try to get confirmation message from the Auth helper. */
         try {
-          const confirm = Auth.getConfirm();
-
+          const confirm = getConfirm();
           this.setState({
             confirm,
             loaded: true
@@ -31,7 +27,7 @@ export default function withAuth(AuthComponent) {
         } catch (err) {
           /* Oh snap! Looks like there's an error so we'll print it out and log the user out for security reasons. */
 
-          Auth.logout();
+          logout();
           history.replace("/login");
         }
       }
@@ -45,7 +41,11 @@ export default function withAuth(AuthComponent) {
         if (confirm) {
           return (
             /* component that is currently being wrapper(App.js) */
-            <AuthComponent history={history} confirm={confirm} />
+            <AuthComponent
+              {...this.props}
+              history={history}
+              confirm={confirm}
+            />
           );
         }
         return null;
@@ -55,7 +55,7 @@ export default function withAuth(AuthComponent) {
   }
 
   AuthWrapped.propTypes = {
-    history: PropTypes.isRequired
+    history: PropTypes.object.isRequired
   };
 
   return AuthWrapped;

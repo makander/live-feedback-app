@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import withAuth from "../hocs/withAuth";
 
-export default function MySessions(props) {
+function MySessions(props) {
   return (
     <div>
       <h2>List of Previous Sessions</h2>
@@ -25,3 +26,5 @@ export default function MySessions(props) {
     </div>
   );
 }
+
+export default withAuth(MySessions);
