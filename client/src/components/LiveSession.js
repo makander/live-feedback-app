@@ -1,12 +1,15 @@
 import React from "react";
 import { connect } from "react-redux";
+import dotenv from "dotenv";
 import { lectureStarted } from "../actions/room";
+
+dotenv.config({ path: "../.env" });
 
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
 function LiveSession(props) {
-  const CORRECT_IP = process.env.REACT_APP_CORRECT_IP;
-
+  const CORRECT_IP = process.env.REACT_APP_SOCKET_CLIENT_CONNECTION;
+  console.log(CORRECT_IP);
   return (
     <div>
       <h2>Session Active in Room {props.room_name}</h2>
@@ -17,9 +20,10 @@ function LiveSession(props) {
           rel="noopener noreferrer"
           href={`http://192.168.99.100:3000/guest/${props.roomId}`}
           target="_blank"
-        >{`http://192.168.99.100:3000/guest/${props.roomId}`}</a>
+        >{`$http://192.168.99.100:3000/guest/${props.roomId}`}</a>
       </p>
       <p>Average Score: 5</p>
+
       <p>Timer: 00:00</p>
       {props.lectureStarted ? (
         <p>Lecture Started</p>
