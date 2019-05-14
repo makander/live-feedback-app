@@ -69,7 +69,7 @@ const socket = require("socket.io");
 
 const io = socket(server);
 
-const roomArrays = [];
+let roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
@@ -94,9 +94,8 @@ io.on("connection", socket => {
       roomArrays.push(newRoom);
       console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
-      return roomArrays;
     }
-    roomArrays.map(room => {
+    roomArrays.forEach(room => {
       if (room.id === roomId) {
         socket.join(roomId);
         room.users.push({
@@ -107,39 +106,34 @@ io.on("connection", socket => {
         });
         socket.emit("joinedRoom");
       }
-      return roomArrays;
     });
-    console.log(roomArrays);
     return roomArrays;
   });
 
   socket.on("sessionStart", roomId => {
     console.log("Start");
-    console.log(roomArrays);
-    roomArrays.map(room => {
+    roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
-        console.log("match");
         return { ...room, isActive: true };
       }
       return room;
     });
+    return roomArrays;
   });
 
   socket.on("sessionStop", roomId => {
     console.log("Stop");
-    console.log(roomArrays);
-    roomArrays.map(room => {
+    roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
-        console.log("match");
         return { ...room, isActive: false };
       }
       return room;
     });
+    return roomArrays;
   });
 
   socket.on("changeSlider", sliderValue => {
-    console.log(sliderValue);
-    console.log(roomArrays);
+    console.log("slider: ", sliderValue);
   });
 });
 //--------------------------------------------------
