@@ -3,7 +3,8 @@ import {
   CREATE_ROOM,
   GUEST_JOINED_ROOM,
   CHANGE_SLIDER,
-  LECTURE_STARTED
+  SESSION_STARTED,
+  SESSION_STOPPED
 } from "../actions/types";
 
 const initialState = {
@@ -12,7 +13,7 @@ const initialState = {
   rooms: [],
   joined_room: false,
   slider_value: 5,
-  lectureStarted: false
+  session_active: false
 };
 
 export default function(state = initialState, action) {
@@ -40,10 +41,15 @@ export default function(state = initialState, action) {
         ...state,
         slider_value: action.value
       };
-    case LECTURE_STARTED:
+    case SESSION_STARTED:
       return {
         ...state,
-        lectureStarted: true
+        session_active: true
+      };
+    case SESSION_STOPPED:
+      return {
+        ...state,
+        session_active: false
       };
 
     default:

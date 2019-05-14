@@ -76,7 +76,6 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   isConnected: state.room.joined_room,
-  lectureStarted: state.room.lectureStarted
 });
 
 export default connect(

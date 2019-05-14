@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { lectureStarted } from "../actions/room";
+import { sessionStarted, sessionStopped } from "../actions/room";
 
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
@@ -19,35 +19,49 @@ function LiveSession(props) {
       </p>
       <p>Average Score: 5</p>
       <p>Timer: 00:00</p>
-      {props.lectureStarted ? (
-        <p>Lecture Started</p>
+      {props.session_active ? (<p>Session Active</p>) : (<p>Session Inactive</p>)}
+      {!props.session_active ? (
+        <button
+          type="button"
+          onClick={e => {
+            props.startSession(e);
+          }}
+        >
+          Start Session
+        </button>
       ) : (
         <button
           type="button"
           onClick={e => {
-            props.startLecture(e);
+            props.stopSession(e);
           }}
         >
-          Start Lecture
+          Stop Session
         </button>
       )}
-      <button type="button">Cancel Lecture</button>
     </div>
   );
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  startLecture: e => {
+  startSession: e => {
     e.preventDefault();
     const io = require("socket.io-client");
     const socket = io(`http://localhost:5000/`);
-    socket.emit("startLecture");
-    lectureStarted(dispatch, ownProps.room_name);
+    socket.emit("sessionStart", ownProps.roomId);
+    sessionStarted(dispatch, ownProps.room_name);
+  },
+  stopSession: e => {
+    e.preventDefault();
+    const io = require("socket.io-client");
+    const socket = io(`http://localhost:5000/`);
+    socket.emit("sessionStop", ownProps.roomId);
+    sessionStopped(dispatch, ownProps.room_name);
   }
 });
 
 const mapStateToProps = state => ({
-  lectureStarted: state.room.lectureStarted
+  session_active: state.room.session_active
 });
 
 export default connect(

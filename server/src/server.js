@@ -69,6 +69,7 @@ const socket = require("socket.io");
 
 const io = socket(server);
 
+const roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
@@ -79,34 +80,66 @@ io.on("connection", socket => {
   socket.on("connectToNewSession", (roomId, isAdmin) => {
     if (isAdmin) {
       socket.join(roomId);
-
-      // NOT DRY SEE LINE 92 REFACTOR INTO SINGLE FUNCTION WITH CALLBACK HERE
       roomParticipants.push({
         userId: socket.id,
         value: null,
-        room: roomId,
-        role: isAdmin ? "teacher" : "student"
+        room_id: roomId,
+        role: "teacher"
       });
+      const newRoom = {
+        id: roomId,
+        isActive: false,
+        users: roomParticipants
+      };
+      roomArrays.push(newRoom);
+      console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
-    } else {
-      roomParticipants.forEach(data => {
-        if (data.room === roomId) {
-          socket.join(roomId);
-          roomParticipants.push({
-            userId: socket.id,
-            value: null,
-            room: roomId,
-            role: isAdmin ? "teacher" : "student"
-          });
-          socket.emit("joinedRoom");
-        }
-      });
+      return roomArrays;
     }
+    roomArrays.map(room => {
+      if (room.id === roomId) {
+        socket.join(roomId);
+        room.users.push({
+          userId: socket.id,
+          value: null,
+          room_id: roomId,
+          role: "student"
+        });
+        socket.emit("joinedRoom");
+      }
+      return roomArrays;
+    });
+    console.log(roomArrays);
+    return roomArrays;
+  });
+
+  socket.on("sessionStart", roomId => {
+    console.log("Start");
+    console.log(roomArrays);
+    roomArrays.map(room => {
+      if (room.id === roomId) {
+        console.log("match");
+        return { ...room, isActive: true };
+      }
+      return room;
+    });
+  });
+
+  socket.on("sessionStop", roomId => {
+    console.log("Stop");
+    console.log(roomArrays);
+    roomArrays.map(room => {
+      if (room.id === roomId) {
+        console.log("match");
+        return { ...room, isActive: false };
+      }
+      return room;
+    });
   });
 
   socket.on("changeSlider", sliderValue => {
     console.log(sliderValue);
-    console.log(roomParticipants);
+    console.log(roomArrays);
   });
 });
 //--------------------------------------------------
