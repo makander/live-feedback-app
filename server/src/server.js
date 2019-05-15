@@ -7,6 +7,7 @@ import cors from "cors";
 
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
+import User from "./models/User";
 
 config({ path: "./deploy/.env" });
 
@@ -69,23 +70,55 @@ const socket = require("socket.io");
 
 const io = socket(server);
 
+const jwtAuth = require("socketio-jwt-auth");
+
+io.use(
+  jwtAuth.authenticate(
+    {
+      secret: process.env.JWT_SECRET,
+      succeedWithoutToken: true
+    },
+    function(payload, done) {
+      if (payload && payload._id) {
+        User.findOne({ _id: payload._id }, function(err, user) {
+          if (err) {
+            console.log("error: ", err);
+            return done(err);
+          }
+          if (!user) {
+            console.log("user does not exist: ", user);
+            return done(null, false, "user does not exist!");
+          }
+          console.log("USER TYPE ADMIN");
+          return done(null, user);
+        });
+      } else {
+        console.log("USER TYPE GUEST");
+        return done(); 
+      }
+    }
+  )
+);
+
 let roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
 io.on("connection", socket => {
-  // Check if user is admin- if true create new session
-  // Otherwise check rooms to see if the user is connecting
-  // to an existing room.
-  socket.on("connectToNewSession", (roomId, isAdmin) => {
-    if (isAdmin) {
-      console.log("teacher created room");
+  const role= (socket.request.user.logged_in) ? "admin" : "guest"
+  console.log("you are connected as a: ", role);
+
+  // Connect to session - if authenticated via JWT as admin Create room
+  // if not authenticated join room as guest, if room exists
+  socket.on("connectToNewSession", (roomId) => {
+    if (role === "admin") {
+      console.log("Teacher created room");
       socket.join(roomId);
       roomParticipants.push({
         userId: socket.id,
         value: null,
         room_id: roomId,
-        role: "teacher"
+        role
       });
       const newRoom = {
         id: roomId,
@@ -95,8 +128,7 @@ io.on("connection", socket => {
       roomArrays.push(newRoom);
       console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
-    } else {
-      console.log("student joined");
+    } else  {
       roomArrays.forEach(room => {
         if (room.id === roomId) {
           socket.join(roomId);
@@ -104,8 +136,9 @@ io.on("connection", socket => {
             userId: socket.id,
             value: null,
             room_id: roomId,
-            role: "student"
+            role
           });
+          console.log(`${role  } joined ${  roomId}`)
           socket.emit("joinedRoom");
         }
       });
@@ -113,6 +146,9 @@ io.on("connection", socket => {
     return roomArrays;
   });
 
+
+// When admin starts session the room value is updated and emitted to 
+// the Guest page via sessoinStatusChanged
   socket.on("sessionStart", roomId => {
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
@@ -125,6 +161,8 @@ io.on("connection", socket => {
     return roomArrays;
   });
 
+  // When admin stops session the room value is updated and emitted to 
+// the Guest page via sessoinStatusChanged
   socket.on("sessionStop", roomId => {
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
@@ -137,15 +175,9 @@ io.on("connection", socket => {
     return roomArrays;
   });
 
-  socket.on("changeSlider", (sliderValue, roomId, userId) => {
-    console.log(
-      "slider: ",
-      sliderValue,
-      "room: ",
-      roomArrays,
-      "user: ",
-      userId
-    );
+  // When guest connected to room changes the slider users value property will updated
+  socket.on("changeSlider", (sliderValue) => {
+    console.log("slider: ", sliderValue);
   });
 });
 //--------------------------------------------------
