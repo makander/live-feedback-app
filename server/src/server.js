@@ -60,15 +60,16 @@ app.use(function(err, req, res, next) {
 
 const port = process.env.PORT || 5000;
 
-const server = app.listen(port, () =>
-  console.log(`Server up and running on port ${port} test!`)
-);
+const server = require('http').createServer(app);
+const socket = require("socket.io");
+
+const io = socket.listen(server);
+io.origins('*:*')
+
 
 // ----------------SOCKET.IO------------------------
 // THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
-const socket = require("socket.io");
 
-const io = socket(server, { origins: '*:*'});
 
 const jwtAuth = require("socketio-jwt-auth");
 
@@ -181,3 +182,7 @@ io.on("connection", socket => {
   });
 });
 //--------------------------------------------------
+
+server.listen(port, () => {
+  console.log(`Server listening on Port ${port}`);
+})
