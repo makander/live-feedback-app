@@ -68,7 +68,7 @@ const server = app.listen(port, () =>
 // THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
 const socket = require("socket.io");
 
-const io = socket(server);
+const io = socket(server, { origins: '*:*'});
 
 const jwtAuth = require("socketio-jwt-auth");
 
