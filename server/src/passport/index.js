@@ -49,3 +49,6 @@ const jwtValidation = new JWTStrategy(jwtOpts, async (payload, done) => {
 
 passport.use(localLogin);
 passport.use(jwtValidation);
+
+// export const authLocal = passport.authenticate("local", { session: false });
+// passport.authenticate("jwt", { session: false });
