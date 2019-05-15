@@ -1,5 +1,5 @@
 import User from "../../../models/User";
-// import { authLocal, authJwt } from "../../../passport";
+import { authLocal, authJwt } from "../../../passport";
 
 class UserServices {
   // eslint-disable-next-line consistent-return
@@ -38,13 +38,13 @@ class UserServices {
     }
   };
 
-  /*   localLoginMiddleWare = function(req, res, next) {
+  localLoginMiddleWare = function(req, res, next) {
     return authLocal(req, res, next);
   };
 
   jwtLoginMiddleware = function(req, res, next) {
     return authJwt(req, res, next);
-  }; */
+  };
 }
 
 export default new UserServices();

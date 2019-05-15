@@ -29,7 +29,7 @@ routes.get("/validate", (req, res, next) => {
     if (!user) {
       return res.json({ ok: false, error: "Token is invalid" });
     }
-    return res.json({ ok: true, data: user.toRegJSON() });
+    return res.json({ ok: true, data: "Token is valid" });
   })(req, res, next);
 });
 
