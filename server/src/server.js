@@ -79,6 +79,7 @@ io.on("connection", socket => {
   // to an existing room.
   socket.on("connectToNewSession", (roomId, isAdmin) => {
     if (isAdmin) {
+      console.log("teacher created room");
       socket.join(roomId);
       roomParticipants.push({
         userId: socket.id,
@@ -94,26 +95,29 @@ io.on("connection", socket => {
       roomArrays.push(newRoom);
       console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
+    } else {
+      console.log("student joined");
+      roomArrays.forEach(room => {
+        if (room.id === roomId) {
+          socket.join(roomId);
+          room.users.push({
+            userId: socket.id,
+            value: null,
+            room_id: roomId,
+            role: "student"
+          });
+          socket.emit("joinedRoom");
+        }
+      });
     }
-    roomArrays.forEach(room => {
-      if (room.id === roomId) {
-        socket.join(roomId);
-        room.users.push({
-          userId: socket.id,
-          value: null,
-          room_id: roomId,
-          role: "student"
-        });
-        socket.emit("joinedRoom");
-      }
-    });
     return roomArrays;
   });
 
   socket.on("sessionStart", roomId => {
-    console.log("Start");
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
+        console.log("Start");
+        socket.emit("sessionStatusChanged", true);
         return { ...room, isActive: true };
       }
       return room;
@@ -122,9 +126,10 @@ io.on("connection", socket => {
   });
 
   socket.on("sessionStop", roomId => {
-    console.log("Stop");
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
+        console.log("Stop");
+        socket.emit("sessionStatusChanged", false);
         return { ...room, isActive: false };
       }
       return room;
@@ -132,8 +137,15 @@ io.on("connection", socket => {
     return roomArrays;
   });
 
-  socket.on("changeSlider", sliderValue => {
-    console.log("slider: ", sliderValue);
+  socket.on("changeSlider", (sliderValue, roomId, userId) => {
+    console.log(
+      "slider: ",
+      sliderValue,
+      "room: ",
+      roomArrays,
+      "user: ",
+      userId
+    );
   });
 });
 //--------------------------------------------------
