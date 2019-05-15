@@ -15,7 +15,7 @@ export const getConfirm = async () => {
   const token = localStorage.getItem("jwtToken");
   if (token)  {
     try {
-      axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/users/validate`)
+     await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/users/validate`)
       } catch (error) {
         console.error(error);
       }
