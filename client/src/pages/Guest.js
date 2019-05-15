@@ -8,15 +8,18 @@ class Guest extends Component {
   constructor(props) {
     super(props);
     this.io = require("socket.io-client");
-    this.socket = this.io(`http://localhost:5000/`);
+    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    this.socket.on("sessionStatusChanged", function() {
+      console.log("recieved");
+    });
   }
 
   componentWillMount() {
     this.socket.emit(
-      "connectToNewSession", 
-    this.props.match.params.roomId,
-     false
-     );
+      "connectToNewSession",
+      this.props.match.params.roomId,
+      false
+    );
     this.socket.on("joinedRoom", this.props.joinedRoom);
   }
 
