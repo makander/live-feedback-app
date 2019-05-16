@@ -16,9 +16,9 @@ function LiveSession(props) {
         Room Link:
         <a
           rel="noopener noreferrer"
-          href={`http://192.168.99.100:3000/guest/${props.roomId}`}
+          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}
           target="_blank"
-        >{`http://192.168.99.100:3000/guest/${props.roomId}`}</a>
+        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}</a>
       </p>
       <p>Average Score: 5</p>
 
@@ -52,20 +52,20 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   startSession: e => {
     e.preventDefault();
     const io = require("socket.io-client");
-    const socket = io(`http://192.168.99.100:5000/`);
+    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sessionStart", ownProps.roomId);
     sessionStarted(dispatch, ownProps.room_name);
   },
   stopSession: e => {
     e.preventDefault();
     const io = require("socket.io-client");
-    const socket = io(`http://192.168.99.100:5000/`);
+    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sessionStop", ownProps.roomId);
     sessionStopped(dispatch, ownProps.room_name);
   },
   sendToDB: () => {
     const io = require("socket.io-client");
-    const socket = io(`http://192.168.99.100:5000/`);
+    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sendToDB", ownProps.roomId);
   }
 });

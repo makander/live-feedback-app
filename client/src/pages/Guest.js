@@ -8,7 +8,14 @@ class Guest extends Component {
   constructor(props) {
     super(props);
     this.io = require("socket.io-client");
+<<<<<<< HEAD
     this.socket = this.io(`http://192.168.99.100:5000/`);
+=======
+    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    this.socket.on("sessionStatusChanged", function() {
+      console.log("recieved");
+    });
+>>>>>>> develop
   }
 
   componentWillMount() {

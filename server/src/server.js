@@ -11,6 +11,7 @@ import RoomData from "./models/RoomData";
 import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
+import User from "./models/User";
 
 config({ path: "./deploy/.env" });
 
@@ -39,6 +40,8 @@ app.use(
     origin: process.env.ALLOW_ORIGIN
   })
 );
+
+app.options("*", cors());
 
 app.use(bodyParser.json());
 
@@ -75,23 +78,57 @@ const server = app.listen(port, () =>
 const socket = require("socket.io");
 
 const io = socket(server);
+io.origins("*:*");
+
+const jwtAuth = require("socketio-jwt-auth");
+
+io.use(
+  jwtAuth.authenticate(
+    {
+      secret: process.env.JWT_SECRET,
+      succeedWithoutToken: true
+    },
+    function(payload, done) {
+      if (payload && payload._id) {
+        User.findOne({ _id: payload._id }, function(err, user) {
+          if (err) {
+            console.log("error: ", err);
+            return done(err);
+          }
+          if (!user) {
+            console.log("user does not exist: ", user);
+            return done(null, false, "user does not exist!");
+          }
+          console.log("USER TYPE ADMIN");
+          return done(null, user);
+        });
+      } else {
+        console.log("USER TYPE GUEST");
+        return done();
+      }
+    }
+  )
+);
 
 let roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
 io.on("connection", socket => {
-  // Check if user is admin- if true create new session
-  // Otherwise check rooms to see if the user is connecting
-  // to an existing room.
-  socket.on("connectToNewSession", (roomId, isAdmin) => {
-    if (isAdmin) {
+  const role = socket.request.user.logged_in ? "admin" : "guest";
+  console.log("you are connected as a: ", role);
+
+  // Connect to session - if authenticated via JWT as admin Create room
+  // if not authenticated join room as guest, if room exists
+  socket.on("connectToNewSession", roomId => {
+    if (role === "admin") {
+      console.log("Teacher created room");
       socket.join(roomId);
       roomParticipants.push({
         userId: socket.id,
         value: null,
         room_id: roomId,
-        role: "teacher"
+        role
       });
       const newRoom = {
         id: roomId,
@@ -101,36 +138,44 @@ io.on("connection", socket => {
       roomArrays.push(newRoom);
       console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
+    } else {
+      roomArrays.forEach(room => {
+        if (room.id === roomId) {
+          socket.join(roomId);
+          room.users.push({
+            userId: socket.id,
+            value: null,
+            room_id: roomId,
+            role
+          });
+          console.log(`${role} joined ${roomId}`);
+          socket.emit("joinedRoom");
+        }
+      });
     }
-    roomArrays.forEach(room => {
-      if (room.id === roomId) {
-        socket.join(roomId);
-        room.users.push({
-          userId: socket.id,
-          value: null,
-          room_id: roomId,
-          role: "student"
-        });
-        socket.emit("joinedRoom");
-      }
-    });
     return roomArrays;
   });
 
+  // When admin starts session the room value is updated and emitted to
+  // the Guest page via sessoinStatusChanged
   socket.on("sessionStart", roomId => {
-    console.log("Start");
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
+        console.log("Start");
+        socket.emit("sessionStatusChanged", true);
         return { ...room, isActive: true };
       }
     });
     return roomArrays;
   });
 
+  // When admin stops session the room value is updated and emitted to
+  // the Guest page via sessoinStatusChanged
   socket.on("sessionStop", roomId => {
-    console.log("Stop");
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
+        console.log("Stop");
+        socket.emit("sessionStatusChanged", false);
         return { ...room, isActive: false };
       }
     });
@@ -144,8 +189,7 @@ io.on("connection", socket => {
   // Load all sessions
   socket.on("loadSessions", () => {
     console.log("hej");
-    const connection =
-      "mongodb+srv://ruben:ruben@devconnector-k3pw0.mongodb.net/chatapp?retryWrites=true";
+    const connection = db;
 
     // Connect to MongoDB
     mongoose
@@ -189,8 +233,7 @@ io.on("connection", socket => {
   socket.on("sendToDB", roomId => {
     // DB Config
 
-    const dbz =
-      "mongodb+srv://ruben:ruben@devconnector-k3pw0.mongodb.net/chatapp?retryWrites=true";
+    const dbz = db;
 
     // Connect to MongoDB
     mongoose

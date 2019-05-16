@@ -66,7 +66,7 @@ UserSchema.methods = {
   toAuthJSON() {
     return {
       user: { ...this.toRegJSON() },
-      token: `JWT ${this.createToken()}`
+      token: this.createToken()
     };
   },
 

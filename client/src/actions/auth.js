@@ -1,7 +1,7 @@
 import axios from "axios";
 // eslint-disable-next-line camelcase
 import jwt_decode from "jwt-decode";
-import setAuthToken from "../utils/AuthHelper";
+import { setAuthToken } from "../utils/AuthHelper";
 
 import { GET_ERRORS, SET_CURRENT_USER, USER_LOADING } from "./types";
 
@@ -18,7 +18,7 @@ export const setUserLoading = () => ({
 
 // Login - get user token
 export const loginUser = userData => dispatch => {
-  console.log("login");
+  console.log("login from actions auth");
   axios
     .post(`${process.env.REACT_APP_API_BASE_URL}/api/users/login`, userData)
     .then(res => {
@@ -45,7 +45,6 @@ export const registerUser = (userData, history) => dispatch => {
     .post(`${process.env.REACT_APP_API_BASE_URL}/api/users/register`, userData)
     .then(() => {
       history.push("/login");
-      loginUser(userData);
     })
     .catch(err => {
       return dispatch({
@@ -65,4 +64,14 @@ export const logoutUser = history => dispatch => {
   dispatch(setCurrentUser({}));
 
   history.push("/");
+};
+
+export const isAuthenticated = dispatch => {
+  const token = localStorage.getItem("jwtToken");
+  // Set token to Auth header
+  setAuthToken(token);
+  // Decode token to get user data
+  const decoded = jwt_decode(token);
+  // Set current user
+  dispatch(setCurrentUser(decoded));
 };

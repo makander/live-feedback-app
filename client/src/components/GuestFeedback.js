@@ -11,7 +11,7 @@ function GuestFeedback(props) {
       <p>Slider value: {props.sliderValue}</p>
       <form>
         <div className="form-group row" style={{ marginTop: 3 + "rem" }}>
-          <div class="col-sm-8 p-2 mx-auto d-flex">
+          <div className="col-sm-8 p-2 mx-auto d-flex">
             <div className="p-2 mx-2">0</div>
             <input
               name="feedback-slider"

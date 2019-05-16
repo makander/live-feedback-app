@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import withAuth from "../hocs/withAuth";
 import io from "socket.io-client";
 
 class MySessions extends Component {
   constructor(props) {
     super(props);
     this.io = require("socket.io-client");
-    this.socket = this.io(`http://192.168.99.100:5000/`);
+    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
   }
 
   componentWillMount() {
@@ -42,4 +43,4 @@ class MySessions extends Component {
   }
 }
 
-export default MySessions;
+export default withAuth(MySessions);
