@@ -16,7 +16,9 @@ function LiveSession(props) {
         Room Link:
         <a
           rel="noopener noreferrer"
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}
+          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${
+            props.roomId
+          }`}
           target="_blank"
         >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}</a>
       </p>
@@ -66,7 +68,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   sendToDB: () => {
     const io = require("socket.io-client");
     const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    socket.emit("sendToDB", ownProps.roomId);
+    socket.emit("sendToDB", {
+      roomId: ownProps.roomId,
+      user_id: ownProps.user_id
+    });
   }
 });
 

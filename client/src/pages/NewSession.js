@@ -40,6 +40,7 @@ function NewSession(props) {
           <LiveSession
             roomId={`${userId}-${room_name}`}
             room_name={room_name}
+            user_id={userId}
           />
         ) : null}
       </div>
@@ -55,10 +56,12 @@ const mapDispatchToProps = dispatch => ({
     const roomId = `${userId}-${room_name}`;
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
     const token = localStorage.getItem("jwtToken");
-    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {query: `auth_token=${token}`});
+    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {
+      query: `auth_token=${token}`
+    });
     socket.on("error", function(err) {
       console.log(err);
-    })
+    });
     socket.emit("connectToNewSession", roomId);
     socket.on("sessionCreated", roomParticipants => {
       createRoom(dispatch, roomParticipants);

@@ -110,7 +110,7 @@ io.use(
   )
 );
 
-let roomArrays = [];
+const roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
@@ -230,9 +230,10 @@ io.on("connection", socket => {
 
   // Triggered by button in LiveSession, establishes connection to mongoDB
   // and saves room data for specicied room
-  socket.on("sendToDB", roomId => {
-    // DB Config
-
+  socket.on("sendToDB", data => {
+    // DB Config¨¨
+    const roomId = data.roomId;
+    const user_id = data.user_id;
     const dbz = db;
 
     // Connect to MongoDB
@@ -245,34 +246,47 @@ io.on("connection", socket => {
 
     dbs.on("error", console.error.bind(console, "connection error:"));
     dbs.once("open", function(data) {
-      console.log(data);
-      console.log("inside once");
-      console.log(roomArrays);
       console.log("Connection Successful!");
-
+      console.log("här komer room arrays");
+      console.log(roomArrays);
       const sessionData = [];
       roomArrays.map(room => {
         if (room.id === roomId) {
           sessionData.push(room);
         }
         return room;
-      });
-      console.log("här kommer session data");
-      console.log(sessionData);
+      }); /* User.findByIdAndUpdate(
+        { _id: user_id },
+        { $set: { session_data: sessionData } },
+        { new: true }
+      ); */
 
-      const roomSession = new RoomData({
-        sessionData,
-        roomId
-      });
-      console.log("här kommer ett nytt room document");
-      console.log(roomSession);
+      /* const roomSession = new RoomData({
+        session_data: sessionData,
+        roomId: roomId,
+        user_id: user_id
+      }); */
 
       // save model to database
-      roomSession.save(function(err, test) {
+      /* roomSession.save(function(err, test) {
         if (err) return console.error(err);
         console.log(`${test.name} saved to bookstore collection.`);
         return true;
       });
+ */ User.findByIdAndUpdate(
+        {
+          _id: user_id
+        },
+        { $set: { session_data: sessionData } },
+        { upsert: true },
+        function(err, test) {
+          if (err) {
+            console.log("error");
+          } else {
+            console.log(test);
+          }
+        }
+      );
     });
   });
 });
