@@ -8,6 +8,7 @@ import cors from "cors";
 // room imports
 import roomData from "./models/roomData";
 
+import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
 
@@ -49,6 +50,9 @@ app.use(router);
 
 // API Routes goes here
 router.use("/api/users", users);
+
+// Session Route
+router.use("/api/my-sessions", mysession);
 
 app.use(errorLogger);
 
@@ -155,11 +159,31 @@ io.on("connection", socket => {
 
     dbs.on("error", console.error.bind(console, "connection error:"));
 
-    const allRoomData = roomData.find({
+    const getSessionData = async function(req, res) {
+      try {
+        const result = await roomData.find({}, function(err, docs) {
+          if (!err) {
+            console.log(docs);
+            process.exit();
+          } else {
+            throw err;
+          }
+        });
+
+        return res
+          .status(200)
+          .json({ ok: true, data: result.data.toRegJSON() });
+      } catch (error) {
+        return res.json(error);
+      }
+    };
+
+    /* const allRoomData = roomData.find({
       roomId: "5cdad654848207005215643d-1234"
-    });
-    socket.emit("sendData", allRoomData);
-    console.log(allRoomData);
+    }); */
+
+    socket.emit("sendData", getSessionData);
+    console.log(getSessionData);
   });
 
   // Triggered by button in LiveSession, establishes connection to mongoDB
