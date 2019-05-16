@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import roomData from "../../../models/roomData";
+import roomData from "../../../models/RoomData";
 
 export const getSessionData = async function(req, res) {
   try {

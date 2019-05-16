@@ -159,7 +159,7 @@ io.on("connection", socket => {
 
     const getSessionData = async function(req, res) {
       try {
-        const result = await roomData.find({}, function(err, docs) {
+        const result = await RoomData.find({}, function(err, docs) {
           if (!err) {
             console.log(docs);
             process.exit();
