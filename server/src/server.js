@@ -6,7 +6,7 @@ import { config } from "dotenv";
 import cors from "cors";
 
 // room imports
-import roomData from "./models/roomData";
+import RoomData from "./models/RoomData";
 
 import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
@@ -76,7 +76,7 @@ const socket = require("socket.io");
 
 const io = socket(server);
 
-const roomArrays = [];
+let roomArrays = [];
 const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
@@ -101,28 +101,27 @@ io.on("connection", socket => {
       roomArrays.push(newRoom);
       console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
-    } else {
-      roomArrays.map(room => {
-        if (room.id === roomId) {
-          socket.join(roomId);
-          room.users.push({
-            userId: socket.id,
-            value: null,
-            room_id: roomId,
-            role: "student"
-          });
-          socket.emit("joinedRoom");
-        }
-        return room;
-      });
     }
+    roomArrays.forEach(room => {
+      if (room.id === roomId) {
+        socket.join(roomId);
+        room.users.push({
+          userId: socket.id,
+          value: null,
+          room_id: roomId,
+          role: "student"
+        });
+        socket.emit("joinedRoom");
+      }
+    });
+    return roomArrays;
   });
 
   socket.on("sessionStart", roomId => {
     console.log("Start");
-    roomArrays.map(room => {
+    roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
-        room.isActive = true;
+        return { ...room, isActive: true };
       }
     });
     return roomArrays;
@@ -130,17 +129,16 @@ io.on("connection", socket => {
 
   socket.on("sessionStop", roomId => {
     console.log("Stop");
-    roomArrays.map(room => {
+    roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
-        room.isActive = false;
+        return { ...room, isActive: false };
       }
     });
     return roomArrays;
   });
 
   socket.on("changeSlider", sliderValue => {
-    console.log(sliderValue);
-    console.log(roomArrays);
+    console.log("slider: ", sliderValue);
   });
 
   // Load all sessions
@@ -204,6 +202,7 @@ io.on("connection", socket => {
 
     dbs.on("error", console.error.bind(console, "connection error:"));
     dbs.once("open", function(data) {
+      console.log(data);
       console.log("inside once");
       console.log(roomArrays);
       console.log("Connection Successful!");
@@ -211,15 +210,14 @@ io.on("connection", socket => {
       const sessionData = [];
       roomArrays.map(room => {
         if (room.id === roomId) {
-          console.log("här kommer room inuti map");
-          console.log(room);
           sessionData.push(room);
         }
+        return room;
       });
       console.log("här kommer session data");
       console.log(sessionData);
 
-      const roomSession = new roomData({
+      const roomSession = new RoomData({
         sessionData,
         roomId
       });
@@ -230,6 +228,7 @@ io.on("connection", socket => {
       roomSession.save(function(err, test) {
         if (err) return console.error(err);
         console.log(`${test.name} saved to bookstore collection.`);
+        return true;
       });
     });
   });
