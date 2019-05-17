@@ -60,7 +60,7 @@ class Register extends Component {
       <div className="d-flex justify-content-center pt-2">
         <div
           className="border border-info px-5 pt-5"
-          style={{ marginBottom: 8 + "rem" }}
+          style={{ marginBottom: 8 + "rem", width: "75vh" }}
         >
           <div>
             <h1 className="text-center">Register</h1>

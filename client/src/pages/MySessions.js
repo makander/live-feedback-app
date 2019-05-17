@@ -4,25 +4,28 @@ import withAuth from "../hocs/withAuth";
 
 function MySessions(props) {
   return (
-    <div>
-      <h2>List of Previous Sessions</h2>
-      <ul>
-        <li>Session Name: [username.customName]</li>
-        <li>Session Name: [username.customName]</li>
-      </ul>
-      <button type="button">
-        <Link
-          to="/dashboard"
-          style={{
-            width: "140px",
-            borderRadius: "3px",
-            letterSpacing: "1.5px",
-            textDecoration: "none"
-          }}
-        >
-          Back
-        </Link>
-      </button>
+    <div className="d-flex justify-content-center pt-2">
+      <div
+        className="border border-info px-5 pt-5"
+        style={{ marginBottom: "8rem" }}
+      >
+        <div className="p-2">
+          <h1 className="text-center">My sessions</h1>
+          <ul className="list-unstyled py-2">
+            <li>Session Name: [username.customName]</li>
+            <li>Session Name: [username.customName]</li>
+          </ul>
+          <div className="d-flex justify-content-center pb-3">
+            <Link
+              to="/dashboard"
+              role="button"
+              className="btn btn-outline-secondary"
+            >
+              My Sessions
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
