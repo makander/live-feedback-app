@@ -119,7 +119,6 @@ io.on("connection", socket => {
     if (role === "admin") {
       console.log("Teacher created room");
       socket.join(roomId);
-      console.log(io.nsps["/"].adapter.rooms[roomId]);
 
       roomParticipants.push({
         userId: socket.id,
@@ -133,13 +132,12 @@ io.on("connection", socket => {
         users: roomParticipants
       };
       roomArrays.push(newRoom);
-      console.log("Current rooms: ", roomArrays);
       socket.emit("newSessionCreated");
     } else {
       roomArrays.forEach(room => {
         if (room.id === roomId) {
           socket.join(roomId);
-          console.log(io.nsps["/"].adapter.rooms[roomId]);
+          // console.log(io.nsps["/"].adapter.rooms[roomId]);
 
           room.users.push({
             userId: socket.id,
@@ -156,14 +154,12 @@ io.on("connection", socket => {
   });
 
   socket.on("feedbackSessionLeave", inputUserId => {
-    console.log("before ", roomArrays);
     roomArrays = roomArrays.map(room => {
       return {
         ...room,
         users: room.users.filter(user => user.userId !== inputUserId)
       };
     });
-    console.log("after ", roomArrays);
   });
 
   // When admin starts session the room value is updated and emitted to
@@ -171,7 +167,6 @@ io.on("connection", socket => {
   socket.on("sessionStart", roomId => {
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
-        console.log("Start");
         socket.emit("sessionStatusChanged", true);
         return { ...room, isActive: true };
       }
@@ -185,7 +180,6 @@ io.on("connection", socket => {
   socket.on("sessionStop", roomId => {
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
-        console.log("Stop");
         socket.emit("sessionStatusChanged", false);
         return { ...room, isActive: false };
       }
@@ -195,10 +189,8 @@ io.on("connection", socket => {
   });
 
   const averageUserValue = roomId => {
-    console.log("room from aver", roomId);
     const arrayToSum = [];
     const matchingRoom = roomArrays.filter(room => room.id === roomId);
-    console.log(matchingRoom);
     const guests = matchingRoom[0].users.filter(user => user.role === "guest");
     guests.forEach(guest => arrayToSum.push(parseInt(guest.value, 10)));
     const userCount = guests.length;
@@ -210,16 +202,7 @@ io.on("connection", socket => {
       // io.in(roomId).emit("roomAverageValue", roomAverageValue);
       // io.emit("roomAverageValue", roomAverageValue); // fungerar
       io.to(roomId).emit("roomAverageValue", roomAverageValue);
-      console.log(
-        "tot: ",
-        valueArrayTot,
-        "usercount: ",
-        userCount,
-        "arraytosum: ",
-        arrayToSum,
-        "average: ",
-        roomAverageValue
-      );
+
       arrayToSum.splice(0);
     }
   };

@@ -18,11 +18,9 @@ class Guest extends Component {
       false
     );
     this.socket.on("joinedRoom", userId => {
-      console.log(userId);
       this.props.joinedRoom(userId);
     });
     this.socket.on("roomAverageValue", roomAverageValue => {
-      console.log("socket on", roomAverageValue);
       document.title = roomAverageValue;
     });
 
