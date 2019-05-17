@@ -19,14 +19,16 @@ export default function withAuth(AuthComponent) {
       } else {
         /* Try to get confirmation message from the Auth helper. */
         try {
-          const confirm = getConfirm();
-          this.setState({
-            confirm,
-            loaded: true
-          });
+       getConfirm().then(response => {
+      if(response.data.ok) {
+        this.setState({
+          confirm: true,
+          loaded: true
+        });
+      }
+      });
         } catch (err) {
           /* Oh snap! Looks like there's an error so we'll print it out and log the user out for security reasons. */
-
           logout();
           history.replace("/login");
         }
