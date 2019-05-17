@@ -18,57 +18,47 @@ class Dashboard extends Component {
     } = this.props;
 
     return (
-      <div style={{ height: "75vh" }} className="container valign-wrapper">
-        <div className="row">
-          <div className="landing-copy col s12 center-align">
-            <h4>
-              <b>Hey there,</b> {user.name.split(" ")[0]}
-              <p className="flow-text grey-text text-darken-1">
-                You are logged into a full-stack{" "}
-                <span style={{ fontFamily: "monospace" }}>MERN</span> app 👏
-              </p>
-            </h4>
-            <nav>
-              <button type="button">
-                <Link
-                  to="/my-sessions"
-                  style={{
-                    width: "140px",
-                    borderRadius: "3px",
-                    letterSpacing: "1.5px",
-                    textDecoration: "none"
-                  }}
-                >
-                  My Sessions
-                </Link>
-              </button>
-              <button type="button">
-                <Link
-                  to="/new-session"
-                  style={{
-                    width: "140px",
-                    borderRadius: "3px",
-                    letterSpacing: "1.5px",
-                    textDecoration: "none"
-                  }}
-                >
-                  New Session
-                </Link>
-              </button>
-            </nav>
-            <button
-              type="button"
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem"
-              }}
-              onClick={this.onLogoutClick}
-              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-            >
-              Logout
-            </button>
+      <div className="d-flex justify-content-center pt-2">
+        <div
+          className="border border-info p-5"
+          style={{ marginBottom: "3rem" }}
+        >
+          <div>
+            <div className="row">
+              <div className="text-center">
+                <h1>Welcome!</h1>
+                <h4>
+                  <b>Hey there,</b> {user.name.split(" ")[0]}
+                  <p>You are logged into Feedplx! 👏</p>
+                </h4>
+                <div />
+                <nav className="d-flex justify-content-around pt-5">
+                  <Link
+                    to="/new-session"
+                    role="button"
+                    className="btn btn-outline-primary btn"
+                  >
+                    New Session
+                  </Link>
+
+                  <Link
+                    to="/my-sessions"
+                    role="button"
+                    className="btn btn-outline-secondary"
+                  >
+                    My Sessions
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={this.onLogoutClick}
+                    className="btn btn-outline-danger"
+                  >
+                    Logout
+                  </button>
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
       </div>

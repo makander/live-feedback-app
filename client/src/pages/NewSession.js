@@ -32,20 +32,46 @@ function NewSession(props) {
   } = props;
 
   return (
-    <div className="cotainer p-2">
-      <h1>Welcome to the New Session view</h1>
-      <p>Session_State: {session_live ? "on" : "off"}</p>
-      <button type="button" onClick={() => console.log(props)}>
-        Check State
-      </button>
-      <p>{room_name}</p>
-      {!session_live ? (
-        <form onSubmit={handleClickNewSession}>
-          <input type="text" onChange={handleInputChange} required />
-          <button type="submit">New Session</button>
-        </form>
-      ) : null}
-      {session_live ? <LiveSession room_name={room_name} /> : null}
+    <div className="d-flex justify-content-center pt-2">
+      <div
+        className="border border-info px-5 pt-5"
+        style={{ marginBottom: "8rem" }}
+      >
+        <div className="container p-2">
+          <h1 className="text-center">Sessions</h1>
+          <p>Session_State: {session_live ? "on" : "off"}</p>
+          <button
+            type="button"
+            className="btn btn-primary btn"
+            onClick={() => console.log(props)}
+          >
+            Check State
+          </button>
+          <p>{room_name}</p>
+          <div className="d-flex justify-content-center p-4">
+            {!session_live ? (
+              <form className="form-inline" onSubmit={handleClickNewSession}>
+                <div className="form-group">
+                  <input
+                    className="form-control form-control"
+                    type="text"
+                    placeholder="Please enter session name"
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="btn btn-outline-primary btn mx-2"
+                  >
+                    New Session
+                  </button>
+                </div>
+              </form>
+            ) : null}
+            {session_live ? <LiveSession room_name={room_name} /> : null}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

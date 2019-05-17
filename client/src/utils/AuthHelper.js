@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const setAuthToken = token => {
-  console.log(token);
   if (token) {
     // Apply authorization token to every request if logged in
     axios.defaults.headers.common.Authorization = token;
@@ -13,8 +12,9 @@ export const setAuthToken = token => {
 
 export const getConfirm = () => {
   const token = localStorage.getItem("jwtToken");
-  if (token) return true;
-  return false;
+  if (token) {
+    return axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/users/validate`)
+  }
 };
 
 export const loggedIn = () => {
