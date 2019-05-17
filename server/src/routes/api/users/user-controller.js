@@ -35,6 +35,16 @@ export const login = async (req, res, next) => {
   })(req, res, next);
 };
 
+export const validateUser = async (req, res, next) => {
+  return passport.authenticate("jwt", (err, user) => {
+    if (err) return next(err);
+    if (!user) {
+      return res.json({ ok: false, error: "Token is invalid" });
+    }
+    return res.json({ ok: true, data: "Token is valid" });
+  })(req, res, next);
+};
+
 export const logout = (req, res) => {
   req.logout();
   res.status(200).json({ msg: "Successfully logged out" });

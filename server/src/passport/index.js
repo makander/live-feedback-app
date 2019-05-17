@@ -34,7 +34,7 @@ const jwtOpts = {
   secretOrKey: process.env.JWT_SECRET || "secret"
 };
 
-const jwtLogin = new JWTStrategy(jwtOpts, async (payload, done) => {
+const jwtValidation = new JWTStrategy(jwtOpts, async (payload, done) => {
   try {
     const user = await User.findById(payload.sub);
     if (!user) {
@@ -47,7 +47,7 @@ const jwtLogin = new JWTStrategy(jwtOpts, async (payload, done) => {
 });
 
 passport.use(localLogin);
-passport.use(jwtLogin);
+passport.use(jwtValidation);
 
 export const authLocal = passport.authenticate("local", { session: false });
 export const authJwt = passport.authenticate("jwt", { session: false });

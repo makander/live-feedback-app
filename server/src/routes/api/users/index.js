@@ -19,4 +19,6 @@ routes.get("/logout", function(req, res) {
   res.status(200).json({ msg: "Successfully logged out" });
 });
 
+routes.get("/validate", UserController.validateUser);
+
 export default routes;
