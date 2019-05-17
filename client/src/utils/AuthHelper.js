@@ -10,7 +10,7 @@ export const setAuthToken = token => {
   }
 };
 
-export const getConfirm = async () => {
+export const getConfirm = () => {
   const token = localStorage.getItem("jwtToken");
   if (token) {
     return axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/users/validate`)

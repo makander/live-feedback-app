@@ -14,7 +14,7 @@ routes.post("/register", UserController.register);
 // @desc Login user and return JWT token
 // @access Public
 routes.post("/login", (req, res, next) => {
-  return passport.authenticate("local", { session: false }, (err, user) => {
+  return passport.authenticate("local", (err, user) => {
     if (err) return next(err);
     if (!user) {
       return res.json({ ok: false, error: "You are not authorized" });
@@ -24,7 +24,7 @@ routes.post("/login", (req, res, next) => {
 });
 
 routes.get("/validate", (req, res, next) => {
-  return passport.authenticate("jwt", { session: false }, (err, user) => {
+  return passport.authenticate("jwt", (err, user) => {
     if (err) return next(err);
     if (!user) {
       return res.json({ ok: false, error: "Token is invalid" });
