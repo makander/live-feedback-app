@@ -277,7 +277,7 @@ io.on("connection", socket => {
         {
           _id: user_id
         },
-        { $set: { session_data: sessionData } },
+        { $push: { session_data: sessionData } },
         { upsert: true },
         function(err, test) {
           if (err) {

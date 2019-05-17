@@ -1,6 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter, Link } from "react-router-dom";
+import {
+  sessionStarted,
+  sessionStopped,
+  sessionDetails
+} from "../actions/room";
 import withAuth from "../hocs/withAuth";
 
 function MySessions(props) {
@@ -9,14 +14,19 @@ function MySessions(props) {
     <div>
       {console.log(session_data)}
       <h2>List of Previous Sessions</h2>
-      <ul>
-        {session_data.session_data.map(data => {
-          return <li>{data.id}</li>;
-        })}
-        <p>hej</p>
-        <li>Session Name: [username.customName]</li>
-        <li>Session Name: [username.customName]</li>
-      </ul>
+      {session_data.session_data.length ? (
+        <ul>
+          {session_data.session_data.map(data => {
+            return (
+              <li key={data.id} onClick={props.sessionDetails}>
+                {data.id}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p>You have no saved sessions</p>
+      )}
       <button type="button">
         <Link
           to="/dashboard"
@@ -34,10 +44,15 @@ function MySessions(props) {
   );
 }
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  sessionDetails: () => {
+    sessionDetails(dispatch);
+  }
+});
 
 const mapStateToProps = state => ({
-  session_data: state.auth.user
+  session_data: state.auth.user,
+  session_details: state.room.session_details
 });
 
 export default connect(

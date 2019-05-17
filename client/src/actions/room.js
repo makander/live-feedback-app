@@ -5,6 +5,7 @@ import {
   CHANGE_SLIDER,
   SESSION_STARTED,
   SESSION_STOPPED,
+  SESSION_DETAILS
 } from "../actions/types";
 
 export const toggleLiveSession = (dispatch, roomName) =>
@@ -18,3 +19,4 @@ export const sessionStarted = (dispatch, roomName) =>
   dispatch({ type: SESSION_STARTED, value: roomName });
 export const sessionStopped = (dispatch, roomName) =>
   dispatch({ type: SESSION_STOPPED, value: roomName });
+export const sessionDetails = dispatch => dispatch({ type: SESSION_DETAILS });
