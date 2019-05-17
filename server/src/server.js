@@ -232,8 +232,8 @@ io.on("connection", socket => {
   // and saves room data for specicied room
   socket.on("sendToDB", data => {
     // DB Config¨¨
-    const roomId = data.roomId;
-    const user_id = data.user_id;
+    const {roomId} = data;
+    const {user_id} = data;
     const dbz = db;
 
     // Connect to MongoDB

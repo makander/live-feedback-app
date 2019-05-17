@@ -1,5 +1,4 @@
 import { Router } from "express";
-import passport from "passport";
 
 import * as UserController from "./user-controller";
 
@@ -13,14 +12,11 @@ routes.post("/register", UserController.register);
 // @route POST api/users/login
 // @desc Login user and return JWT token
 // @access Public
-routes.post("/login", (req, res, next) => {
-  return passport.authenticate("local", (err, user) => {
-    if (err) return next(err);
-    if (!user) {
-      return res.json({ ok: false, error: "You are not authorized 2" });
-    }
-    return res.json({ ok: true, data: user.toAuthJSON() });
-  })(req, res, next);
+routes.post("/login", UserController.login);
+
+routes.get("/logout", function(req, res) {
+  req.logout();
+  res.status(200).json({ msg: "Successfully logged out" });
 });
 
 export default routes;
