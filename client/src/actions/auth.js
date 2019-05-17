@@ -55,15 +55,22 @@ export const registerUser = (userData, history) => dispatch => {
 };
 
 // Log user out
-export const logoutUser = history => dispatch => {
-  // Remove token from local storage
+export const logoutUser = () => dispatch => {
+  axios
+    .get(`${process.env.REACT_APP_API_BASE_URL}/api/users/logout`)
+    .then(res => {
+      // this should be handled better
+      alert(res.data.msg);
+    })
+    .catch(err => {
+      return dispatch({
+        type: GET_ERRORS,
+        payload: err.response ? err.response.data : {}
+      });
+    });
   localStorage.removeItem("jwtToken");
-  // Remove auth header for future requests
   setAuthToken(false);
-  // Set current user to empty object {} which will set isAuthenticated to false
-  dispatch(setCurrentUser({}));
-
-  history.push("/");
+  dispatch(setCurrentUser());
 };
 
 export const isAuthenticated = dispatch => {

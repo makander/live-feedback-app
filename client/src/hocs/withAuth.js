@@ -15,7 +15,7 @@ export default function withAuth(AuthComponent) {
     componentDidMount() {
       const { history } = this.props;
       if (!loggedIn()) {
-        history.replace("/login");
+        history.push("/login");
       } else {
         /* Try to get confirmation message from the Auth helper. */
         try {
