@@ -8,8 +8,8 @@ import withAuth from "../hocs/withAuth";
 class Dashboard extends Component {
   onLogoutClick = e => {
     e.preventDefault();
-    const { logout, history } = this.props;
-    logout(history);
+    const { logout } = this.props;
+    logout();
   };
 
   render() {
@@ -29,7 +29,7 @@ class Dashboard extends Component {
               </p>
             </h4>
             <nav>
-              <button>
+              <button type="button">
                 <Link
                   to="/my-sessions"
                   style={{
@@ -42,7 +42,7 @@ class Dashboard extends Component {
                   My Sessions
                 </Link>
               </button>
-              <button>
+              <button type="button">
                 <Link
                   to="/new-session"
                   style={{
@@ -78,12 +78,11 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   logout: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired
 };
 
 const mapDispatchToProps = dispatch => ({
-  logout: history => dispatch(logoutUser(history))
+  logout: () => dispatch(logoutUser())
 });
 
 const mapStateToProps = state => ({
