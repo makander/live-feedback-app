@@ -5,6 +5,10 @@ import bodyParser from "body-parser";
 import { config } from "dotenv";
 import cors from "cors";
 
+// room imports
+import RoomData from "./models/RoomData";
+
+import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
 import User from "./models/User";
@@ -49,6 +53,9 @@ app.use(router);
 
 // API Routes goes here
 router.use("/api/users", users);
+
+// Session Route
+router.use("/api/my-sessions", mysession);
 
 app.use(errorLogger);
 
@@ -109,7 +116,6 @@ const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
 io.on("connection", socket => {
-  socket.on("test", () => console.log("test socket running"));
   const role = socket.request.user.logged_in ? "admin" : "guest";
   console.log("you are connected as a: ", role);
 
@@ -164,29 +170,27 @@ io.on("connection", socket => {
 
   // When admin starts session the room value is updated and emitted to
   // the Guest page via sessoinStatusChanged
-  socket.on("sessionStart", roomId => {
-    roomArrays = roomArrays.map(room => {
-      if (room.id === roomId) {
-        socket.emit("sessionStatusChanged", true);
-        return { ...room, isActive: true };
-      }
-      return room;
-    });
-    return roomArrays;
-  });
+  // socket.on("sessionStart", roomId => {
+  //   roomArrays = roomArrays.map(room => {
+  //     if (room.id === roomId) {
+  //       socket.emit("sessionStatusChanged", true);
+  //       return { ...room, isActive: true };
+  //     }
+  //   });
+  //   return roomArrays;
+  // });
 
   // When admin stops session the room value is updated and emitted to
   // the Guest page via sessoinStatusChanged
-  socket.on("sessionStop", roomId => {
-    roomArrays = roomArrays.map(room => {
-      if (room.id === roomId) {
-        socket.emit("sessionStatusChanged", false);
-        return { ...room, isActive: false };
-      }
-      return room;
-    });
-    return roomArrays;
-  });
+  // socket.on("sessionStop", roomId => {
+  //   roomArrays = roomArrays.map(room => {
+  //     if (room.id === roomId) {
+  //       socket.emit("sessionStatusChanged", false);
+  //       return { ...room, isActive: false };
+  //     }
+  //     return roomArrays;
+  //   });
+  // });
 
   const averageUserValue = roomId => {
     const arrayToSum = [];
@@ -226,5 +230,86 @@ io.on("connection", socket => {
   });
 
   socket.on("disconnect", () => console.log("user disconnected", socket.id));
+
+  // Load all sessions
+  socket.on("loadSessions", () => {
+    const connection = db;
+
+    // Connect to MongoDB
+    mongoose
+      .connect(connection, { useNewUrlParser: true })
+      .then(() => console.log("MongoDB connected!"))
+      .catch(err => console.log(err));
+
+    const dbs = mongoose.connection;
+
+    dbs.on("error", console.error.bind(console, "connection error:"));
+
+    const getSessionData = async function(req, res) {
+      try {
+        const result = await RoomData.find({}, function(err, docs) {
+          if (!err) {
+            console.log(docs);
+            process.exit();
+          } else {
+            throw err;
+          }
+        });
+
+        return res
+          .status(200)
+          .json({ ok: true, data: result.data.toRegJSON() });
+      } catch (error) {
+        return res.json(error);
+      }
+    };
+
+    socket.emit("sendData", getSessionData);
+    console.log(getSessionData);
+  });
+
+  // Triggered by button in LiveSession, establishes connection to mongoDB
+  // and saves room data for specicied room
+  socket.on("sendToDB", data => {
+    // DB Config¨¨
+
+    // eslint-disable-next-line camelcase
+    const { roomId, user_id } = data;
+    const dbz = db;
+    console.log("dbz: ", dbz, "data", data);
+
+    // Connect to MongoDB
+    mongoose
+      .connect(dbz, { useNewUrlParser: true })
+      .then(() => console.log("MongoDB connected!"))
+      .catch(err => console.log(err));
+
+    const dbs = mongoose.connection;
+
+    dbs.on("error", console.error.bind(console, "connection error:"));
+    dbs.once("open", function() {
+      console.log(roomArrays);
+      const sessionData = [];
+      roomArrays.map(room => {
+        if (room.id === roomId) {
+          sessionData.push(room);
+        }
+        return room;
+      });
+      User.findByIdAndUpdate(
+        {
+          _id: user_id
+        },
+        { $push: { session_data: sessionData } },
+        { upsert: true },
+        function(err, test) {
+          if (err) {
+            console.log("error");
+          } else {
+            console.log(test);
+          }
+        }
+      );
+    });
+  });
 });
-//--------------------------------------------------

@@ -1,8 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { withRouter, Link } from "react-router-dom";
+import {
+  sessionStarted,
+  sessionStopped,
+  sessionDetails
+} from "../actions/room";
 import withAuth from "../hocs/withAuth";
 
 function MySessions(props) {
+  const { session_data } = props;
   return (
     <div className="d-flex justify-content-center pt-2">
       <div
@@ -11,10 +18,25 @@ function MySessions(props) {
       >
         <div className="p-2">
           <h1 className="text-center">My sessions</h1>
-          <ul className="list-unstyled py-2">
-            <li>Session Name: [username.customName]</li>
-            <li>Session Name: [username.customName]</li>
-          </ul>
+          {session_data.session_data.length ? (
+            <ul className="list-unstyled py-2">
+              {session_data.session_data.map(data => {
+                return (
+                  <li key={data.id}>
+                    <button
+                      className="btn btn-secondary"
+                      type="button"
+                      onClick={props.sessionDetails}
+                    >
+                      {data.id}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>You have no saved sessions</p>
+          )}
           <div className="d-flex justify-content-center pb-3">
             <Link
               to="/dashboard"
@@ -30,4 +52,18 @@ function MySessions(props) {
   );
 }
 
-export default withAuth(MySessions);
+const mapDispatchToProps = dispatch => ({
+  sessionDetails: () => {
+    sessionDetails(dispatch);
+  }
+});
+
+const mapStateToProps = state => ({
+  session_data: state.auth.user,
+  session_details: state.room.session_details
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(withAuth(MySessions)));

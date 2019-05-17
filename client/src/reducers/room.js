@@ -4,7 +4,8 @@ import {
   GUEST_JOINED_ROOM,
   CHANGE_SLIDER,
   SESSION_STARTED,
-  SESSION_STOPPED
+  SESSION_STOPPED,
+  SESSION_DETAILS
 } from "../actions/types";
 
 const initialState = {
@@ -14,7 +15,8 @@ const initialState = {
   joined_room: false,
   slider_value: "5",
   session_active: false,
-  session_user_id: null
+  session_user_id: null,
+  session_details: false
 };
 
 export default function(state = initialState, action) {
@@ -52,6 +54,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         session_active: false
+      };
+    case SESSION_DETAILS:
+      return {
+        ...state,
+        session_details: true
       };
 
     default:

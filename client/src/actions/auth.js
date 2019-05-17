@@ -23,6 +23,7 @@ export const loginUser = userData => dispatch => {
     .post(`${process.env.REACT_APP_API_BASE_URL}/api/users/login`, userData)
     .then(res => {
       // Set token to localStorage
+      console.log(res.data.data.user.session_data);
       const { token } = res.data.data;
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header

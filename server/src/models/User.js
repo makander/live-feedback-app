@@ -19,6 +19,10 @@ const UserSchema = new Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  session_data: {
+    type: Array,
+    default: null
   }
 });
 
@@ -76,7 +80,8 @@ UserSchema.methods = {
     return {
       _id: this._id,
       name: this.name,
-      email: this.email
+      email: this.email,
+      session_data: this.session_data
     };
   }
 };
