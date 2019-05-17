@@ -6,14 +6,16 @@ import { sessionStarted, sessionStopped } from "../actions/room";
 // Note-
 function LiveSession(props) {
   return (
-    <div>
+    <div className="text-center p-5">
       <h2>Session Active in Room {props.room_name}</h2>
       <p>Room ID: {props.roomId}</p>
       <p>
         Room Link:
         <a
           rel="noopener noreferrer"
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}
+          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${
+            props.roomId
+          }`}
           target="_blank"
         >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}</a>
       </p>
@@ -22,6 +24,7 @@ function LiveSession(props) {
       {props.session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
       {!props.session_active ? (
         <button
+          className="btn btn-outline-success m-2"
           type="button"
           onClick={e => {
             props.startSession(e);
@@ -31,6 +34,7 @@ function LiveSession(props) {
         </button>
       ) : (
         <button
+          className="btn btn-outline-danger"
           type="button"
           onClick={e => {
             props.stopSession(e);
