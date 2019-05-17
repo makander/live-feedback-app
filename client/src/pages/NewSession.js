@@ -65,7 +65,7 @@ const mapDispatchToProps = dispatch => ({
     const room_name = e.target[0].value;
     const roomId = `${userId}-${room_name}`;
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("jwtToken").substring(4);
     const io = require("socket.io-client");
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {
       query: `auth_token=${token}`
