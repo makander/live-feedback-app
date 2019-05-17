@@ -9,19 +9,30 @@ class Guest extends Component {
     super(props);
     this.io = require("socket.io-client");
     this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    this.socket.on("sessionStatusChanged", function() {
-      console.log("recieved");
-    });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.socket.emit(
       "connectToNewSession",
       this.props.match.params.roomId,
       false
     );
-    this.socket.on("joinedRoom", this.props.joinedRoom);
+    this.socket.on("joinedRoom", userId => {
+      console.log(userId);
+      this.props.joinedRoom(userId);
+    });
+    this.socket.on("roomAverageValue", roomAverageValue => {
+      console.log("socket on", roomAverageValue);
+      document.title = roomAverageValue;
+    });
+
+    window.addEventListener("beforeunload", ev => {
+      ev.preventDefault();
+      this.socket.emit("feedbackSessionLeave", this.props.session_user_id);
+    });
   }
+
+  componentWillUnmount() {}
 
   render() {
     const { roomId } = this.props.match.params;
@@ -58,7 +69,7 @@ class Guest extends Component {
               </ul>
             </div>
             {/* {this.props.lectureStarted ? ( */}
-            <GuestFeedback />
+            <GuestFeedback room_id={roomId} />
             {/*  ) : (
               <p>Lecture have not yet started</p>
             )} */}
@@ -72,13 +83,14 @@ class Guest extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  joinedRoom: () => {
-    joinedRoom(dispatch);
+  joinedRoom: userId => {
+    joinedRoom(dispatch, userId);
   }
 });
 
 const mapStateToProps = state => ({
   isConnected: state.room.joined_room,
+  session_user_id: state.room.session_user_id
 });
 
 export default connect(

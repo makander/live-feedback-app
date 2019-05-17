@@ -12,8 +12,9 @@ const initialState = {
   room_name: null,
   rooms: [],
   joined_room: false,
-  slider_value: 5,
-  session_active: false
+  slider_value: "5",
+  session_active: false,
+  session_user_id: null
 };
 
 export default function(state = initialState, action) {
@@ -34,7 +35,8 @@ export default function(state = initialState, action) {
     case GUEST_JOINED_ROOM:
       return {
         ...state,
-        joined_room: true
+        joined_room: true,
+        session_user_id: action.value
       };
     case CHANGE_SLIDER:
       return {
