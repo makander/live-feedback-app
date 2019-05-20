@@ -5,7 +5,8 @@ import {
   CHANGE_SLIDER,
   SESSION_STARTED,
   SESSION_STOPPED,
-  SESSION_DETAILS
+  SESSION_DETAILS,
+  SET_SESSION_AVERAGE
 } from "../actions/types";
 
 const initialState = {
@@ -16,7 +17,8 @@ const initialState = {
   slider_value: "5",
   session_active: false,
   session_user_id: null,
-  session_details: false
+  session_details: false,
+  session_average: null
 };
 
 export default function(state = initialState, action) {
@@ -59,6 +61,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         session_details: true
+      };
+    case SET_SESSION_AVERAGE:
+      return {
+        ...state,
+        session_average: action.value
       };
 
     default:

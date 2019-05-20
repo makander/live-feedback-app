@@ -77,6 +77,8 @@ const server = app.listen(port, () =>
 // THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
 const socket = require("socket.io");
 
+socket.heartbeatTimeout = 3;
+
 const io = socket(server);
 io.origins("*:*");
 
@@ -138,10 +140,12 @@ io.on("connection", socket => {
         users: roomParticipants
       };
       roomArrays.push(newRoom);
+      roomParticipants.splice(0);
       socket.emit("newSessionCreated");
     } else {
       roomArrays.forEach(room => {
         if (room.id === roomId) {
+          console.log("room id before join", roomId);
           socket.join(roomId);
           // console.log(io.nsps["/"].adapter.rooms[roomId]);
 
@@ -153,6 +157,8 @@ io.on("connection", socket => {
           });
           console.log(`${role} joined ${roomId}`);
           socket.emit("joinedRoom", socket.id);
+        } else {
+          console.log("room not found");
         }
       });
     }
@@ -195,8 +201,12 @@ io.on("connection", socket => {
   const averageUserValue = roomId => {
     const arrayToSum = [];
     const matchingRoom = roomArrays.filter(room => room.id === roomId);
+    console.log("matchingRoom", matchingRoom, "roomArrays", roomArrays);
     const guests = matchingRoom[0].users.filter(user => user.role === "guest");
-    guests.forEach(guest => arrayToSum.push(parseInt(guest.value, 10)));
+    guests.forEach(guest => {
+      arrayToSum.push(parseInt(guest.value, 10));
+      console.log(guest);
+    });
     const userCount = guests.length;
 
     if (arrayToSum.length) {
@@ -206,13 +216,14 @@ io.on("connection", socket => {
       // io.in(roomId).emit("roomAverageValue", roomAverageValue);
       // io.emit("roomAverageValue", roomAverageValue); // fungerar
       io.to(roomId).emit("roomAverageValue", roomAverageValue);
-
+      console.log("tosum", arrayToSum);
       arrayToSum.splice(0);
     }
   };
 
   // When guest connected to room changes the slider users value property will updated
   socket.on("changeSlider", (sliderValue, roomId, userId) => {
+    // console.log(Object.keys(io.nsps["/"].adapter.rooms));
     roomArrays = roomArrays.map(room => {
       if (room.id === roomId) {
         room.users.map(user => {
@@ -227,6 +238,7 @@ io.on("connection", socket => {
       return room;
     });
     averageUserValue(roomId);
+    socket.disconnect();
   });
 
   socket.on("disconnect", () => console.log("user disconnected", socket.id));

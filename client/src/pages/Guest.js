@@ -17,8 +17,13 @@ class Guest extends Component {
       this.props.match.params.roomId,
       false
     );
+    this.socket.on("ping", () => {
+      console.log("PONG Sent");
+      this.socket.emit("pong");
+    });
     this.socket.on("joinedRoom", userId => {
       this.props.joinedRoom(userId);
+      localStorage.setItem("guest", userId);
     });
     this.socket.on("roomAverageValue", roomAverageValue => {
       document.title = roomAverageValue;
@@ -30,7 +35,9 @@ class Guest extends Component {
     });
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this.socket.emit("feedbackSessionLeave", this.props.session_user_id);
+  }
 
   render() {
     const { roomId } = this.props.match.params;

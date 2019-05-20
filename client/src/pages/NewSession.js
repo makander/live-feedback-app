@@ -3,10 +3,15 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import withAuth from "../hocs/withAuth";
-import { toggleLiveSession, createRoom } from "../actions/room";
+import {
+  toggleLiveSession,
+  createRoom,
+  setSessionAverage
+} from "../actions/room";
 
 // Components
 import LiveSession from "../components/LiveSession";
+import ProgressBar from "../components/ProgressBar";
 
 class NewSession extends Component {
   constructor(props) {
@@ -17,24 +22,40 @@ class NewSession extends Component {
 
   render() {
     const {
-      session_live,
+      session_live: SessionLive,
       room_name,
       handleClickNewSession,
       handleInputChange,
-      userId
+      userId,
+      roomAverageValue
     } = this.props;
     console.log(this.props);
+
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
           className="border border-info px-5 pt-5"
           style={{ marginBottom: "8rem" }}
         >
-          <div className="container p-2">
-            <h1 className="text-center">Sessions</h1>
+          <div className="container p-2 justify-content-center ">
+            {/* <div
+              className="container py-4 rounded"
+              style={{
+                backgroundColor: `rgb(${roomAverageValue * 25}, ${
+                  roomAverageValue ? 255 / roomAverageValue : "0"
+                }, 0)`
+              }}
+            >
+              <h1 className="text-center text-light">
+                {roomAverageValue
+                  ? `Current pace: ${roomAverageValue}`
+                  : "Awaiting feedback"}
+              </h1>
+            </div> */}
+            <ProgressBar />
             <p>{room_name}</p>
             <div className="d-flex justify-content-center p-4">
-              {!session_live ? (
+              {!SessionLive ? (
                 <form
                   className="form-inline"
                   onSubmit={e => handleClickNewSession(e, userId)}
@@ -56,7 +77,7 @@ class NewSession extends Component {
                   </div>
                 </form>
               ) : null}
-              {session_live ? (
+              {SessionLive ? (
                 <LiveSession
                   roomId={`${userId}-${room_name}`}
                   room_name={room_name}
@@ -71,6 +92,8 @@ class NewSession extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
+  setSessionAverage: roomAverageValue =>
+    setSessionAverage(dispatch, roomAverageValue),
   handleClickNewSession: (e, userId) => {
     e.preventDefault();
     const room_name = e.target[0].value;
@@ -91,9 +114,10 @@ const mapDispatchToProps = dispatch => ({
 
     toggleLiveSession(dispatch, room_name);
 
-    socket.on("roomAverageValue", roomAverageValue => {
-      console.log("socket on", roomAverageValue);
-      document.title = roomAverageValue;
+    socket.on("roomAverageValue", inputRoomAverageValue => {
+      console.log("socket on", inputRoomAverageValue);
+      document.title = inputRoomAverageValue;
+      setSessionAverage(dispatch, inputRoomAverageValue);
     });
   }
 });
@@ -101,7 +125,8 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
   room_name: state.room.room_name,
-  userId: state.auth.user._id
+  userId: state.auth.user._id,
+  roomAverageValue: state.room.session_average
 });
 
 NewSession.propTypes = {
