@@ -15,6 +15,7 @@ services:
     deploy:
       labels:
         traefik.port: '5010'
+        traefik.enable: true,
         traefik.tags: 'traefik'
         traefik.backend: 'impostrious_api'
         traefik.docker.network: 'traefik'
