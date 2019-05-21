@@ -67,7 +67,7 @@ app.use(function(err, req, res, next) {
   res.status(err.statusCode).send(err.message); // All HTTP requests must have a response, so let's send back an error with its status code and message
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5005;
 
 const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
@@ -174,51 +174,28 @@ io.on("connection", socket => {
     });
   });
 
-  // When admin starts session the room value is updated and emitted to
-  // the Guest page via sessoinStatusChanged
-  // socket.on("sessionStart", roomId => {
-  //   roomArrays = roomArrays.map(room => {
-  //     if (room.id === roomId) {
-  //       socket.emit("sessionStatusChanged", true);
-  //       return { ...room, isActive: true };
-  //     }
-  //   });
-  //   return roomArrays;
-  // });
-
-  // When admin stops session the room value is updated and emitted to
-  // the Guest page via sessoinStatusChanged
-  // socket.on("sessionStop", roomId => {
-  //   roomArrays = roomArrays.map(room => {
-  //     if (room.id === roomId) {
-  //       socket.emit("sessionStatusChanged", false);
-  //       return { ...room, isActive: false };
-  //     }
-  //     return roomArrays;
-  //   });
-  // });
-
   const averageUserValue = roomId => {
     const arrayToSum = [];
     const matchingRoom = roomArrays.filter(room => room.id === roomId);
-    console.log("matchingRoom", matchingRoom, "roomArrays", roomArrays);
-    const guests = matchingRoom[0].users.filter(user => user.role === "guest");
-    guests.forEach(guest => {
-      arrayToSum.push(parseInt(guest.value, 10));
-      console.log(guest);
-    });
-    const userCount = guests.length;
-
-    if (arrayToSum.length) {
-      const reducer = (accumulator, currentValue) => accumulator + currentValue;
-      const valueArrayTot = arrayToSum.reduce(reducer);
-      const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
-      // io.in(roomId).emit("roomAverageValue", roomAverageValue);
-      // io.emit("roomAverageValue", roomAverageValue); // fungerar
-      io.to(roomId).emit("roomAverageValue", roomAverageValue);
-      console.log("tosum", arrayToSum);
-      arrayToSum.splice(0);
+    if (matchingRoom.length) {
+      console.log("matchingRoom", matchingRoom, "roomArrays", roomArrays);
+      const guests = matchingRoom[0].users.filter(
+        user => user.role === "guest"
+      );
+      guests.forEach(guest => {
+        arrayToSum.push(parseInt(guest.value, 10));
+      });
+      const userCount = guests.length;
+      if (arrayToSum.length) {
+        const reducer = (accumulator, currentValue) =>
+          accumulator + currentValue;
+        const valueArrayTot = arrayToSum.reduce(reducer);
+        const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
+        arrayToSum.splice(0);
+        return roomAverageValue;
+      }
     }
+    return null;
   };
 
   // When guest connected to room changes the slider users value property will updated
@@ -237,7 +214,9 @@ io.on("connection", socket => {
       }
       return room;
     });
-    averageUserValue(roomId);
+    const averageVal = averageUserValue(roomId);
+    console.log(averageVal);
+    io.to(roomId).emit("roomAverageValue", averageVal);
     socket.disconnect();
   });
 
@@ -304,6 +283,8 @@ io.on("connection", socket => {
       const sessionData = [];
       roomArrays.map(room => {
         if (room.id === roomId) {
+          console.log(room);
+          // REFACTOR AVERAGE VAL
           sessionData.push(room);
         }
         return room;
