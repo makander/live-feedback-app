@@ -18,7 +18,7 @@ config({ path: "./deploy/.env" });
 const app = express();
 const router = express.Router();
 
-const dbName = process.env.NODE_ENV === "dev" ? "database-test" : "database";
+const dbName = process.env.NODE_ENV === "test" ? "database-test" : "database";
 const db = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${
   process.env.MONGO_INITDB_ROOT_PASSWORD
 }@database:27017/${dbName}?authMechanism=SCRAM-SHA-1&authSource=admin`;
@@ -313,3 +313,5 @@ io.on("connection", socket => {
     });
   });
 });
+
+module.export = server;

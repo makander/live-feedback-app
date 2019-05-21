@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint 'src/**/*.js' --fix; exit 0",
     "format": "prettier-eslint 'server/**/*.{js,json}' --write",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "\"./node_modules/mocha/bin/mocha\" --require @babel/register \"./{,!(node_modules)/**/}*.test.js\"",
     "clean": "rm -rf build && mkdir build",
     "build-babel": "babel ./src -d build",
     "build": "npm run clean && npm run build-babel",
@@ -57,6 +57,7 @@
     "@babel/plugin-transform-arrow-functions": "^7.2.0",
     "@babel/preset-env": "^7.4.2",
     "babel-eslint": "^10.0.1",
+    "chai": "^4.2.0",
     "eslint": "^5.15.3",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.1.0",
@@ -64,7 +65,10 @@
     "eslint-plugin-promise": "^4.0.1",
     "husky": "^1.3.1",
     "lint-staged": "^8.1.5",
+    "mocha": "^6.1.4",
     "nodemon": "^1.18.10",
-    "prettier-eslint-cli": "^4.7.1"
+    "prettier-eslint-cli": "^4.7.1",
+    "sinon": "^7.3.2",
+    "supertest": "^4.0.2"
   }
 }
