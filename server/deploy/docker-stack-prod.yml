@@ -15,9 +15,14 @@ services:
     deploy:
       labels:
         traefik.port: '5010'
+        traefik.enable: 'true'
+        traefik.tags: 'traefik'
         traefik.backend: 'impostrious_api'
         traefik.docker.network: 'traefik'
         traefik.frontend.rule: 'Host:impostrious-api.chas.school'
+        traefik.webservice.frontend.entryPoints: 'https'
+        traefik.redirectorservice.frontend.entryPoints: 'http'
+        traefik.redirectorservice.frontend.redirect.entryPoint: 'https'
   database:
     image: 'mongo'
     volumes:
