@@ -149,7 +149,9 @@ Login.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => ({
-  login: user => dispatch(loginUser(user))
+  login: user => {
+    dispatch(loginUser(user));
+  }
 });
 
 const mapStateToProps = state => ({

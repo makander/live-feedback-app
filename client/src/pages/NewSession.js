@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
-import React from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import io from "socket.io-client";
 import PropTypes from "prop-types";
 import withAuth from "../hocs/withAuth";
 import { toggleLiveSession, createRoom } from "../actions/room";
@@ -10,99 +8,112 @@ import { toggleLiveSession, createRoom } from "../actions/room";
 // Components
 import LiveSession from "../components/LiveSession";
 
-/* ---------TODO--------- 
+class NewSession extends Component {
+  constructor(props) {
+    super(props);
+    this.io = require("socket.io-client");
+    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+  }
 
-IMPLEMENT ROUTING ELEMENTS
-
---------------------------
-  STORE VALUES REQUIRED
-    SESSION_LIVE: false ----> Initial state needs to have this as false, trigger when pressing button
-    CURRENT_ROOM: null ----> Which room is being monitored by user
-    CURRENT_ROOM: null ----> Which room is being monitored by user
-    CURRENT_ROOM_DATA: null ----> Input from the current room users that will be displayed and later sent to MONGODB
-    AVERAGE_SCORE: null ----> The current calculated score from the users
----------------------  */
-
-function NewSession(props) {
-  const {
-    session_live,
-    room_name,
-    handleClickNewSession,
-    handleInputChange
-  } = props;
-
-  return (
-    <div className="d-flex justify-content-center pt-2">
-      <div
-        className="border border-info px-5 pt-5"
-        style={{ marginBottom: "8rem" }}
-      >
-        <div className="container p-2">
-          <h1 className="text-center">Sessions</h1>
-          <p>Session_State: {session_live ? "on" : "off"}</p>
-          <button
-            type="button"
-            className="btn btn-primary btn"
-            onClick={() => console.log(props)}
-          >
-            Check State
-          </button>
-          <p>{room_name}</p>
-          <div className="d-flex justify-content-center p-4">
-            {!session_live ? (
-              <form className="form-inline" onSubmit={handleClickNewSession}>
-                <div className="form-group">
-                  <input
-                    className="form-control form-control"
-                    type="text"
-                    placeholder="Please enter session name"
-                    onChange={handleInputChange}
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="btn btn-outline-primary btn mx-2"
-                  >
-                    New Session
-                  </button>
-                </div>
-              </form>
-            ) : null}
-            {session_live ? <LiveSession room_name={room_name} /> : null}
+  render() {
+    const {
+      session_live,
+      room_name,
+      handleClickNewSession,
+      handleInputChange,
+      userId
+    } = this.props;
+    console.log(this.props);
+    return (
+      <div className="d-flex justify-content-center pt-2">
+        <div
+          className="border border-info px-5 pt-5"
+          style={{ marginBottom: "8rem" }}
+        >
+          <div className="container p-2">
+            <h1 className="text-center">Sessions</h1>
+            <p>{room_name}</p>
+            <div className="d-flex justify-content-center p-4">
+              {!session_live ? (
+                <form
+                  className="form-inline"
+                  onSubmit={e => handleClickNewSession(e, userId)}
+                >
+                  <div className="form-group">
+                    <input
+                      className="form-control form-control"
+                      type="text"
+                      placeholder="Please enter session name"
+                      onChange={handleInputChange}
+                      required
+                    />
+                    <button
+                      type="submit"
+                      className="btn btn-outline-primary btn mx-2"
+                    >
+                      New Session
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+              {session_live ? (
+                <LiveSession
+                  roomId={`${userId}-${room_name}`}
+                  room_name={room_name}
+                />
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 const mapDispatchToProps = dispatch => ({
-  handleClickNewSession: e => {
+  handleClickNewSession: (e, userId) => {
     e.preventDefault();
-    const roomName = e.target[0].value;
-    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
-    socket.emit("connectToNewSession", roomName, true);
+    const room_name = e.target[0].value;
+    const roomId = `${userId}-${room_name}`;
+    // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
+    const token = localStorage.getItem("jwtToken").substring(4);
+    const io = require("socket.io-client");
+    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {
+      query: `auth_token=${token}`
+    });
+    socket.on("error", err => {
+      console.log(err);
+    });
+    socket.emit("connectToNewSession", roomId);
     socket.on("sessionCreated", roomParticipants => {
       createRoom(dispatch, roomParticipants);
     });
 
-    toggleLiveSession(dispatch, roomName);
+    toggleLiveSession(dispatch, room_name);
+
+    socket.on("roomAverageValue", roomAverageValue => {
+      console.log("socket on", roomAverageValue);
+      document.title = roomAverageValue;
+    });
   }
 });
 
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
-  room_name: state.room.room_name
+  room_name: state.room.room_name,
+  userId: state.auth.user._id
 });
 
 NewSession.propTypes = {
   session_live: PropTypes.bool,
   room_name: PropTypes.string,
   handleClickNewSession: PropTypes.func,
-  handleInputChange: PropTypes.func
+  handleInputChange: PropTypes.func,
+  userId: PropTypes.string
 };
 
 NewSession.defaultProps = {
+  userId: null,
   session_live: false,
   room_name: "",
   handleClickNewSession: () => {

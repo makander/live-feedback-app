@@ -5,8 +5,13 @@ import bodyParser from "body-parser";
 import { config } from "dotenv";
 import cors from "cors";
 
+// room imports
+import RoomData from "./models/RoomData";
+
+import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
+import User from "./models/User";
 
 config({ path: "./deploy/.env" });
 
@@ -36,6 +41,8 @@ app.use(
   })
 );
 
+app.options("*", cors());
+
 app.use(bodyParser.json());
 
 mongoose.connect(db, { useNewUrlParser: true });
@@ -46,6 +53,9 @@ app.use(router);
 
 // API Routes goes here
 router.use("/api/users", users);
+
+// Session Route
+router.use("/api/my-sessions", mysession);
 
 app.use(errorLogger);
 
@@ -63,29 +73,243 @@ const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
 );
 
-// SOCKET.IO
+// ----------------SOCKET.IO------------------------
 // THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
 const socket = require("socket.io");
 
 const io = socket(server);
+io.origins("*:*");
 
-let roomParticipants = [];
+const jwtAuth = require("socketio-jwt-auth");
+
+io.use(
+  jwtAuth.authenticate(
+    {
+      secret: process.env.JWT_SECRET,
+      succeedWithoutToken: true
+    },
+    function(payload, done) {
+      if (payload && payload._id) {
+        User.findOne({ _id: payload._id }, function(err, user) {
+          if (err) {
+            console.log("error: ", err);
+            return done(err);
+          }
+          if (!user) {
+            console.log("user does not exist: ", user);
+            return done(null, false, "user does not exist!");
+          }
+          console.log("USER TYPE ADMIN");
+          return done(null, user);
+        });
+      } else {
+        console.log("USER TYPE GUEST");
+        return done();
+      }
+      return done();
+    }
+  )
+);
+
+let roomArrays = [];
+const roomParticipants = [];
 
 // eslint-disable-next-line no-shadow
 io.on("connection", socket => {
-  console.log("made socket connection ", socket.id);
-  socket.on("connectToNewSession", (roomName, isAdmin) => {
-    console.log("room name: ", roomName, "isAdmin: ", isAdmin);
-    roomParticipants = [];
-    socket.join(roomName);
-    roomParticipants.push({
-      userId: socket.id,
-      value: null,
-      room: roomName,
-      role: isAdmin ? "teacher" : "student"
+  const role = socket.request.user.logged_in ? "admin" : "guest";
+  console.log("you are connected as a: ", role);
+
+  // Connect to session - if authenticated via JWT as admin Create room
+  // if not authenticated join room as guest, if room exists
+  socket.on("connectToNewSession", roomId => {
+    if (role === "admin") {
+      console.log("Teacher created room");
+      socket.join(roomId);
+
+      roomParticipants.push({
+        userId: socket.id,
+        value: 5,
+        room_id: roomId,
+        role
+      });
+      const newRoom = {
+        id: roomId,
+        isActive: false,
+        users: roomParticipants
+      };
+      roomArrays.push(newRoom);
+      socket.emit("newSessionCreated");
+    } else {
+      roomArrays.forEach(room => {
+        if (room.id === roomId) {
+          socket.join(roomId);
+          // console.log(io.nsps["/"].adapter.rooms[roomId]);
+
+          room.users.push({
+            userId: socket.id,
+            value: 5,
+            room_id: roomId,
+            role
+          });
+          console.log(`${role} joined ${roomId}`);
+          socket.emit("joinedRoom", socket.id);
+        }
+      });
+    }
+    return roomArrays;
+  });
+
+  socket.on("feedbackSessionLeave", inputUserId => {
+    roomArrays = roomArrays.map(room => {
+      return {
+        ...room,
+        users: room.users.filter(user => user.userId !== inputUserId)
+      };
     });
-    console.log(roomParticipants);
-    io.emit("sessionCreated", roomParticipants);
+  });
+
+  // When admin starts session the room value is updated and emitted to
+  // the Guest page via sessoinStatusChanged
+  // socket.on("sessionStart", roomId => {
+  //   roomArrays = roomArrays.map(room => {
+  //     if (room.id === roomId) {
+  //       socket.emit("sessionStatusChanged", true);
+  //       return { ...room, isActive: true };
+  //     }
+  //   });
+  //   return roomArrays;
+  // });
+
+  // When admin stops session the room value is updated and emitted to
+  // the Guest page via sessoinStatusChanged
+  // socket.on("sessionStop", roomId => {
+  //   roomArrays = roomArrays.map(room => {
+  //     if (room.id === roomId) {
+  //       socket.emit("sessionStatusChanged", false);
+  //       return { ...room, isActive: false };
+  //     }
+  //     return roomArrays;
+  //   });
+  // });
+
+  const averageUserValue = roomId => {
+    const arrayToSum = [];
+    const matchingRoom = roomArrays.filter(room => room.id === roomId);
+    const guests = matchingRoom[0].users.filter(user => user.role === "guest");
+    guests.forEach(guest => arrayToSum.push(parseInt(guest.value, 10)));
+    const userCount = guests.length;
+
+    if (arrayToSum.length) {
+      const reducer = (accumulator, currentValue) => accumulator + currentValue;
+      const valueArrayTot = arrayToSum.reduce(reducer);
+      const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
+      // io.in(roomId).emit("roomAverageValue", roomAverageValue);
+      // io.emit("roomAverageValue", roomAverageValue); // fungerar
+      io.to(roomId).emit("roomAverageValue", roomAverageValue);
+
+      arrayToSum.splice(0);
+    }
+  };
+
+  // When guest connected to room changes the slider users value property will updated
+  socket.on("changeSlider", (sliderValue, roomId, userId) => {
+    roomArrays = roomArrays.map(room => {
+      if (room.id === roomId) {
+        room.users.map(user => {
+          if (user.userId === userId) {
+            const loser = user;
+            loser.value = sliderValue;
+            return loser;
+          }
+          return user;
+        });
+      }
+      return room;
+    });
+    averageUserValue(roomId);
+  });
+
+  socket.on("disconnect", () => console.log("user disconnected", socket.id));
+
+  // Load all sessions
+  socket.on("loadSessions", () => {
+    const connection = db;
+
+    // Connect to MongoDB
+    mongoose
+      .connect(connection, { useNewUrlParser: true })
+      .then(() => console.log("MongoDB connected!"))
+      .catch(err => console.log(err));
+
+    const dbs = mongoose.connection;
+
+    dbs.on("error", console.error.bind(console, "connection error:"));
+
+    const getSessionData = async function(req, res) {
+      try {
+        const result = await RoomData.find({}, function(err, docs) {
+          if (!err) {
+            console.log(docs);
+            process.exit();
+          } else {
+            throw err;
+          }
+        });
+
+        return res
+          .status(200)
+          .json({ ok: true, data: result.data.toRegJSON() });
+      } catch (error) {
+        return res.json(error);
+      }
+    };
+
+    socket.emit("sendData", getSessionData);
+    console.log(getSessionData);
+  });
+
+  // Triggered by button in LiveSession, establishes connection to mongoDB
+  // and saves room data for specicied room
+  socket.on("sendToDB", data => {
+    // DB Config¨¨
+
+    // eslint-disable-next-line camelcase
+    const { roomId, user_id } = data;
+    const dbz = db;
+    console.log("dbz: ", dbz, "data", data);
+
+    // Connect to MongoDB
+    mongoose
+      .connect(dbz, { useNewUrlParser: true })
+      .then(() => console.log("MongoDB connected!"))
+      .catch(err => console.log(err));
+
+    const dbs = mongoose.connection;
+
+    dbs.on("error", console.error.bind(console, "connection error:"));
+    dbs.once("open", function() {
+      console.log(roomArrays);
+      const sessionData = [];
+      roomArrays.map(room => {
+        if (room.id === roomId) {
+          sessionData.push(room);
+        }
+        return room;
+      });
+      User.findByIdAndUpdate(
+        {
+          _id: user_id
+        },
+        { $push: { session_data: sessionData } },
+        { upsert: true },
+        function(err, test) {
+          if (err) {
+            console.log("error");
+          } else {
+            console.log(test);
+          }
+        }
+      );
+    });
   });
 });
-//--------------------------------------------------

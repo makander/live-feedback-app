@@ -8,9 +8,8 @@ dotenv.config({ path: "../.env" });
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
 function LiveSession(props) {
-  console.log(props);
   return (
-    <div className="text-center p-5">
+    <div>
       <h2>Session Active in Room {props.room_name}</h2>
       <p>Room ID: {props.roomId}</p>
       <p>
@@ -29,7 +28,6 @@ function LiveSession(props) {
       {props.session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
       {!props.session_active ? (
         <button
-          className="btn btn-outline-success m-2"
           type="button"
           onClick={e => {
             props.startSession(e);
@@ -39,7 +37,6 @@ function LiveSession(props) {
         </button>
       ) : (
         <button
-          className="btn btn-outline-danger"
           type="button"
           onClick={e => {
             props.stopSession(e);
@@ -48,13 +45,7 @@ function LiveSession(props) {
           Stop Session
         </button>
       )}
-      <button
-        type="button"
-        className="btn btn-outline-info m-2"
-        onClick={() => props.sendToDB(props.user_id)}
-      >
-        Send to DB
-      </button>
+      <button onClick={props.sendToDB}>Send to DB</button>
     </div>
   );
 }
@@ -74,19 +65,18 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     socket.emit("sessionStop", ownProps.roomId);
     sessionStopped(dispatch, ownProps.room_name);
   },
-  sendToDB: user_id => {
+  sendToDB: () => {
     const io = require("socket.io-client");
     const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sendToDB", {
       roomId: ownProps.roomId,
-      user_id
+      user_id: ownProps.user_id
     });
   }
 });
 
 const mapStateToProps = state => ({
-  session_active: state.room.session_active,
-  user_id: state.auth.user.sub
+  session_active: state.room.session_active
 });
 
 export default connect(
