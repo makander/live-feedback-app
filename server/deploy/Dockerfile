@@ -23,6 +23,6 @@ COPY --from=builder /node_modules /node_modules
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/deploy/.env /app/deploy/.env
 
-EXPOSE 5001
+EXPOSE 5000
 
 CMD ["npm", "start"]
