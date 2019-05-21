@@ -137,7 +137,8 @@ io.on("connection", socket => {
       const newRoom = {
         id: roomId,
         isActive: false,
-        users: roomParticipants
+        users: roomParticipants,
+        room_data: []
       };
       roomArrays.push(newRoom);
       roomParticipants.splice(0);
@@ -283,8 +284,8 @@ io.on("connection", socket => {
       const sessionData = [];
       roomArrays.map(room => {
         if (room.id === roomId) {
-          console.log(room);
-          // REFACTOR AVERAGE VAL
+          const averageScore = averageUserValue(roomId);
+          room.room_data.push({ x: averageScore, y: Date.now() });
           sessionData.push(room);
         }
         return room;
