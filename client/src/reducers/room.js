@@ -1,6 +1,5 @@
 import {
   TOGGLE_LIVE_SESSION,
-  CREATE_ROOM,
   GUEST_JOINED_ROOM,
   CHANGE_SLIDER,
   SESSION_STARTED,
@@ -12,7 +11,6 @@ import {
 const initialState = {
   session_live: false,
   room_name: null,
-  rooms: [],
   joined_room: false,
   slider_value: "5",
   session_active: false,
@@ -27,14 +25,8 @@ export default function(state = initialState, action) {
     case TOGGLE_LIVE_SESSION:
       return {
         ...state,
-        session_live: !state.session_live,
+        session_live: true,
         room_name: action.value
-      };
-    case CREATE_ROOM:
-      return {
-        ...state,
-        rooms: action.value,
-        joined_room: true
       };
     case GUEST_JOINED_ROOM:
       return {

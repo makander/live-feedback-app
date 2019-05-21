@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import withAuth from "../hocs/withAuth";
 import {
   toggleLiveSession,
-  createRoom,
   setSessionAverage
 } from "../actions/room";
 
@@ -18,7 +17,13 @@ class NewSession extends Component {
     super(props);
     this.io = require("socket.io-client");
     this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    this.state = {
+      sessionLive: false
+    }
   }
+
+
+
 
   render() {
     const {
@@ -29,7 +34,8 @@ class NewSession extends Component {
       userId,
       roomAverageValue
     } = this.props;
-    console.log(this.props);
+
+    console.log(this.props.session_live);
 
     return (
       <div className="d-flex justify-content-center pt-2">
@@ -38,24 +44,10 @@ class NewSession extends Component {
           style={{ marginBottom: "8rem" }}
         >
           <div className="container p-2 justify-content-center ">
-            {/* <div
-              className="container py-4 rounded"
-              style={{
-                backgroundColor: `rgb(${roomAverageValue * 25}, ${
-                  roomAverageValue ? 255 / roomAverageValue : "0"
-                }, 0)`
-              }}
-            >
-              <h1 className="text-center text-light">
-                {roomAverageValue
-                  ? `Current pace: ${roomAverageValue}`
-                  : "Awaiting feedback"}
-              </h1>
-            </div> */}
             <ProgressBar />
             <p>{room_name}</p>
             <div className="d-flex justify-content-center p-4">
-              {!SessionLive ? (
+              {!this.props.session_live ? (
                 <form
                   className="form-inline"
                   onSubmit={e => handleClickNewSession(e, userId)}
@@ -77,7 +69,7 @@ class NewSession extends Component {
                   </div>
                 </form>
               ) : null}
-              {SessionLive ? (
+              {this.props.session_live ? (
                 <LiveSession
                   roomId={`${userId}-${room_name}`}
                   room_name={room_name}
@@ -108,11 +100,14 @@ const mapDispatchToProps = dispatch => ({
       console.log(err);
     });
     socket.emit("connectToNewSession", roomId);
-    socket.on("sessionCreated", roomParticipants => {
-      createRoom(dispatch, roomParticipants);
+    socket.on("sessionCreationCheck", (success) => {
+      if(success){
+        toggleLiveSession(dispatch, room_name);
+      } else {
+        console.log("failed")
+      } 
     });
 
-    toggleLiveSession(dispatch, room_name);
 
     socket.on("roomAverageValue", inputRoomAverageValue => {
       console.log("socket on", inputRoomAverageValue);

@@ -6,7 +6,7 @@ import { config } from "dotenv";
 import cors from "cors";
 
 // room imports
-import RoomData from "./models/RoomData";
+import RoomData from "./models/roomData";
 
 import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
@@ -93,6 +93,7 @@ io.use(
     function(payload, done) {
       if (payload && payload._id) {
         User.findOne({ _id: payload._id }, function(err, user) {
+          console.log("PAYLOAD ID FETCH: ", payload._id);
           if (err) {
             console.log("error: ", err);
             return done(err);
@@ -124,10 +125,11 @@ io.on("connection", socket => {
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", roomId => {
+    const UserId = roomId.split("-")[0];
+
     if (role === "admin") {
       console.log("Teacher created room");
       socket.join(roomId);
-
       roomParticipants.push({
         userId: socket.id,
         value: 5,
@@ -140,16 +142,36 @@ io.on("connection", socket => {
         users: roomParticipants,
         room_data: []
       };
-      roomArrays.push(newRoom);
-      roomParticipants.splice(0);
-      socket.emit("newSessionCreated");
+
+      //---------------------------------------------------
+      // CHECK IF ROOM IF with id
+      const { ObjectId } = mongoose.Types.ObjectId;
+      console.log("OUR USER ID: ", UserId);
+      User.find(
+        { _id: ObjectId(UserId), session_data: { $elemMatch: { id: roomId } } },
+        function(err, docs) {
+          if (docs.length !== 0) {
+            console.log("duplicate room name");
+            socket.emit("sessionCreationCheck", false);
+          } else if (err) {
+            console.log("database error of some sort");
+            socket.emit("databaseError", err);
+            return err;
+          } else {
+            console.log("YEAH WE GOT HERE");
+            roomArrays.push(newRoom);
+            socket.emit("sessionCreationCheck", true);
+            roomParticipants.splice(0);
+            return docs;
+          }
+          return docs;
+        }
+      );
     } else {
       roomArrays.forEach(room => {
         if (room.id === roomId) {
           console.log("room id before join", roomId);
           socket.join(roomId);
-          // console.log(io.nsps["/"].adapter.rooms[roomId]);
-
           room.users.push({
             userId: socket.id,
             value: 5,
@@ -281,12 +303,10 @@ io.on("connection", socket => {
     dbs.on("error", console.error.bind(console, "connection error:"));
     dbs.once("open", function() {
       console.log(roomArrays);
-      const sessionData = [];
-      roomArrays.map(room => {
+      const sessionData = roomArrays.map(room => {
         if (room.id === roomId) {
           const averageScore = averageUserValue(roomId);
           room.room_data.push({ x: averageScore, y: Date.now() });
-          sessionData.push(room);
         }
         return room;
       });
@@ -294,7 +314,7 @@ io.on("connection", socket => {
         {
           _id: user_id
         },
-        { $push: { session_data: sessionData } },
+        { $set: { session_data: sessionData } },
         { upsert: true },
         function(err, test) {
           if (err) {
