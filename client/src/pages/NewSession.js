@@ -78,8 +78,9 @@ const mapDispatchToProps = dispatch => ({
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
     const token = localStorage.getItem("jwtToken").substring(4);
     const io = require("socket.io-client");
-    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {
-      query: `auth_token=${token}`
+    const socket = io.connect(process.env.REACT_APP_SOCKET_CONNECTION, {
+      query: `auth_token=${token}`,
+      transports: ["websocket"]
     });
     socket.on("error", err => {
       console.log(err);
