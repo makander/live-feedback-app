@@ -12,6 +12,7 @@ class Guest extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props.match.params.roomId);
     this.socket.emit(
       "connectToNewSession",
       this.props.match.params.roomId,
@@ -46,7 +47,7 @@ class Guest extends Component {
         {roomId !== undefined ? (
           <div
             className="border border-info px-5 pt-5"
-            style={{ marginBottom: 8 + "rem" }}
+            style={{ marginBottom: `${8}rem` }}
           >
             <div>
               <h1 className="text-center">Welcome To Room: {roomId}</h1>
