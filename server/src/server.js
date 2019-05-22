@@ -6,7 +6,7 @@ import { config } from "dotenv";
 import cors from "cors";
 
 // room imports
-import RoomData from "./models/RoomData";
+import RoomData from "./models/roomData";
 
 import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
@@ -67,7 +67,7 @@ app.use(function(err, req, res, next) {
   res.status(err.statusCode).send(err.message); // All HTTP requests must have a response, so let's send back an error with its status code and message
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5005;
 
 const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
@@ -93,6 +93,7 @@ io.use(
     function(payload, done) {
       if (payload && payload._id) {
         User.findOne({ _id: payload._id }, function(err, user) {
+          console.log("PAYLOAD ID FETCH: ", payload._id);
           if (err) {
             console.log("error: ", err);
             return done(err);
@@ -124,10 +125,11 @@ io.on("connection", socket => {
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", roomId => {
+    const UserId = roomId.split("-")[0];
+
     if (role === "admin") {
       console.log("Teacher created room");
       socket.join(roomId);
-
       roomParticipants.push({
         userId: socket.id,
         value: 5,
@@ -137,18 +139,39 @@ io.on("connection", socket => {
       const newRoom = {
         id: roomId,
         isActive: false,
-        users: roomParticipants
+        users: roomParticipants,
+        room_data: []
       };
-      roomArrays.push(newRoom);
-      roomParticipants.splice(0);
-      socket.emit("newSessionCreated");
+
+      //---------------------------------------------------
+      // CHECK IF ROOM IF with id
+      const { ObjectId } = mongoose.Types.ObjectId;
+      console.log("OUR USER ID: ", UserId);
+      User.find(
+        { _id: ObjectId(UserId), session_data: { $elemMatch: { id: roomId } } },
+        function(err, docs) {
+          if (docs.length !== 0) {
+            console.log("duplicate room name");
+            socket.emit("sessionCreationCheck", false);
+          } else if (err) {
+            console.log("database error of some sort");
+            socket.emit("databaseError", err);
+            return err;
+          } else {
+            console.log("YEAH WE GOT HERE");
+            roomArrays.push(newRoom);
+            socket.emit("sessionCreationCheck", true);
+            roomParticipants.splice(0);
+            return docs;
+          }
+          return docs;
+        }
+      );
     } else {
       roomArrays.forEach(room => {
         if (room.id === roomId) {
           console.log("room id before join", roomId);
           socket.join(roomId);
-          // console.log(io.nsps["/"].adapter.rooms[roomId]);
-
           room.users.push({
             userId: socket.id,
             value: 5,
@@ -174,51 +197,28 @@ io.on("connection", socket => {
     });
   });
 
-  // When admin starts session the room value is updated and emitted to
-  // the Guest page via sessoinStatusChanged
-  // socket.on("sessionStart", roomId => {
-  //   roomArrays = roomArrays.map(room => {
-  //     if (room.id === roomId) {
-  //       socket.emit("sessionStatusChanged", true);
-  //       return { ...room, isActive: true };
-  //     }
-  //   });
-  //   return roomArrays;
-  // });
-
-  // When admin stops session the room value is updated and emitted to
-  // the Guest page via sessoinStatusChanged
-  // socket.on("sessionStop", roomId => {
-  //   roomArrays = roomArrays.map(room => {
-  //     if (room.id === roomId) {
-  //       socket.emit("sessionStatusChanged", false);
-  //       return { ...room, isActive: false };
-  //     }
-  //     return roomArrays;
-  //   });
-  // });
-
   const averageUserValue = roomId => {
     const arrayToSum = [];
     const matchingRoom = roomArrays.filter(room => room.id === roomId);
-    console.log("matchingRoom", matchingRoom, "roomArrays", roomArrays);
-    const guests = matchingRoom[0].users.filter(user => user.role === "guest");
-    guests.forEach(guest => {
-      arrayToSum.push(parseInt(guest.value, 10));
-      console.log(guest);
-    });
-    const userCount = guests.length;
-
-    if (arrayToSum.length) {
-      const reducer = (accumulator, currentValue) => accumulator + currentValue;
-      const valueArrayTot = arrayToSum.reduce(reducer);
-      const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
-      // io.in(roomId).emit("roomAverageValue", roomAverageValue);
-      // io.emit("roomAverageValue", roomAverageValue); // fungerar
-      io.to(roomId).emit("roomAverageValue", roomAverageValue);
-      console.log("tosum", arrayToSum);
-      arrayToSum.splice(0);
+    if (matchingRoom.length) {
+      console.log("matchingRoom", matchingRoom, "roomArrays", roomArrays);
+      const guests = matchingRoom[0].users.filter(
+        user => user.role === "guest"
+      );
+      guests.forEach(guest => {
+        arrayToSum.push(parseInt(guest.value, 10));
+      });
+      const userCount = guests.length;
+      if (arrayToSum.length) {
+        const reducer = (accumulator, currentValue) =>
+          accumulator + currentValue;
+        const valueArrayTot = arrayToSum.reduce(reducer);
+        const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
+        arrayToSum.splice(0);
+        return roomAverageValue;
+      }
     }
+    return null;
   };
 
   // When guest connected to room changes the slider users value property will updated
@@ -237,7 +237,9 @@ io.on("connection", socket => {
       }
       return room;
     });
-    averageUserValue(roomId);
+    const averageVal = averageUserValue(roomId);
+    console.log(averageVal);
+    io.to(roomId).emit("roomAverageValue", averageVal);
     socket.disconnect();
   });
 
@@ -301,10 +303,10 @@ io.on("connection", socket => {
     dbs.on("error", console.error.bind(console, "connection error:"));
     dbs.once("open", function() {
       console.log(roomArrays);
-      const sessionData = [];
-      roomArrays.map(room => {
+      const sessionData = roomArrays.map(room => {
         if (room.id === roomId) {
-          sessionData.push(room);
+          const averageScore = averageUserValue(roomId);
+          room.room_data.push({ x: Date.now(), y: averageScore });
         }
         return room;
       });
@@ -312,7 +314,7 @@ io.on("connection", socket => {
         {
           _id: user_id
         },
-        { $push: { session_data: sessionData } },
+        { $set: { session_data: sessionData } },
         { upsert: true },
         function(err, test) {
           if (err) {
