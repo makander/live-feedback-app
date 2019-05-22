@@ -3,14 +3,14 @@
 /* eslint-disable import/first */
 /* eslint-env node, mocha, chai, sinon */
 import User from "../models/User";
-import { expect, should } from "chai";
+import mongoose from "mongoose";
 
 process.env.NODE_ENV = "test";
 process.env.API_BASE = "/api";
 
-const request = require("supertest");
-
 const hostUrl = "http://localhost:5000";
+const request = require("supertest")(hostUrl);
+
 const newUser = {
   "name": "Christian Test",
   "email": "christian-test@anneblom.se",
@@ -18,7 +18,7 @@ const newUser = {
   "password2": "secret"
 };
 
-async function findUser() {
+function findUser() {
   console.log("Hej");
 
   const foundUser = User.findOne({ email: newUser.email }, function(err, user) {
@@ -55,13 +55,40 @@ describe("GET /", function() {
   });
 });
 
-describe("User delete", function() {
-  it("deletes user", function() {
-    findUser().then((user) => {
-      console.log(user);
-      user.should.have.property('email');
-    }).catch(err => {
-      console.log(err);
+describe("Database", function () {
+  beforeEach(function (done) {
+
+    function clearDB() {
+      const promises = [
+        User.remove().exec(),
+    ];
+
+      Promise.all(promises)
+        .then(() => {
+          done();
+        })
+    }
+
+    if (mongoose.connection.readyState === 0) {
+      mongoose.connect("mongodb://admin:password@database:27017/database?authMechanism=SCRAM-SHA-1&authSource=admin", function (err) {
+        if (err) {
+          throw err;
+        }
+        return clearDB();
+      });
+    } else {
+      return clearDB();
+    }
+  });
+
+  describe("User delete", function() {
+    it("creates user", function() {
+      return request.post(`api/users/register`)
+        .send(newUser)
+        .expect(200)
+        .then(res => {
+          res.body.ok.should.be.true;
+        });
     });
   });
-});
+})
