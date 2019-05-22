@@ -6,7 +6,7 @@ import { config } from "dotenv";
 import cors from "cors";
 
 // room imports
-import RoomData from "./models/roomData";
+import RoomData from "./models/RoomData";
 
 import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
