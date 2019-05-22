@@ -9,6 +9,7 @@ import {
 import withAuth from "../hocs/withAuth";
 
 function MySessions(props) {
+  console.log(props);
   const { session_data } = props;
   return (
     <div className="d-flex justify-content-center pt-2">
@@ -22,15 +23,15 @@ function MySessions(props) {
             <ul className="list-unstyled py-2">
               {session_data.session_data.map(data => {
                 return (
-                  <li key={data.id}>
-                    <button
-                      className="btn btn-secondary"
-                      type="button"
-                      onClick={props.sessionDetails}
+                  <div>
+                    <Link
+                      to={`/my-sessions/${data.id}`}
+                      role="button"
+                      className="btn btn-outline-primary btn"
                     >
                       {data.id}
-                    </button>
-                  </li>
+                    </Link>
+                  </div>
                 );
               })}
             </ul>
