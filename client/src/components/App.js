@@ -18,6 +18,7 @@ import { Landing, Register, Login, Dashboard } from "../pages";
 import MySessions from "../pages/MySessions";
 import NewSession from "../pages/NewSession";
 import Guest from "../pages/Guest";
+import SessionDetails from "./SessionDetails";
 
 const App = () => (
   <Provider store={store}>
@@ -41,6 +42,11 @@ const App = () => (
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
             <PrivateRoute exact path="/my-sessions" component={MySessions} />
             <PrivateRoute exact path="/new-session" component={NewSession} />
+            <PrivateRoute
+              exact
+              path="/my-sessions/:id"
+              component={SessionDetails}
+            />
           </Switch>
         </div>
       </>
