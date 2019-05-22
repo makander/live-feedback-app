@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint 'src/**/*.js' --fix; exit 0",
     "format": "prettier-eslint 'server/**/*.{js,json}' --write",
-    "test": "\"./node_modules/mocha/bin/mocha\" --require @babel/register \"./{,!(node_modules)/**/}*.test.js\"",
+    "test": "\"./node_modules/mocha/bin/mocha\" --require @babel/register --timeout 20000 \"./src/tests/basic.test.js\"",
     "clean": "rm -rf build && mkdir build",
     "build-babel": "babel ./src -d build",
     "build": "npm run clean && npm run build-babel",
@@ -37,6 +37,7 @@
     "express-winston": "^3.1.0",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.3.0",
+    "mongo-mock": "^3.7.1",
     "mongoose": "^5.3.11",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",

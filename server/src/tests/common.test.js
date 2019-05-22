@@ -27,7 +27,7 @@ export async function createUser() {
 }
 
 export async function getDefaultUser() {
-  const users = await User.find({ "email": defaultUser.email });
+  const users = await User.findOne({ "email": defaultUser.email });
   if (users.length === 0) {
     await createUser();
     return getDefaultUser();

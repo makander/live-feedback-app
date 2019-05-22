@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env node, mocha, chai, sinon */
 import { request, loginWithDefaultUser, cleanExceptDefaultUser, defaultUser, getDefaultUser } from "./common.test";
+import User from "../models/User";
 
 describe("# Auth APIs", () => {
   const apiBase = process.env.API_BASE || "/api";
@@ -16,14 +17,15 @@ describe("# Auth APIs", () => {
     })
 
     it("Should create user", () => {
-      return cleanExceptDefaultUser().then(() => {
-        return request.post(`${apiBase}/users/register`)
-          .send(newUser)
-          .expect(200)
-          .then(res => {
-            res.body.ok.should.be.true;
-          });
-      });
+      User.deleteOne(newUser).then(() => {
+        console.log("done!");
+      })
+      return request.post(`${apiBase}/users/register`)
+        .send(newUser)
+        .expect(200)
+        .then(res => {
+          res.body.ok.should.be.true;
+        });
     });
 
     it("Should retrieve the token", () => {
@@ -32,6 +34,10 @@ describe("# Auth APIs", () => {
           res.status.should.equal(200);
           res.body.ok.should.be.true;
           res.body.data.token.should.not.be.empty;
+        }).catch(err => {
+          return err;
+        }).catch(err => {
+          return err;
         });
       });
     });
