@@ -10,9 +10,7 @@ const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
 let counter = null;
 
 const timer = (active, user_id, roomId) => {
-  console.log("active", active);
   if (!active) {
-    console.log("NOT ACTIVE");
     counter = setInterval(
       () =>
         socket.emit("sendToDB", {
@@ -23,30 +21,13 @@ const timer = (active, user_id, roomId) => {
     );
     return;
   }
-  console.log("CLEARING INTERLOLZ");
   clearInterval(counter);
 };
-
-// const setTimer = (props.user_id, props.roomId) =>
-//   setInterval((user_id, roomId) => {
-//     // socket.emit("sendToDB", {
-//     //   roomId,
-//     //   user_id
-//     // });
-//     console.log("userid", user_id, "roomid", roomId);
-//   }, 1000);
-
-// const stopTimer = (user_id, roomId) => {
-//   clearInterval(setTimer(user_id, roomId));
-//   console.log("SHUT DOWN!!");
-// };
 
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
 
 function LiveSession(props) {
-  console.log(props);
-
   return (
     <div className="text-center p-5">
       <h2>Session Active in Room {props.room_name}</h2>
@@ -83,7 +64,6 @@ function LiveSession(props) {
           onClick={e => {
             props.stopSession(e);
             timer(props.session_active);
-            // clearInterval(props.sendToDB());
           }}
         >
           Stop Session
@@ -106,12 +86,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     const io = require("socket.io-client");
     const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sessionStop", ownProps.roomId);
-
-    //    clearInterval();
     sessionStopped(dispatch, ownProps.room_name);
   }
-  // sendToDB: user_id => {
-  // }
 });
 
 const mapStateToProps = state => ({
