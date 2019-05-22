@@ -306,7 +306,7 @@ io.on("connection", socket => {
       const sessionData = roomArrays.map(room => {
         if (room.id === roomId) {
           const averageScore = averageUserValue(roomId);
-          room.room_data.push({ x: averageScore, y: Date.now() });
+          room.room_data.push({ x: Date.now(), y: averageScore });
         }
         return room;
       });
