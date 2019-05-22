@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import dotenv from "dotenv";
 import { sessionStarted, sessionStopped } from "../actions/room";
+
 dotenv.config({ path: "../.env" });
 
 // This component should handle all of the rendering of real time lecture feedback
