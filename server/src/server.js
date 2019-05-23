@@ -300,6 +300,7 @@ io.on("connection", socket => {
 
     const dbs = mongoose.connection;
 
+    console.log("this is data", data);
     dbs.on("error", console.error.bind(console, "connection error:"));
     dbs.once("open", function() {
       console.log(roomArrays);

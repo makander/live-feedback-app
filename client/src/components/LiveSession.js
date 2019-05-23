@@ -4,11 +4,30 @@ import dotenv from "dotenv";
 import { sessionStarted, sessionStopped } from "../actions/room";
 
 dotenv.config({ path: "../.env" });
+const io = require("socket.io-client");
+
+const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+let counter = null;
+
+const timer = (active, user_id, roomId) => {
+  if (!active) {
+    counter = setInterval(
+      () =>
+        socket.emit("sendToDB", {
+          roomId,
+          user_id
+        }),
+      10000
+    );
+    return;
+  }
+  clearInterval(counter);
+};
 
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
+
 function LiveSession(props) {
-  console.log(props);
   return (
     <div className="text-center p-5">
       <h2>Session Active in Room {props.room_name}</h2>
@@ -33,6 +52,7 @@ function LiveSession(props) {
           type="button"
           onClick={e => {
             props.startSession(e);
+            timer(props.session_active, props.user_id, props.roomId);
           }}
         >
           Start Session
@@ -43,18 +63,12 @@ function LiveSession(props) {
           type="button"
           onClick={e => {
             props.stopSession(e);
+            timer(props.session_active);
           }}
         >
           Stop Session
         </button>
       )}
-      <button
-        type="button"
-        className="btn btn-outline-info m-2"
-        onClick={() => props.sendToDB(props.user_id)}
-      >
-        Send to DB
-      </button>
     </div>
   );
 }
@@ -73,20 +87,13 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sessionStop", ownProps.roomId);
     sessionStopped(dispatch, ownProps.room_name);
-  },
-  sendToDB: user_id => {
-    const io = require("socket.io-client");
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    socket.emit("sendToDB", {
-      roomId: ownProps.roomId,
-      user_id
-    });
   }
 });
 
 const mapStateToProps = state => ({
   session_active: state.room.session_active,
-  user_id: state.auth.user.sub
+  user_id: state.auth.user.sub,
+  timer: null
 });
 
 export default connect(
