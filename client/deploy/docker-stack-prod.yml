@@ -7,9 +7,14 @@ services:
     deploy:
       labels:
         traefik.port: '80'
+        traefik.enable: 'true'
+        traefik.tags: 'traefik'
         traefik.backend: 'impostrious_prod_client'
         traefik.docker.network: 'traefik'
         traefik.frontend.rule: 'Host:impostrious.chas.school'
+        traefik.webservice.frontend.entryPoints: 'https'
+        traefik.redirectorservice.frontend.entryPoints: 'http'
+        traefik.redirectorservice.frontend.redirect.entryPoint: 'https'
     env_file:
       - .env
 
