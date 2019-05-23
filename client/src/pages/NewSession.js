@@ -17,13 +17,7 @@ class NewSession extends Component {
     super(props);
     this.io = require("socket.io-client");
     this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    this.state = {
-      sessionLive: false
-    }
   }
-
-
-
 
   render() {
     const {
@@ -35,8 +29,6 @@ class NewSession extends Component {
       roomAverageValue
     } = this.props;
 
-    console.log(this.props.session_live);
-
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
@@ -44,10 +36,10 @@ class NewSession extends Component {
           style={{ marginBottom: "8rem" }}
         >
           <div className="container p-2 justify-content-center ">
-            <ProgressBar />
-            <p>{room_name}</p>
             <div className="d-flex justify-content-center p-4">
-              {!this.props.session_live ? (
+            {!this.props.session_live ? (
+            <div>
+              <h3 className="mx-auto">Create New Session</h3>
                 <form
                   className="form-inline"
                   onSubmit={e => handleClickNewSession(e, userId)}
@@ -56,7 +48,7 @@ class NewSession extends Component {
                     <input
                       className="form-control form-control"
                       type="text"
-                      placeholder="Please enter session name"
+                      placeholder="Enter session name"
                       onChange={handleInputChange}
                       required
                     />
@@ -68,13 +60,16 @@ class NewSession extends Component {
                     </button>
                   </div>
                 </form>
-              ) : null}
-              {this.props.session_live ? (
+                </div>
+              ) :  (
+                <div>
+                <ProgressBar />
                 <LiveSession
                   roomId={`${userId}-${room_name}`}
                   room_name={room_name}
                 />
-              ) : null}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -110,7 +105,6 @@ const mapDispatchToProps = dispatch => ({
 
 
     socket.on("roomAverageValue", inputRoomAverageValue => {
-      console.log("socket on", inputRoomAverageValue);
       document.title = inputRoomAverageValue;
       setSessionAverage(dispatch, inputRoomAverageValue);
     });
@@ -148,3 +142,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withRouter(withAuth(NewSession)));
+

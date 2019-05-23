@@ -8,8 +8,6 @@ function GuestFeedback(props) {
   const { sliderValue, handleSlider, session_user_id, room_id } = props;
   return (
     <div className="jumbotron bg-light">
-      <h2>Feedback Component</h2>
-      <p>Slider value: {sliderValue}</p>
       <form>
         <div className="form-group row" style={{ marginTop: "3rem" }}>
           <div className="col-sm-8 p-2 mx-auto d-flex">

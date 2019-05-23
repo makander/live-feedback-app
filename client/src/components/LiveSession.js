@@ -1,9 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import dotenv from "dotenv";
+
+import PropTypes from "prop-types";
 import { sessionStarted, sessionStopped } from "../actions/room";
 
-dotenv.config({ path: "../.env" });
+
 const io = require("socket.io-client");
 
 const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
@@ -28,31 +29,31 @@ const timer = (active, user_id, roomId) => {
 // Note-
 
 function LiveSession(props) {
+  const {room_name, roomId, user_id, session_active, startSession} = props
   return (
     <div className="text-center p-5">
-      <h2>Session Active in Room {props.room_name}</h2>
-      <p>Room ID: {props.roomId}</p>
-      <p>
-        Room Link:
-        <a
+      <h2>Session Active in Room {room_name}</h2>
+      <p>Room ID: {roomId}</p>
+      <div className="container bg-success">
+        
+        <a className="text-light"
           rel="noopener noreferrer"
+          
           href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${
-            props.roomId
+            roomId
           }`}
           target="_blank"
-        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}</a>
-      </p>
-      <p>Average Score: 5</p>
-
-      <p>Timer: 00:00</p>
-      {props.session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
-      {!props.session_active ? (
+        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
+      
+      </div>
+      {session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
+      {!session_active ? (
         <button
           className="btn btn-outline-success m-2"
           type="button"
           onClick={e => {
-            props.startSession(e);
-            timer(props.session_active, props.user_id, props.roomId);
+            startSession(e);
+            timer(session_active, user_id, roomId);
           }}
         >
           Start Session
@@ -76,24 +77,29 @@ function LiveSession(props) {
 const mapDispatchToProps = (dispatch, ownProps) => ({
   startSession: e => {
     e.preventDefault();
-    const io = require("socket.io-client");
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sessionStart", ownProps.roomId);
     sessionStarted(dispatch, ownProps.room_name);
   },
   stopSession: e => {
     e.preventDefault();
-    const io = require("socket.io-client");
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.emit("sessionStop", ownProps.roomId);
     sessionStopped(dispatch, ownProps.room_name);
   }
 });
 
+LiveSession.propTypes = {
+  session_active: PropTypes.bool,
+  user_id: PropTypes.string.isRequired,
+};
+
+LiveSession.defaultProps = {
+  session_active: false,
+
+};
+
 const mapStateToProps = state => ({
   session_active: state.room.session_active,
   user_id: state.auth.user.sub,
-  timer: null
 });
 
 export default connect(
