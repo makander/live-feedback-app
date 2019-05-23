@@ -7,48 +7,17 @@ class SessionDetails extends Component {
     super(props);
   }
 
-  componentDidMount() {
-    /* console.log(this.props.match.params.id); */
-  }
+  componentDidMount() {}
 
   render() {
-    const {
-      sessionData
-    } = this.props; /* 
-     const hej = <h1>hejdå</h1>;
-  /*   const testing = sessionData.map(data => {
-      if (data.id === this.props.match.params.id) {
-        data.room_data.map(roomdata => {
-          return <h1>{roomdata.x}</h1>;
-        });
-      }
-    }); */
-    /*  const test = sessionData.map(data => {
-      if (data.id === this.props.match.params.id) {
-        data.room_data.map(roomdata => {
-          return <h2>hej</h2>;
-        });
-      } else {
-        return null;
-      }
-    }); */
-    const xValue = [];
-    const yValue = [];
+    const { sessionData } = this.props;
 
     const scatterData = [];
-
-    let timeStampAtZero;
-
     const session = sessionData.map(data => {
       if (data.id === this.props.match.params.id) {
         return data.room_data.map(roomdata => {
           console.log("roomdata ", roomdata);
-          return (
-            <h1>
-              {/* {xValue.push(roomdata.x)}, {yValue.push(roomdata.y)} */}
-              {scatterData.push(roomdata)}
-            </h1>
-          );
+          return <h1>{scatterData.push(roomdata)}</h1>;
         });
       }
     });
@@ -59,27 +28,20 @@ class SessionDetails extends Component {
           label: "Value",
           backgroundColor: "rgba(255, 0, 225, 0.75)",
           data: scatterData,
-          showLine: true
+          showLine: true,
+          responsive: true
         }
       ]
     };
+
     return (
-      <div>
-        <Scatter data={data} />
-        <h1>SessionData</h1>
-        {/* {data} */}
-        {/*   {sessionData.map(data => {
-          if (data.id === this.props.match.params.id) {
-            return data.room_data.map(roomdata => {
-              console.log("roomdata ", roomdata);
-              return (
-                <h1>
-                  {roomdata.x}, {roomdata.y}
-                </h1>
-              );
-            });
-          }
-        })} */}
+      <div className="d-flex justify-content-center pt-2">
+        <div className="container">
+          <h1 className="text-center">
+            Session: {this.props.match.params.id.split("-")[1]}
+          </h1>
+          <Scatter data={data} />
+        </div>
       </div>
     );
   }

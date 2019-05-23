@@ -306,20 +306,19 @@ io.on("connection", socket => {
       const sessionData = roomArrays.map(room => {
         if (room.id === roomId) {
           const averageScore = averageUserValue(roomId);
-          /* x: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-          }),
-          y: averageScore */
-
-          /* const date = new Date();
+          console.log(averageScore);
+          // eslint-disable-next-line no-extend-native
+          Date.prototype.addHours = function(h) {
+            this.setHours(this.getHours() + h);
+            return this;
+          };
+          const date = new Date().addHours(2);
+          console.log(date);
           const timestr = date.toLocaleTimeString("en-GB");
           const formatedtime = timestr.slice(0, timestr.lastIndexOf(":"));
-          const formattime = formatedtime.replace(":", "."); */
-          /* const formatedtime = timestr.slice(0, timestr.lastIndexOf(":")); */
-
-          room.room_data.push({ x: Date.now(), y: averageScore });
+          const formattime = formatedtime.replace(":", ".");
+          console.log(formattime);
+          room.room_data.push({ x: formattime, y: averageScore });
         }
         return room;
       });

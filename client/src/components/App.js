@@ -35,11 +35,6 @@ const App = () => (
           <Route exact path="/register" component={Register} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/guest/:roomId?" component={Guest} />
-          {/* <Route
-            exact
-            path="/my-sessions/:session.id?"
-            component={SessionDetails}
-          /> */}
           <Switch>
             <PublicRoute exact path="/" component={Landing} />
           </Switch>
@@ -47,22 +42,11 @@ const App = () => (
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
             <PrivateRoute exact path="/my-sessions" component={MySessions} />
             <PrivateRoute exact path="/new-session" component={NewSession} />
-            {/* <PrivateRoute
-              exact
-              path="/my-sessions/:session.id"
-              component={SessionDetails}
-            /> */}
             <PrivateRoute
               exact
               path="/my-sessions/:id"
               component={SessionDetails}
             />
-            {/*  <PrivateRoute {}
-            <Route {...rest} render={props => (
-            <FadeIn>
-              <Component {...props}/>
-            </FadeIn>
-          )}/> */}
           </Switch>
         </div>
       </>
