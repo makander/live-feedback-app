@@ -1,85 +1,59 @@
-import React from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
-import dotenv from "dotenv";
-import { sessionStarted, sessionStopped } from "../actions/room";
+import { Line, Scatter } from "react-chartjs-2";
 
-dotenv.config({ path: "../.env" });
+class SessionDetails extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-// This component should handle all of the rendering of real time lecture feedback
-// Note-
-function LiveSession(props) {
-  return (
-    <div>
-      <h2>Session Active in Room {props.room_name}</h2>
-      <p>Room ID: {props.roomId}</p>
-      <p>
-        Room Link:
-        <a
-          rel="noopener noreferrer"
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${
-            props.roomId
-          }`}
-          target="_blank"
-        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${props.roomId}`}</a>
-      </p>
-      <p>Average Score: 5</p>
+  componentDidMount() {}
 
-      <p>Timer: 00:00</p>
-      {props.session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
-      {!props.session_active ? (
-        <button
-          type="button"
-          onClick={e => {
-            props.startSession(e);
-          }}
-        >
-          Start Session
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={e => {
-            props.stopSession(e);
-          }}
-        >
-          Stop Session
-        </button>
-      )}
-      <button onClick={props.sendToDB}>Send to DB</button>
-    </div>
-  );
+  render() {
+    const { sessionData } = this.props;
+
+    const scatterData = [];
+    const session = sessionData.map(data => {
+      if (data.id === this.props.match.params.id) {
+        return data.room_data.map(roomdata => {
+          console.log("roomdata ", roomdata);
+          return <h1>{scatterData.push(roomdata)}</h1>;
+        });
+      }
+    });
+
+    const data = {
+      datasets: [
+        {
+          label: "Value",
+          backgroundColor: "rgba(255, 0, 225, 0.75)",
+          data: scatterData,
+          showLine: true,
+          responsive: true
+        }
+      ]
+    };
+
+    return (
+      <div className="d-flex justify-content-center pt-2">
+        <div className="container">
+          <h1 className="text-center">
+            Session: {this.props.match.params.id.split("-")[1]}
+          </h1>
+          <Scatter data={data} />
+        </div>
+      </div>
+    );
+  }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  startSession: e => {
-    e.preventDefault();
-    const io = require("socket.io-client");
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    socket.emit("sessionStart", ownProps.roomId);
-    sessionStarted(dispatch, ownProps.room_name);
-  },
-  stopSession: e => {
-    e.preventDefault();
-    const io = require("socket.io-client");
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    socket.emit("sessionStop", ownProps.roomId);
-    sessionStopped(dispatch, ownProps.room_name);
-  },
-  sendToDB: () => {
-    const io = require("socket.io-client");
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    socket.emit("sendToDB", {
-      roomId: ownProps.roomId,
-      user_id: ownProps.user_id
-    });
-  }
-});
+const mapDispatchToProps = () => ({});
 
 const mapStateToProps = state => ({
-  session_active: state.room.session_active
+  sessionData: state.auth.user.session_data
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(LiveSession);
+)(SessionDetails);

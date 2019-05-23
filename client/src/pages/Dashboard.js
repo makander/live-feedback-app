@@ -29,7 +29,7 @@ class Dashboard extends Component {
                 <h1>Welcome!</h1>
                 <h4>
                   <b>Hey there,</b> {user.name.split(" ")[0]}
-                  <p>You are logged into Feedplx! 👏</p>
+                  <p>You are logged into Feedplx!<span role="img" aria-label="clap-emoji">👏</span></p>
                 </h4>
                 <div />
                 <nav className="d-flex justify-content-around pt-5">

@@ -12,13 +12,19 @@ class Guest extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props.match.params.roomId);
     this.socket.emit(
       "connectToNewSession",
       this.props.match.params.roomId,
       false
     );
+    this.socket.on("ping", () => {
+      console.log("PONG Sent");
+      this.socket.emit("pong");
+    });
     this.socket.on("joinedRoom", userId => {
       this.props.joinedRoom(userId);
+      localStorage.setItem("guest", userId);
     });
     this.socket.on("roomAverageValue", roomAverageValue => {
       document.title = roomAverageValue;
@@ -30,41 +36,38 @@ class Guest extends Component {
     });
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    this.socket.emit("feedbackSessionLeave", this.props.session_user_id);
+  }
 
   render() {
     const { roomId } = this.props.match.params;
     return (
-      <div className="d-flex justify-content-center pt-2">
+      <div className="d-flex justify-content-center pt-2 container-fluid">
         {roomId !== undefined ? (
           <div
             className="border border-info px-5 pt-5"
-            style={{ marginBottom: 8 + "rem" }}
+            style={{ marginBottom: `${8}rem` }}
           >
             <div>
-              <h1 className="text-center">Welcome To Room: {roomId}</h1>
-              <h2>Guest Page Todos</h2>
+              <h1 className="text-center">Welcome To Room: {roomId.split("-")[1]}</h1>
+              
               {this.props.isConnected ? (
-                <h3>JOINED ROOM</h3>
+                <div>
+                <h3 className="text-center bg-primary">JOINED ROOM</h3>
+                <p>
+                  Pull the slider to get affect the score. For demo purposes it will be rendered in the document title. So keep track of your
+                  tab.
+                </p>
+                </div>
               ) : (
-                <h3>ROOM DOES NOT EXIST</h3>
+                <div>
+                <h3 className="text-center bg-danger">ROOM DOES NOT EXIST</h3>
+                <p>
+                  Maybe something went wrong on the other side or the link was just plain wrong. Either which way, this room does not exist.
+                </p>
+                </div>
               )}
-              <p>
-                We'll make a check here to see if the room is active. This means
-                we'll check the roomId param prop via a io.emit event and listen
-                for the response with a socket.on
-              </p>
-              <p>
-                If the room is active we'll render the feedback UI component.
-                The feedback slider currently just console.logs the slider
-                value.
-              </p>
-              <ul>
-                <li>
-                  Retrieve and display Room data from socket.on event. No need
-                  to implement store functionality yet
-                </li>
-              </ul>
             </div>
             {/* {this.props.lectureStarted ? ( */}
             <GuestFeedback room_id={roomId} />

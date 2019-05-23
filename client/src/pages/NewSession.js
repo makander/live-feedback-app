@@ -3,10 +3,14 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import withAuth from "../hocs/withAuth";
-import { toggleLiveSession, createRoom } from "../actions/room";
+import {
+  toggleLiveSession,
+  setSessionAverage
+} from "../actions/room";
 
 // Components
 import LiveSession from "../components/LiveSession";
+import ProgressBar from "../components/ProgressBar";
 
 class NewSession extends Component {
   constructor(props) {
@@ -17,24 +21,25 @@ class NewSession extends Component {
 
   render() {
     const {
-      session_live,
+      session_live: SessionLive,
       room_name,
       handleClickNewSession,
       handleInputChange,
-      userId
+      userId,
+      roomAverageValue
     } = this.props;
-    console.log(this.props);
+
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
           className="border border-info px-5 pt-5"
           style={{ marginBottom: "8rem" }}
         >
-          <div className="container p-2">
-            <h1 className="text-center">Sessions</h1>
-            <p>{room_name}</p>
+          <div className="container p-2 justify-content-center ">
             <div className="d-flex justify-content-center p-4">
-              {!session_live ? (
+            {!this.props.session_live ? (
+            <div>
+              <h3 className="mx-auto">Create New Session</h3>
                 <form
                   className="form-inline"
                   onSubmit={e => handleClickNewSession(e, userId)}
@@ -43,7 +48,7 @@ class NewSession extends Component {
                     <input
                       className="form-control form-control"
                       type="text"
-                      placeholder="Please enter session name"
+                      placeholder="Enter session name"
                       onChange={handleInputChange}
                       required
                     />
@@ -55,13 +60,16 @@ class NewSession extends Component {
                     </button>
                   </div>
                 </form>
-              ) : null}
-              {session_live ? (
+                </div>
+              ) :  (
+                <div>
+                <ProgressBar />
                 <LiveSession
                   roomId={`${userId}-${room_name}`}
                   room_name={room_name}
                 />
-              ) : null}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -71,6 +79,8 @@ class NewSession extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
+  setSessionAverage: roomAverageValue =>
+    setSessionAverage(dispatch, roomAverageValue),
   handleClickNewSession: (e, userId) => {
     e.preventDefault();
     const room_name = e.target[0].value;
@@ -86,15 +96,18 @@ const mapDispatchToProps = dispatch => ({
       console.log(err);
     });
     socket.emit("connectToNewSession", roomId);
-    socket.on("sessionCreated", roomParticipants => {
-      createRoom(dispatch, roomParticipants);
+    socket.on("sessionCreationCheck", (success) => {
+      if(success){
+        toggleLiveSession(dispatch, room_name);
+      } else {
+        console.log("failed")
+      } 
     });
 
-    toggleLiveSession(dispatch, room_name);
 
-    socket.on("roomAverageValue", roomAverageValue => {
-      console.log("socket on", roomAverageValue);
-      document.title = roomAverageValue;
+    socket.on("roomAverageValue", inputRoomAverageValue => {
+      document.title = inputRoomAverageValue;
+      setSessionAverage(dispatch, inputRoomAverageValue);
     });
   }
 });
@@ -102,7 +115,8 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
   room_name: state.room.room_name,
-  userId: state.auth.user._id
+  userId: state.auth.user._id,
+  roomAverageValue: state.room.session_average
 });
 
 NewSession.propTypes = {
@@ -129,3 +143,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withRouter(withAuth(NewSession)));
+

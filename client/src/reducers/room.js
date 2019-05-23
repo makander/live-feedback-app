@@ -1,22 +1,22 @@
 import {
   TOGGLE_LIVE_SESSION,
-  CREATE_ROOM,
   GUEST_JOINED_ROOM,
   CHANGE_SLIDER,
   SESSION_STARTED,
   SESSION_STOPPED,
-  SESSION_DETAILS
+  SESSION_DETAILS,
+  SET_SESSION_AVERAGE
 } from "../actions/types";
 
 const initialState = {
   session_live: false,
   room_name: null,
-  rooms: [],
   joined_room: false,
   slider_value: "5",
   session_active: false,
   session_user_id: null,
-  session_details: false
+  session_details: false,
+  session_average: null
 };
 
 export default function(state = initialState, action) {
@@ -25,14 +25,8 @@ export default function(state = initialState, action) {
     case TOGGLE_LIVE_SESSION:
       return {
         ...state,
-        session_live: !state.session_live,
+        session_live: true,
         room_name: action.value
-      };
-    case CREATE_ROOM:
-      return {
-        ...state,
-        rooms: action.value,
-        joined_room: true
       };
     case GUEST_JOINED_ROOM:
       return {
@@ -59,6 +53,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         session_details: true
+      };
+    case SET_SESSION_AVERAGE:
+      return {
+        ...state,
+        session_average: action.value
       };
 
     default:
