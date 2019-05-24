@@ -2,8 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import PropTypes from "prop-types";
-import { sessionStarted, sessionStopped } from "../actions/room";
-
+import { sessionStarted, sessionStopped, cancelSession } from "../actions/room";
 
 const io = require("socket.io-client");
 
@@ -28,50 +27,77 @@ const timer = (active, user_id, roomId) => {
 // This component should handle all of the rendering of real time lecture feedback
 // Note-
 
-function LiveSession(props) {
-  const {room_name, roomId, user_id, session_active, startSession} = props
-  return (
-    <div className="text-center p-5">
-      <h2>Session Active in Room {room_name}</h2>
-      <p>Room ID: {roomId}</p>
-      <div className="container bg-success">
-        
-        <a className="text-light"
-          rel="noopener noreferrer"
-          
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${
-            roomId
-          }`}
-          target="_blank"
-        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
-      
+class LiveSession extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentWillUnmount() {
+    this.props.unmountSession();
+    timer(this.props.session_active);
+  }
+
+  render() {
+    const {
+      room_name,
+      roomId,
+      user_id,
+      session_active,
+      startSession,
+      stopSession
+    } = this.props;
+    return (
+      <div className="text-center p-5">
+        <h2>Session Active in Room {room_name}</h2>
+        <p>Room ID: {roomId}</p>
+        <div className="container bg-success">
+          <a
+            className="text-light"
+            rel="noopener noreferrer"
+            href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}
+            target="_blank"
+          >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
+        </div>
+        <div>
+          <button
+            className="btn btn-outline-warning"
+            type="button"
+            onClick={e => {
+              stopSession(e);
+              timer(session_active);
+              this.props.cancel(e);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+        {session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
+        {!session_active ? (
+          <button
+            className="btn btn-outline-success m-2"
+            type="button"
+            onClick={e => {
+              startSession(e);
+              timer(session_active, user_id, roomId);
+            }}
+          >
+            Start Session
+          </button>
+        ) : (
+          <button
+            className="btn btn-outline-danger"
+            type="button"
+            onClick={e => {
+              stopSession(e);
+              timer(session_active);
+            }}
+          >
+            Stop Session
+          </button>
+        )}
       </div>
-      {session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
-      {!session_active ? (
-        <button
-          className="btn btn-outline-success m-2"
-          type="button"
-          onClick={e => {
-            startSession(e);
-            timer(session_active, user_id, roomId);
-          }}
-        >
-          Start Session
-        </button>
-      ) : (
-        <button
-          className="btn btn-outline-danger"
-          type="button"
-          onClick={e => {
-            props.stopSession(e);
-            timer(props.session_active);
-          }}
-        >
-          Stop Session
-        </button>
-      )}
-    </div>
-  );
+    );
+  }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -84,22 +110,30 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     e.preventDefault();
     socket.emit("sessionStop", ownProps.roomId);
     sessionStopped(dispatch, ownProps.room_name);
+  },
+
+  unmountSession: () => {
+    socket.emit("sessionStop", ownProps.roomId);
+    sessionStopped(dispatch, ownProps.room_name);
+  },
+  cancel: e => {
+    e.preventDefault();
+    cancelSession(dispatch);
   }
 });
 
 LiveSession.propTypes = {
   session_active: PropTypes.bool,
-  user_id: PropTypes.string.isRequired,
+  user_id: PropTypes.string.isRequired
 };
 
 LiveSession.defaultProps = {
-  session_active: false,
-
+  session_active: false
 };
 
 const mapStateToProps = state => ({
   session_active: state.room.session_active,
-  user_id: state.auth.user.sub,
+  user_id: state.auth.user.sub
 });
 
 export default connect(

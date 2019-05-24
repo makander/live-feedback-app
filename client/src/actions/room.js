@@ -5,7 +5,8 @@ import {
   SESSION_STARTED,
   SESSION_STOPPED,
   SESSION_DETAILS,
-  SET_SESSION_AVERAGE
+  SET_SESSION_AVERAGE,
+  CANCEL_SESSION
 } from "./types";
 
 export const toggleLiveSession = (dispatch, roomName) =>
@@ -21,3 +22,4 @@ export const sessionStopped = (dispatch, roomName) =>
 export const setSessionAverage = (dispatch, roomAverageValue) =>
   dispatch({ type: SET_SESSION_AVERAGE, value: roomAverageValue });
 export const sessionDetails = dispatch => dispatch({ type: SESSION_DETAILS });
+export const cancelSession = dispatch => dispatch({ type: CANCEL_SESSION });
