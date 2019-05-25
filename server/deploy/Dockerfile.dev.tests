@@ -15,13 +15,14 @@ RUN npm run build
 
 FROM mhart/alpine-node:latest
 
-ENV NODE_ENV=production
+ENV NODE_ENV=test
 
 WORKDIR /app
 
 COPY --from=builder /node_modules /node_modules
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/deploy/.env /app/deploy/.env
+COPY --from=builder /app/deploy/mongo/001_create-users.js /app/docker-entrypoint-initdb.d/001_create-users.js
 
 EXPOSE 5005
 
