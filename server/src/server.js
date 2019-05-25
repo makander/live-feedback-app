@@ -318,4 +318,4 @@ io.on("connection", socket => {
   });
 });
 
-module.export = server;
+module.exports = server;

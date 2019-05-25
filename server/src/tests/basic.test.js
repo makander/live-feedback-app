@@ -24,13 +24,6 @@ const newUser = {
   "password2": "secret"
 };
 
-describe("GET /", function() {
-  it("responds with 404", function(done) {
-    request.get('/')
-      .expect(404, done);
-  });
-});
-
 describe("Database tests", function () {
   before(function (done) {
 
@@ -58,6 +51,22 @@ describe("Database tests", function () {
   });
 
   describe("User tests", function() {
+    it("should return missing name", function (done) {
+      request.post(`/api/users/register`)
+        .send({
+          email: newUser.email,
+          password: newUser.password,
+          password2: newUser.password2
+        })
+        .expect(400)
+        .end(function (err, res) {
+          if (err) return done(err);
+          should.exist(res.body);
+          res.body.name.should.equal("Name field is required");
+          done();
+        })
+    })
+
     it("should create user", function (done) {
       request.post(`/api/users/register`)
         .send(newUser)
