@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable import/order */
 /* eslint-disable global-require */
 /* eslint-disable import/first */
@@ -5,11 +6,15 @@
 import User from "../models/User";
 import mongoose from "mongoose";
 
+require("should-http");
+
 process.env.NODE_ENV = "test";
 process.env.API_BASE = "/api";
 
 const hostUrl = "http://localhost:5000";
 const request = require("supertest")(hostUrl);
+const should = require("should");
+const assert = require("assert");
 
 const newUser = {
   "name": "Christian Test",
@@ -18,49 +23,19 @@ const newUser = {
   "password2": "secret"
 };
 
-function findUser() {
-  console.log("Hej");
-
-  const foundUser = User.findOne({ email: newUser.email }, function(err, user) {
-    if (err) {
-      console.log("error: ", err);
-      return err;
-    }
-    if (!user) {
-      console.log("user does not exist: ", user);
-      return done(null, false, "user does not exist!");
-    }
-    console.log("USER TYPE ADMIN");
-    return done(null, user);
-  });
-  console.log("da");
-  return foundUser;
-  // try {
-  //   const existingUser = await User.findOne({ email: newUser.email }, function () {
-  //     console.log(existingUser);
-  //   });
-  //   return existingUser.should.have.property('email');
-  // } catch(err) {
-  //   console.log("error", err);
-  // }
-  // console.log("existingUser", existingUser);
-  // done();
-};
-
 describe("GET /", function() {
   it("responds with 404", function(done) {
-    request(hostUrl)
-      .get('/')
+    request.get('/')
       .expect(404, done);
   });
 });
 
-describe("Database", function () {
-  beforeEach(function (done) {
+describe("Database tests", function () {
+  before(function (done) {
 
     function clearDB() {
       const promises = [
-        User.remove().exec(),
+        User.deleteMany({}).exec(),
     ];
 
       Promise.all(promises)
@@ -70,7 +45,7 @@ describe("Database", function () {
     }
 
     if (mongoose.connection.readyState === 0) {
-      mongoose.connect("mongodb://admin:password@database:27017/database?authMechanism=SCRAM-SHA-1&authSource=admin", function (err) {
+      mongoose.connect("mongodb://admin:password@database:27017/database?authMechanism=SCRAM-SHA-1&authSource=admin", { useNewUrlParser: true }, function (err) {
         if (err) {
           throw err;
         }
@@ -81,14 +56,38 @@ describe("Database", function () {
     }
   });
 
-  describe("User delete", function() {
-    it("creates user", function() {
-      return request.post(`api/users/register`)
+  describe("User tests", function() {
+    it("should create user", function (done) {
+      request.post(`/api/users/register`)
         .send(newUser)
         .expect(200)
-        .then(res => {
-          res.body.ok.should.be.true;
+        .end(function (err, res) {
+          if (err) return done(err);
+          should.exist(res.body);
+          res.body.ok.should.equal(true);
+          done();
+        })
+    });
+
+    it("should return token on login", function (done) {
+      function tokenIsSet(res) {
+        if (!('token' in res.body.data)) throw new Error("missing JWT token");
+      }
+
+      request.post("/api/users/login")
+        .send({ email: newUser.email, password: newUser.password })
+        .expect(200)
+        .expect(tokenIsSet)
+        .end(function (err, res) {
+          if (err) return done(err);
+          should.exist(res.body);
+          res.body.ok.should.equal(true);
+          done();
         });
     });
+
+    it("should fail when logging in with incorrect credentials", function (done) {
+      request.post("/api/users/login")
+    })
   });
 })
