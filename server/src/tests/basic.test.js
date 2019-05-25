@@ -12,7 +12,8 @@ process.env.NODE_ENV = "test";
 process.env.API_BASE = "/api";
 
 const hostUrl = "http://localhost:5000";
-const request = require("supertest")(hostUrl);
+const server = require("../server");
+const request = require("supertest")(server);
 const should = require("should");
 const assert = require("assert");
 
@@ -88,6 +89,25 @@ describe("Database tests", function () {
 
     it("should fail when logging in with incorrect credentials", function (done) {
       request.post("/api/users/login")
-    })
+        .send({ email: "bla@bla.com", password: "hejhej"})
+        .expect(401)
+        .end(function (err, res) {
+          if (err) return done(err);
+          should.exist(res.body);
+          res.body.ok.should.equal(false);
+          done();
+        });
+    });
+
+    it("should send correct logout message", function(done) {
+      request.get("/api/users/logout")
+        .expect(200)
+        .end(function (err, res) {
+          if (err) return done(err);
+          should.exist(res.body);
+          res.body.msg.should.equal("Successfully logged out");
+          done();
+        });
+    });
   });
 })
