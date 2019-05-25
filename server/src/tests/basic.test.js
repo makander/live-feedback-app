@@ -46,7 +46,7 @@ describe("Database tests", function () {
     }
 
     if (mongoose.connection.readyState === 0) {
-      mongoose.connect("mongodb://admin:password@database:27017/database?authMechanism=SCRAM-SHA-1&authSource=admin", { useNewUrlParser: true }, function (err) {
+      mongoose.connect(process.env.MONGO_TEST_CONNECTION, { useNewUrlParser: true }, function (err) {
         if (err) {
           throw err;
         }
