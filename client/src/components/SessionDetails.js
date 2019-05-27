@@ -50,13 +50,11 @@ class SessionDetails extends Component {
   }
 }
 
-const mapDispatchToProps = () => ({});
-
 const mapStateToProps = state => ({
   sessionData: state.auth.user.session_data
 });
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(SessionDetails);

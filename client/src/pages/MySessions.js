@@ -55,7 +55,7 @@ function MySessions(props) {
 
 const mapDispatchToProps = dispatch => ({
   sessionDetails: () => {
-    sessionDetails(dispatch);
+    dispatch(sessionDetails());
   }
 });
 
