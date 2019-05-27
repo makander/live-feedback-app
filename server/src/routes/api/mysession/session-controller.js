@@ -11,7 +11,6 @@ export const getSessionData = async function(req, res) {
         throw err;
       }
     });
-
     return res.status(200).json({ ok: true, data: result.data.toRegJSON() });
   } catch (error) {
     return res.json(error);

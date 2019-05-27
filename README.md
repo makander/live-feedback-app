@@ -16,3 +16,10 @@
 1. Go to http://localhost:1234
 2. Input the following string into the "Connection string" input:
    `mongodb://admin:password@database:27017/database?authMechanism=SCRAM-SHA-1&authSource=admin`
+
+### Tests
+
+The backend tests are primarily set up to run in the deployment pipeline, but they can also be run locally.
+Once your local docker environment is up and running, run "docker exec -it [server_container_id] sh" to enter the
+server container, then run "npm test". You will likely get an error outside your test suit saying port 5000 is already in use,
+just ignore that.
