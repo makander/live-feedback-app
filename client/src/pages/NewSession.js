@@ -48,7 +48,7 @@ class NewSession extends Component {
       socket.on("sessionCreationCheck", success => {
         if (success) {
           console.log(room_name);
-          toggleLiveSession(dispatch, room_name);
+          toggleLiveSession(, room_name);
         } else {
           console.log("failed");
         }
@@ -174,8 +174,8 @@ class NewSession extends Component {
 
 const mapDispatchToProps = dispatch => ({
   setSessionAverage: roomAverageValue =>
-    setSessionAverage(dispatch, roomAverageValue),
-  toggleLiveSession: sessionName => toggleLiveSession(dispatch, sessionName)
+    dispatch(setSessionAverage(roomAverageValue)),
+  toggleLiveSession: sessionName => dispatch(toggleLiveSession(sessionName))
 });
 
 const mapStateToProps = state => ({

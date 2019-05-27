@@ -78,12 +78,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   startSession: e => {
     e.preventDefault();
     socket.emit("sessionStart", ownProps.roomId);
-    sessionStarted(dispatch, ownProps.room_name);
+    dispatch(sessionStarted(ownProps.room_name));
   },
   stopSession: e => {
     e.preventDefault();
     socket.emit("sessionStop", ownProps.roomId);
-    sessionStopped(dispatch, ownProps.room_name);
+    dispatch(sessionStopped(ownProps.room_name));
   }
 });
 
