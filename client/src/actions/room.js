@@ -8,19 +8,15 @@ import {
   SET_SESSION_AVERAGE
 } from "./types";
 
-export const toggleLiveSession = (dispatch, roomName) =>
-  dispatch({ type: TOGGLE_LIVE_SESSION, value: roomName });
-export const joinedRoom = (dispatch, userId, roomConfig) =>
-  dispatch({
+export const toggleLiveSession = ( roomName) =>
+  ({ type: TOGGLE_LIVE_SESSION, value: roomName });
+export const joinedRoom = ( userId, roomConfig) =>
+  ({
     type: GUEST_JOINED_ROOM,
     payload: { userId: { value: userId }, roomConfig: { value: roomConfig } }
   });
-export const sliderInput = (dispatch, sliderValue) =>
-  dispatch({ type: CHANGE_SLIDER, value: sliderValue });
-export const sessionStarted = (dispatch, roomName) =>
-  dispatch({ type: SESSION_STARTED, value: roomName });
-export const sessionStopped = (dispatch, roomName) =>
-  dispatch({ type: SESSION_STOPPED, value: roomName });
-export const setSessionAverage = (dispatch, roomAverageValue) =>
-  dispatch({ type: SET_SESSION_AVERAGE, value: roomAverageValue });
-export const sessionDetails = dispatch => dispatch({ type: SESSION_DETAILS });
+export const sliderInput = (sliderValue) => ({ type: CHANGE_SLIDER, value: sliderValue });
+export const sessionStarted = (roomName) => ({ type: SESSION_STARTED, value: roomName });
+export const sessionStopped = (roomName) => ({ type: SESSION_STOPPED, value: roomName });
+export const setSessionAverage = (roomAverageValue) => ({ type: SET_SESSION_AVERAGE, value: roomAverageValue });
+export const sessionDetails = ()  => ({ type: SESSION_DETAILS });

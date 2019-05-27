@@ -12,7 +12,7 @@ const initialState = {
   session_live: false,
   room_name: null,
   joined_room: false,
-  slider_value: "5",
+  slider_value: "50",
   session_room_config: null,
   session_active: false,
   session_user_id: null,

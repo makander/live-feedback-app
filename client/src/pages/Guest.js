@@ -93,7 +93,7 @@ class Guest extends Component {
 
 const mapDispatchToProps = dispatch => ({
   joinedRoom: (userId, roomConfig) => {
-    joinedRoom(dispatch, userId, roomConfig);
+    dispatch(joinedRoom(userId, roomConfig));
   }
 });
 
