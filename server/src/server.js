@@ -6,12 +6,13 @@ import { config } from "dotenv";
 import cors from "cors";
 
 // room imports
-import RoomData from "./models/RoomData";
+// import RoomData from "./models/RoomData";
 
-import mysession from "./routes/api/mysession";
+// import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
 import { errorLogger, logger } from "./loggers";
 import User from "./models/User";
+import Room from "./models/Room";
 
 config({ path: "./deploy/.env" });
 
@@ -59,7 +60,7 @@ app.use(router);
 router.use("/api/users", users);
 
 // Session Route
-router.use("/api/my-sessions", mysession);
+// router.use("/api/my-sessions", mysession);
 
 app.use(errorLogger);
 
@@ -154,36 +155,47 @@ io.on("connection", socket => {
 
       const newRoom = {
         id: roomId,
-        isActive: false,
         users: roomParticipants,
         room_data: [],
         room_config: roomConfig
       };
 
-      //---------------------------------------------------
-      // CHECK IF ROOM IF with id
       const { ObjectId } = mongoose.Types.ObjectId;
-      console.log("OUR USER ID: ", userId);
-      User.find(
-        { _id: ObjectId(userId), session_data: { $elemMatch: { id: roomId } } },
-        function(err, docs) {
-          if (docs.length !== 0) {
-            console.log("duplicate room name");
-            socket.emit("sessionCreationCheck", false);
-          } else if (err) {
-            console.log("database error of some sort");
-            socket.emit("databaseError", err);
-            return err;
-          } else {
-            console.log("YEAH WE GOT HERE");
-            roomArrays.push(newRoom);
-            socket.emit("sessionCreationCheck", true);
-            roomParticipants.splice(0);
-            return docs;
+      const createRoom = async () => {
+        try {
+          const existingRoom = await Room.findOne({ room_name: roomId });
+
+          if (existingRoom) {
+            console.log("Room already exists");
+            return null;
           }
-          return docs;
+          const mongoRoom = new Room({
+            room_name: roomId,
+            author_id: ObjectId(userId),
+            room_data: [],
+            room_config: roomConfig
+          });
+
+          const updatedUser = await User.findOne({
+            _id: ObjectId(userId)
+          });
+          updatedUser.rooms.push(mongoRoom);
+          await updatedUser.save();
+          await mongoRoom.save();
+
+          roomArrays.push(newRoom);
+          socket.emit("sessionCreationCheck", true);
+          roomParticipants.splice(0);
+          return null;
+        } catch (err) {
+          socket.emit("databaseError", err);
+          socket.emit("sessionCreationCheck", false);
+          return null;
         }
-      );
+      };
+      createRoom();
+
+      //---------------------------------------------------
     } else {
       roomArrays.forEach(room => {
         if (room.id === roomId) {
@@ -262,50 +274,13 @@ io.on("connection", socket => {
 
   socket.on("disconnect", () => console.log("user disconnected", socket.id));
 
-  // Load all sessions
-  socket.on("loadSessions", () => {
-    const connection = db;
-
-    // Connect to MongoDB
-    mongoose
-      .connect(connection, { useNewUrlParser: true })
-      .then(() => console.log("MongoDB connected!"))
-      .catch(err => console.log(err));
-
-    const dbs = mongoose.connection;
-
-    dbs.on("error", console.error.bind(console, "connection error:"));
-
-    const getSessionData = async function(req, res) {
-      try {
-        const result = await RoomData.find({}, function(err, docs) {
-          if (!err) {
-            console.log(docs);
-            process.exit();
-          } else {
-            throw err;
-          }
-        });
-
-        return res
-          .status(200)
-          .json({ ok: true, data: result.data.toRegJSON() });
-      } catch (error) {
-        return res.json(error);
-      }
-    };
-
-    socket.emit("sendData", getSessionData);
-    console.log(getSessionData);
-  });
-
   // Triggered by button in LiveSession, establishes connection to mongoDB
   // and saves room data for specicied room
   socket.on("sendToDB", data => {
     // DB Config¨¨
 
     // eslint-disable-next-line camelcase
-    const { roomId, user_id } = data;
+    const { roomId } = data;
     const dbz = db;
     console.log("dbz: ", dbz, "data", data);
 
@@ -340,20 +315,7 @@ io.on("connection", socket => {
         }
         return room;
       });
-      User.findByIdAndUpdate(
-        {
-          _id: user_id
-        },
-        { $set: { session_data: sessionData } },
-        { upsert: true },
-        function(err, test) {
-          if (err) {
-            console.log("error");
-          } else {
-            console.log(test);
-          }
-        }
-      );
+      console.log("session_data for room model: ", sessionData);
     });
   });
 });

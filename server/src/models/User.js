@@ -16,13 +16,10 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  rooms: [{ type: Schema.Types.ObjectId, ref: "Room" }],
   date: {
     type: Date,
     default: Date.now
-  },
-  session_data: {
-    type: Array,
-    default: null
   }
 });
 
@@ -80,8 +77,7 @@ UserSchema.methods = {
     return {
       _id: this._id,
       name: this.name,
-      email: this.email,
-      session_data: this.session_data
+      email: this.email
     };
   }
 };
