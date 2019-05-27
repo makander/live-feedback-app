@@ -10,8 +10,11 @@ import {
 
 export const toggleLiveSession = (dispatch, roomName) =>
   dispatch({ type: TOGGLE_LIVE_SESSION, value: roomName });
-export const joinedRoom = (dispatch, userId) =>
-  dispatch({ type: GUEST_JOINED_ROOM, value: userId });
+export const joinedRoom = (dispatch, userId, roomConfig) =>
+  dispatch({
+    type: GUEST_JOINED_ROOM,
+    payload: { userId: { value: userId }, roomConfig: { value: roomConfig } }
+  });
 export const sliderInput = (dispatch, sliderValue) =>
   dispatch({ type: CHANGE_SLIDER, value: sliderValue });
 export const sessionStarted = (dispatch, roomName) =>

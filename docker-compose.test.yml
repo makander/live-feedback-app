@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+  express_server:
+    build:
+      context: ./server
+      dockerfile: ./deploy/Dockerfile.test
+    command: nodemon ./src/server.js --exec babel-node
+    volumes:
+      - ./server:/usr/app/
+      - ./server/node_modules:/usr/app/node_modules
+  react_client:
+    command: npm run start
+    volumes:
+      - ./client:/usr/app/
+      - ./client/node_modules:/usr/app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  adminmongo:
+    environment:
+      - HOST=0.0.0.0

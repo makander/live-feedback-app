@@ -13,19 +13,20 @@ class Guest extends Component {
 
   componentDidMount() {
     console.log(this.props.match.params.roomId);
-    this.socket.emit(
-      "connectToNewSession",
-      this.props.match.params.roomId,
-      false
-    );
+    this.socket.emit("connectToNewSession", {
+      roomId: this.props.match.params.roomId,
+      role: "guest"
+    });
     this.socket.on("ping", () => {
       console.log("PONG Sent");
       this.socket.emit("pong");
     });
-    this.socket.on("joinedRoom", userId => {
-      this.props.joinedRoom(userId);
+
+    this.socket.on("joinedRoom", (userId, roomConfig) => {
+      this.props.joinedRoom(userId, roomConfig);
       localStorage.setItem("guest", userId);
     });
+
     this.socket.on("roomAverageValue", roomAverageValue => {
       document.title = roomAverageValue;
     });
@@ -42,6 +43,8 @@ class Guest extends Component {
 
   render() {
     const { roomId } = this.props.match.params;
+    const { session_room_config } = this.props;
+
     return (
       <div className="d-flex justify-content-center pt-2 container-fluid">
         {roomId !== undefined ? (
@@ -50,27 +53,32 @@ class Guest extends Component {
             style={{ marginBottom: `${8}rem` }}
           >
             <div>
-              <h1 className="text-center">Welcome To Room: {roomId.split("-")[1]}</h1>
-              
+              <h1 className="text-center">
+                Welcome To Room: {roomId.split("-")[1]}
+              </h1>
+
               {this.props.isConnected ? (
                 <div>
-                <h3 className="text-center bg-primary">JOINED ROOM</h3>
-                <p>
-                  Pull the slider to get affect the score. For demo purposes it will be rendered in the document title. So keep track of your
-                  tab.
-                </p>
+                  <h3 className="text-center bg-primary">JOINED ROOM</h3>
+                  <p>
+                    Pull the slider to get affect the score. For demo purposes
+                    it will be rendered in the document title. So keep track of
+                    your tab.
+                  </p>
                 </div>
               ) : (
                 <div>
-                <h3 className="text-center bg-danger">ROOM DOES NOT EXIST</h3>
-                <p>
-                  Maybe something went wrong on the other side or the link was just plain wrong. Either which way, this room does not exist.
-                </p>
+                  <h3 className="text-center bg-danger">ROOM DOES NOT EXIST</h3>
+                  <p>
+                    Maybe something went wrong on the other side or the link was
+                    just plain wrong. Either which way, this room does not
+                    exist.
+                  </p>
                 </div>
               )}
             </div>
             {/* {this.props.lectureStarted ? ( */}
-            <GuestFeedback room_id={roomId} />
+            <GuestFeedback room_id={roomId} room_config={session_room_config} />
             {/*  ) : (
               <p>Lecture have not yet started</p>
             )} */}
@@ -84,14 +92,15 @@ class Guest extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  joinedRoom: userId => {
-    joinedRoom(dispatch, userId);
+  joinedRoom: (userId, roomConfig) => {
+    joinedRoom(dispatch, userId, roomConfig);
   }
 });
 
 const mapStateToProps = state => ({
   isConnected: state.room.joined_room,
-  session_user_id: state.room.session_user_id
+  session_user_id: state.room.session_user_id,
+  session_room_config: state.room.session_room_config
 });
 
 export default connect(
