@@ -128,8 +128,8 @@ io.on("connection", socket => {
 
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
-  socket.on("connectToNewSession", roomId => {
-    const UserId = roomId.split("-")[0];
+  socket.on("connectToNewSession", data => {
+    const { roomId, userId, xInput, yInput } = data;
 
     if (role === "admin") {
       console.log("Teacher created room");
@@ -140,19 +140,32 @@ io.on("connection", socket => {
         room_id: roomId,
         role
       });
+
+      // @IDEA: Make this completely configurable from the client side
+      const roomConfig = {
+        type: "voting",
+        properties: {
+          min: xInput,
+          max: yInput,
+          min_label: "Label för minsta här",
+          max_label: "Label för högsta värdet här"
+        }
+      };
+
       const newRoom = {
         id: roomId,
         isActive: false,
         users: roomParticipants,
-        room_data: []
+        room_data: [],
+        room_config: roomConfig
       };
 
       //---------------------------------------------------
       // CHECK IF ROOM IF with id
       const { ObjectId } = mongoose.Types.ObjectId;
-      console.log("OUR USER ID: ", UserId);
+      console.log("OUR USER ID: ", userId);
       User.find(
-        { _id: ObjectId(UserId), session_data: { $elemMatch: { id: roomId } } },
+        { _id: ObjectId(userId), session_data: { $elemMatch: { id: roomId } } },
         function(err, docs) {
           if (docs.length !== 0) {
             console.log("duplicate room name");
@@ -183,7 +196,7 @@ io.on("connection", socket => {
             role
           });
           console.log(`${role} joined ${roomId}`);
-          socket.emit("joinedRoom", socket.id);
+          socket.emit("joinedRoom", socket.id, room.room_config);
         } else {
           console.log("room not found");
         }

@@ -5,20 +5,28 @@ import PropTypes from "prop-types";
 import { sliderInput } from "../actions/room";
 
 function GuestFeedback(props) {
-  const { sliderValue, handleSlider, session_user_id, room_id } = props;
+  const {
+    sliderValue,
+    handleSlider,
+    session_user_id,
+    room_id,
+    room_config
+  } = props;
   return (
     <div className="jumbotron bg-light">
       <form>
         <div className="form-group row" style={{ marginTop: "3rem" }}>
           <div className="col-sm-8 p-2 mx-auto d-flex">
-            <div className="p-2 mx-2">0</div>
+            <div className="p-2 mx-2">
+              {room_config ? room_config.properties.min : 0}
+            </div>
             <input
               name="feedback-slider"
               onChange={e => handleSlider(e, session_user_id, room_id)}
               id="feedback-slider"
               type="range"
-              max="10"
-              min="0"
+              max={room_config ? room_config.properties.max : 7}
+              min={room_config ? room_config.properties.min : 0}
               value={sliderValue}
               className="form-control"
             />
@@ -27,7 +35,9 @@ function GuestFeedback(props) {
               name="socket_data"
               value={{ session_user_id, room_id }}
             />
-            <div className="p-2 mx-2">10</div>
+            <div className="p-2 mx-2">
+              {room_config ? room_config.properties.max : 10}
+            </div>
           </div>
         </div>
       </form>
@@ -53,7 +63,8 @@ GuestFeedback.propTypes = {
   sliderValue: PropTypes.string,
   handleSlider: PropTypes.func.isRequired,
   session_user_id: PropTypes.string,
-  room_id: PropTypes.string.isRequired
+  room_id: PropTypes.string.isRequired,
+  room_config: PropTypes.object.isRequired
 };
 
 GuestFeedback.defaultProps = {
