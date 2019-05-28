@@ -8,7 +8,7 @@ const routes = new Router();
 // @desc Register user
 // @access Public
 routes.post("/register", UserController.register);
-
+routes.get("/sessions", UserController.getSessions);
 // @route POST api/users/login
 // @desc Login user and return JWT token
 // @access Public

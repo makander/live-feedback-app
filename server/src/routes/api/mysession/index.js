@@ -1,13 +1,15 @@
 import { Router } from "express";
 
-import * as MySessionController from "./session-controller";
+// import * as MySessionController from "./session-controller";
 
 const routes = new Router();
 
 // @route GET api/my-session
 // @desc Load Session Data from MongoDB
 // @access Private
-routes.get("/register", MySessionController.getSessionData);
+routes.get("/", () =>
+  console.log("QERWERWERWERWERWERWERWERWERWERWERDSFSDFSDFSDFSF")
+);
 
 // @route POST api/users/login
 // @desc Login user and return JWT token

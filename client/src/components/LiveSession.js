@@ -4,22 +4,21 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { sessionStarted, sessionStopped } from "../actions/room";
 
-
 const io = require("socket.io-client");
 
 const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
 let counter = null;
 
-const timer = (active, user_id, roomId) => {
+const timer = (active, roomAverageValue, roomId) => {
   if (!active) {
-    counter = setInterval(
-      () =>
-        socket.emit("sendToDB", {
-          roomId,
-          user_id
-        }),
-      10000
-    );
+    counter = setInterval(() => {
+      const timeStamp = new Date().toLocaleTimeString();
+      socket.emit("sendToDB", {
+        roomId,
+        roomAverageValue,
+        timeStamp
+      });
+    }, 10000);
     return;
   }
   clearInterval(counter);
@@ -29,22 +28,24 @@ const timer = (active, user_id, roomId) => {
 // Note-
 
 function LiveSession(props) {
-  const {room_name, roomId, user_id, session_active, startSession} = props
+  const {
+    room_name,
+    roomId,
+    roomAverageValue,
+    session_active,
+    startSession
+  } = props;
   return (
     <div className="text-center p-5">
       <h2>Session Active in Room {room_name}</h2>
       <p>Room ID: {roomId}</p>
       <div className="container bg-success">
-        
-        <a className="text-light"
+        <a
+          className="text-light"
           rel="noopener noreferrer"
-          
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${
-            roomId
-          }`}
+          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}
           target="_blank"
         >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
-      
       </div>
       {session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
       {!session_active ? (
@@ -53,7 +54,7 @@ function LiveSession(props) {
           type="button"
           onClick={e => {
             startSession(e);
-            timer(session_active, user_id, roomId);
+            timer(session_active, roomAverageValue, roomId);
           }}
         >
           Start Session
@@ -89,17 +90,16 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
 LiveSession.propTypes = {
   session_active: PropTypes.bool,
-  user_id: PropTypes.string.isRequired,
+  roomAverageValue: PropTypes.string.isRequired
 };
 
 LiveSession.defaultProps = {
-  session_active: false,
-
+  session_active: false
 };
 
 const mapStateToProps = state => ({
   session_active: state.room.session_active,
-  user_id: state.auth.user.sub,
+  roomAverageValue: state.room.session_average
 });
 
 export default connect(

@@ -1,9 +1,12 @@
 /* eslint-disable import/prefer-default-export */
-import roomData from "../../../models/RoomData";
+import Room from "../../../models/Room";
+import { validateUser } from "../users/user-controller";
 
 export const getSessionData = async function(req, res) {
+  console.log("getsessiondata ", req.body);
+  validateUser(req);
   try {
-    const result = await roomData.find({}, function(err, docs) {
+    const result = await Room.find({}, function(err, docs) {
       if (!err) {
         console.log(docs);
         process.exit();

@@ -9,11 +9,11 @@ import { toggleLiveSession, setSessionAverage } from "../actions/room";
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
 
+// Average calc - client side roomarray
+
 class NewSession extends Component {
   constructor(props) {
     super(props);
-    this.io = require("socket.io-client");
-    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
 
     this.state = {
       sessionName: "",
@@ -21,7 +21,18 @@ class NewSession extends Component {
       xInput: ""
     };
 
+    this.roomArray = [];
+
     // this.handleClickNewSession = this.handleClickNewSession.bind(this);
+  }
+
+  componentDidMount() {
+    const io = require("socket.io-client");
+    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    socket.on("newUserJoinedRoom", newUser => {
+      this.roomArray.push(newUser);
+      console.log("roomarray", this.roomArray);
+    });
   }
 
   handleInputChange = e => {
@@ -32,30 +43,6 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    /* const room_name = e.target[0].value;
-      const roomId = `${userId}-${room_name}`;
-      // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
-      const token = localStorage.getItem("jwtToken").substring(4);
-      const io = require("socket.io-client");
-      const socket = io.connect(process.env.REACT_APP_SOCKET_CONNECTION, {
-        query: `auth_token=${token}`,
-        transports: ["websocket"]
-      });
-      socket.on("error", err => {
-        console.log(err);
-      });
-      socket.emit("connectToNewSession", { roomId, bajs: "bajs" });
-      socket.on("sessionCreationCheck", success => {
-        if (success) {
-          console.log(room_name);
-          toggleLiveSession(, room_name);
-        } else {
-          console.log("failed");
-        }
-      // }); */
-    // const room_name = e.target[0].value;
-    //  const roomId = e.target[0].value;
-    // const user = `${userId}`;
     const { userId, toggleLiveSession, setSessionAverage } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
@@ -78,17 +65,55 @@ class NewSession extends Component {
       yInput
     });
 
-    socket.on("sessionCreationCheck", success => {
+    socket.on("sessionCreationCheck", (success, roomData) => {
       if (success) {
         toggleLiveSession(sessionName);
+        console.log("creationCheck", roomData);
       } else {
         console.log("failed");
       }
     });
 
-    socket.on("roomAverageValue", inputRoomAverageValue => {
-      document.title = inputRoomAverageValue;
-      setSessionAverage(inputRoomAverageValue);
+    socket.on("userLeftRoom", data => {
+      console.log("userLeftRoom running", this.roomArray, "data", data);
+      this.roomArray = this.roomArray.filter(user => user.userId !== data);
+
+      console.log("userLeftRoom roomArray after filter", this.roomArray);
+    });
+
+    socket.on("roomAverageValue", data => {
+      const { sliderValue, userId: sliderUserId } = data;
+      this.roomArray = this.roomArray.map(user => {
+        if (user.userId === sliderUserId) {
+          const loser = user;
+          loser.value = sliderValue;
+          console.log(loser);
+          return loser;
+        }
+        return user;
+      });
+
+      const arrayToSum = [];
+
+      this.roomArray.forEach(user => {
+        arrayToSum.push(parseInt(user.value, 10));
+      });
+      const userCount = arrayToSum.length;
+      if (arrayToSum.length) {
+        const reducer = (accumulator, currentValue) =>
+          accumulator + currentValue;
+        const valueArrayTot = arrayToSum.reduce(reducer);
+        const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
+        arrayToSum.splice(0);
+
+        document.title = roomAverageValue;
+        setSessionAverage(roomAverageValue);
+      }
+    });
+
+    socket.on("newUserJoinedRoom", newUser => {
+      this.roomArray.push(newUser);
+      console.log(this.roomArray);
     });
   };
 
