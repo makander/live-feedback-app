@@ -3,11 +3,17 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import withAuth from "../hocs/withAuth";
-import { toggleLiveSession, setSessionAverage } from "../actions/room";
+import {
+  toggleLiveSession,
+  setSessionAverage,
+  handleVotingInput
+} from "../actions/room";
 
 // Components
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
+import Voting from "../components/Roomtypes/Voting";
+import BreakTime from "../components/Roomtypes/Break";
 
 class NewSession extends Component {
   constructor(props) {
@@ -17,12 +23,28 @@ class NewSession extends Component {
 
     this.state = {
       sessionName: "",
-      yInput: "",
-      xInput: ""
+      yInput: null,
+      xInput: null,
+      voting: false,
+      labels: false,
+      breakTime: false,
+      roomConfig: []
     };
-
-    // this.handleClickNewSession = this.handleClickNewSession.bind(this);
   }
+
+  voting = () => {
+    console.log(this.state);
+    this.setState(prevState => ({
+      voting: !prevState.voting
+    }));
+  };
+
+  breakTime = () => {
+    console.log(this.state);
+    this.setState(prevState => ({
+      breakTime: !prevState.breakTime
+    }));
+  };
 
   handleInputChange = e => {
     this.setState({
@@ -32,32 +54,13 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    /* const room_name = e.target[0].value;
-      const roomId = `${userId}-${room_name}`;
-      // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
-      const token = localStorage.getItem("jwtToken").substring(4);
-      const io = require("socket.io-client");
-      const socket = io.connect(process.env.REACT_APP_SOCKET_CONNECTION, {
-        query: `auth_token=${token}`,
-        transports: ["websocket"]
-      });
-      socket.on("error", err => {
-        console.log(err);
-      });
-      socket.emit("connectToNewSession", { roomId, bajs: "bajs" });
-      socket.on("sessionCreationCheck", success => {
-        if (success) {
-          console.log(room_name);
-          toggleLiveSession(, room_name);
-        } else {
-          console.log("failed");
-        }
-      // }); */
-    // const room_name = e.target[0].value;
-    //  const roomId = e.target[0].value;
-    // const user = `${userId}`;
-    const { userId, toggleLiveSession, setSessionAverage } = this.props;
-    const { sessionName, xInput, yInput } = this.state;
+    const {
+      userId,
+      toggleLiveSession,
+      setSessionAverage,
+      voting_input
+    } = this.props;
+    const { sessionName, xInput, yInput, roomConfig } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
     const token = localStorage.getItem("jwtToken").substring(4);
@@ -67,6 +70,32 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
+    /* const rooms = [
+      { type: "lectureSpeed", xInput, yInput },
+      { type: "voting", params: voting_input }
+    ]; */
+    console.log("xinput", xInput);
+
+    const test =
+      xInput !== undefined
+        ? this.setState({
+            roomConfig: [
+              ...roomConfig,
+              { type: "lectureSpeed", xInput, yInput }
+            ]
+          })
+        : null;
+    console.log("test", test);
+    /*
+    if (voting_input) {
+      this.setState({
+        roomConfig: [...roomConfig, { type: "voting", params: voting_input }]
+      });
+    } */
+
+    console.log("state", this.state);
+    console.log(roomConfig);
+
     socket.on("error", err => {
       console.log(err);
     });
@@ -74,8 +103,8 @@ class NewSession extends Component {
     socket.emit("connectToNewSession", {
       roomId: `${userId}-${sessionName}`,
       userId,
-      xInput,
-      yInput
+      roomConfig,
+      test
     });
 
     socket.on("sessionCreationCheck", success => {
@@ -101,7 +130,15 @@ class NewSession extends Component {
       roomAverageValue
     } = this.props;
 
-    const { sessionName, xInput, yInput } = this.state;
+    const {
+      sessionName,
+      xInput,
+      yInput,
+      lectureSpeed,
+      voting,
+      breakTime,
+      handleVotingInput
+    } = this.state;
 
     return (
       <div className="d-flex justify-content-center pt-2">
@@ -113,6 +150,17 @@ class NewSession extends Component {
             <div className="d-flex justify-content-center p-4">
               {!this.props.session_live ? (
                 <div>
+                  <h1>Create your lecture by adding components below</h1>
+                  <button type="button" onClick={this.voting}>
+                    Voting
+                  </button>
+                  <button type="button" onClick={this.breakTime}>
+                    Break
+                  </button>
+                  {voting ? (
+                    <Voting handleVotingInput={handleVotingInput} />
+                  ) : null}
+                  {breakTime ? <BreakTime /> : null}
                   <h3 className="mx-auto">Create New Session</h3>
                   <form
                     className="form-inline"
@@ -182,7 +230,8 @@ const mapStateToProps = state => ({
   session_live: state.room.session_live,
   room_name: state.room.room_name,
   userId: state.auth.user._id,
-  roomAverageValue: state.room.session_average
+  roomAverageValue: state.room.session_average,
+  voting_input: state.room.voting_input
 });
 
 NewSession.propTypes = {

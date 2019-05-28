@@ -5,7 +5,8 @@ import {
   SESSION_STARTED,
   SESSION_STOPPED,
   SESSION_DETAILS,
-  SET_SESSION_AVERAGE
+  SET_SESSION_AVERAGE,
+  VOTING_INPUT
 } from "../actions/types";
 
 const initialState = {
@@ -17,7 +18,8 @@ const initialState = {
   session_active: false,
   session_user_id: null,
   session_details: false,
-  session_average: null
+  session_average: null,
+  voting_input: null
 };
 
 export default function(state = initialState, action) {
@@ -60,6 +62,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         session_average: action.value
+      };
+    case VOTING_INPUT:
+      return {
+        ...state,
+        voting_input: action.value
       };
 
     default:

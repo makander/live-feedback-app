@@ -129,8 +129,9 @@ io.on("connection", socket => {
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", data => {
-    const { roomId, userId, xInput, yInput } = data;
-
+    const { roomId, userId, roomConfig } = data;
+    console.log("data", data);
+    console.log("roomconfig", roomConfig);
     if (role === "admin") {
       console.log("Teacher created room");
       socket.join(roomId);
@@ -141,8 +142,14 @@ io.on("connection", socket => {
         role
       });
 
+      /* data.lectureSpeed.xInput ? () : ()
+      data.room_config.map(data => {
+        data.types === "voting" ? roomConfigs.push(data) : null
+        data.types === "lecture" =
+      }) */
+
       // @IDEA: Make this completely configurable from the client side
-      const roomConfig = {
+      /* const roomConfig = {
         type: "voting",
         properties: {
           min: xInput,
@@ -150,7 +157,7 @@ io.on("connection", socket => {
           min_label: "Label för minsta här",
           max_label: "Label för högsta värdet här"
         }
-      };
+      }; */
 
       const newRoom = {
         id: roomId,
@@ -159,6 +166,8 @@ io.on("connection", socket => {
         room_data: [],
         room_config: roomConfig
       };
+
+      console.log("newRoom", newRoom);
 
       //---------------------------------------------------
       // CHECK IF ROOM IF with id

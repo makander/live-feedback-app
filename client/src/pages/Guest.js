@@ -77,6 +77,7 @@ class Guest extends Component {
                 </div>
               )}
             </div>
+
             {/* {this.props.lectureStarted ? ( */}
             <GuestFeedback room_id={roomId} room_config={session_room_config} />
             {/*  ) : (
