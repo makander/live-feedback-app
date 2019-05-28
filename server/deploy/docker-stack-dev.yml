@@ -1,4 +1,4 @@
-version: '3.5'
+version: "3.5"
 
 services:
   api:
@@ -14,17 +14,17 @@ services:
       - backend
     deploy:
       labels:
-        traefik.port: '5000'
-        traefik.enable: 'true'
-        traefik.tags: 'traefik'
-        traefik.backend: 'impostrious_dev_api'
-        traefik.docker.network: 'traefik'
-        traefik.frontend.rule: 'Host:impostrious-dev-api.chas.school'
-        traefik.webservice.frontend.entryPoints: 'https'
-        traefik.redirectorservice.frontend.entryPoints: 'http'
-        traefik.redirectorservice.frontend.redirect.entryPoint: 'https'
+        traefik.port: "5005"
+        traefik.enable: "true"
+        traefik.tags: "traefik"
+        traefik.backend: "impostrious_dev_api"
+        traefik.docker.network: "traefik"
+        traefik.frontend.rule: "Host:impostrious-dev-api.chas.school"
+        traefik.webservice.frontend.entryPoints: "https"
+        traefik.redirectorservice.frontend.entryPoints: "http"
+        traefik.redirectorservice.frontend.redirect.entryPoint: "https"
   database:
-    image: 'mongo'
+    image: "mongo"
     volumes:
       - ./mongo/001_create-users.js:/docker-entrypoint-initdb.d/001_create-users.js:ro
     env_file:
@@ -33,7 +33,7 @@ services:
       - backend
     deploy:
       labels:
-        traefik.enable: 'false'
+        traefik.enable: "false"
 
 volumes:
   database:

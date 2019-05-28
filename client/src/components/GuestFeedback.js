@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import PropTypes from "prop-types";
+import Voting from "./voting";
 import { sliderInput } from "../actions/room";
 
 function GuestFeedback(props) {
@@ -12,12 +13,16 @@ function GuestFeedback(props) {
     room_id,
     room_config
   } = props;
+
   return (
     <div className="jumbotron bg-light">
       <form>
         <div className="form-group row" style={{ marginTop: "3rem" }}>
           <div className="col-sm-8 p-2 mx-auto d-flex">
             <div className="p-2 mx-2">
+              {/* Render component types here  */}
+              <h1>Notifcation here</h1>
+
               {room_config ? room_config.properties.min : 0}
             </div>
             <input
