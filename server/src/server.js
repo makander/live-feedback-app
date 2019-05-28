@@ -167,13 +167,10 @@ io.on("connection", socket => {
         room_config: roomConfig
       };
 
-<<<<<<< HEAD
       console.log("newRoom", newRoom);
 
       //---------------------------------------------------
       // CHECK IF ROOM IF with id
-=======
->>>>>>> a4031941785ec585084819a3dcc851809cad5174
       const { ObjectId } = mongoose.Types.ObjectId;
       const createRoom = async () => {
         try {
