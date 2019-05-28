@@ -1,6 +1,5 @@
 import passport from "passport";
 import UserServices from "./user-services";
-import Room from "../../../models/Room";
 
 // Load validation
 // eslint-disable-next-line no-unused-vars
@@ -63,27 +62,4 @@ export const secret = function(req, res) {
     ok: true,
     data: `Welcome ${req.user.username} to our secret content!`
   });
-};
-
-export const getSessions = async function(req, res, next) {
-  passport.authenticate("jwt", (err, user) => {
-    if (err) return next(err);
-    if (!user) {
-      return res.json({ ok: false, error: "Token is invalid" });
-    }
-    console.log(user);
-    try {
-      const result = Room.find({ author_id: user._id }, function(error, docs) {
-        if (!error) {
-          console.log("docs: ", docs);
-          process.exit();
-        } else {
-          throw error;
-        }
-      });
-      return res.status(200).json({ ok: true, data: result.data.toRegJSON() });
-    } catch (error) {
-      return res.json(error);
-    }
-  })(req, res, next);
 };

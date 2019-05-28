@@ -5,11 +5,8 @@ import bodyParser from "body-parser";
 import { config } from "dotenv";
 import cors from "cors";
 
-// room imports
-// import RoomData from "./models/RoomData";
-
-// import mysession from "./routes/api/mysession";
 import users from "./routes/api/users";
+import mysession from "./routes/api/mysession";
 import { errorLogger, logger } from "./loggers";
 import User from "./models/User";
 import Room from "./models/Room";
@@ -60,7 +57,7 @@ app.use(router);
 router.use("/api/users", users);
 
 // Session Route
-// router.use("/api/my-sessions", mysession);
+router.use("/api/my-sessions", mysession);
 
 app.use(errorLogger);
 
@@ -221,7 +218,6 @@ io.on("connection", socket => {
 
   socket.on("feedbackSessionLeave", data => {
     const { inputUserId, roomId } = data;
-    console.log("feedbackSessionLeave", data);
     io.to(roomId).emit("userLeftRoom", inputUserId);
   });
 
@@ -235,11 +231,10 @@ io.on("connection", socket => {
   socket.on("disconnect", () => console.log("user disconnected", socket.id));
 
   // Triggered by button in LiveSession, establishes connection to mongoDB
-  // and saves room data for specicied room
+  // and saves room data for specicied room, on an interval
   socket.on("sendToDB", data => {
     // DB Config¨¨
 
-    // eslint-disable-next-line camelcase
     const { roomId, roomAverageValue, timeStamp } = data;
 
     // Connect to MongoDB
