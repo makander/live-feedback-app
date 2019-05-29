@@ -54,12 +54,14 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
+    const sessionNameNoSpaces = sessionName.replace(new RegExp(' ', 'g'), "_");
+
     socket.on("error", err => {
       console.log(err);
     });
 
     socket.emit("connectToNewSession", {
-      roomId: `${userId}-${sessionName}`,
+      roomId: `${userId}-${sessionNameNoSpaces}`,
       userId,
       xInput,
       yInput
@@ -185,7 +187,7 @@ class NewSession extends Component {
                   <ProgressBar />
                   <LiveSession
                     roomId={`${userId}-${room_name}`}
-                    room_name={room_name}
+                    roomName={room_name}
                   />
                 </div>
               )}
