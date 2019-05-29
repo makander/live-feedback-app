@@ -7,98 +7,110 @@ import { sessionStarted, sessionStopped } from "../actions/room";
 const io = require("socket.io-client");
 
 const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-let counter = null;
 
-const timer = (active, roomAverageValue, roomId) => {
-  if (!active) {
-    counter = setInterval(() => {
-      const timeStamp = new Date().toLocaleTimeString();
-      socket.emit("sendToDB", {
-        roomId,
-        roomAverageValue,
-        timeStamp
-      });
-    }, 10000);
-    return;
+class LiveSession extends React.Component {
+  constructor(props) {
+    super(props);
+    this.counter = null;
   }
-  clearInterval(counter);
-};
 
-// This component should handle all of the rendering of real time lecture feedback
-// Note-
+  timerCallback = () => {
+    const timeStamp = new Date().toLocaleTimeString();
+    const { roomAverageValue, roomId } = this.props;
+    socket.emit("sendToDB", {
+      roomId,
+      roomAverageValue,
+      timeStamp
+    });
+  };
 
-function LiveSession(props) {
-  const {
-    room_name,
-    roomId,
-    roomAverageValue,
-    session_active,
-    startSession
-  } = props;
-  return (
-    <div className="text-center p-5">
-      <h2>Session Active in Room {room_name}</h2>
-      <p>Room ID: {roomId}</p>
-      <div className="container bg-success">
-        <a
-          className="text-light"
-          rel="noopener noreferrer"
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}
-          target="_blank"
-        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
+  timer = active => {
+    if (!active) {
+      this.counter = setInterval(this.timerCallback, 10000);
+      return;
+    }
+    clearInterval(this.counter);
+  };
+
+  render() {
+    const {
+      roomName,
+      roomId,
+      roomAverageValue,
+      sessionActive,
+      startSession,
+      stopSession
+    } = this.props;
+
+    return (
+      <div className="text-center p-5">
+        <h2>Session Active in Room {roomName}</h2>
+        <p>Room ID: {roomId}</p>
+        <div className="container bg-success">
+          <a
+            className="text-light"
+            rel="noopener noreferrer"
+            href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}
+            target="_blank"
+          >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
+        </div>
+        {sessionActive ? <p>Session Active</p> : <p>Session Inactive</p>}
+        {!sessionActive ? (
+          <button
+            className="btn btn-outline-success m-2"
+            type="button"
+            onClick={e => {
+              startSession(e);
+              this.timer(sessionActive, roomAverageValue, roomId);
+            }}
+          >
+            Start Session
+          </button>
+        ) : (
+          <button
+            className="btn btn-outline-danger"
+            type="button"
+            onClick={e => {
+              stopSession(e);
+              this.timer(sessionActive);
+            }}
+          >
+            Stop Session
+          </button>
+        )}
       </div>
-      {session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
-      {!session_active ? (
-        <button
-          className="btn btn-outline-success m-2"
-          type="button"
-          onClick={e => {
-            startSession(e);
-            timer(session_active, roomAverageValue, roomId);
-          }}
-        >
-          Start Session
-        </button>
-      ) : (
-        <button
-          className="btn btn-outline-danger"
-          type="button"
-          onClick={e => {
-            props.stopSession(e);
-            timer(props.session_active);
-          }}
-        >
-          Stop Session
-        </button>
-      )}
-    </div>
-  );
+    );
+  }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   startSession: e => {
     e.preventDefault();
     socket.emit("sessionStart", ownProps.roomId);
-    dispatch(sessionStarted(ownProps.room_name));
+    dispatch(sessionStarted(ownProps.roomName));
   },
   stopSession: e => {
     e.preventDefault();
     socket.emit("sessionStop", ownProps.roomId);
-    dispatch(sessionStopped(ownProps.room_name));
+    dispatch(sessionStopped(ownProps.roomName));
   }
 });
 
 LiveSession.propTypes = {
-  session_active: PropTypes.bool,
-  roomAverageValue: PropTypes.string.isRequired
+  sessionActive: PropTypes.bool,
+  roomAverageValue: PropTypes.string.isRequired,
+  roomId: PropTypes.string.isRequired,
+  roomName: PropTypes.string.isRequired,
+  startSession: PropTypes.func.isRequired,
+  stopSession: PropTypes.func.isRequired
 };
 
 LiveSession.defaultProps = {
-  session_active: false
+  sessionActive: false
 };
 
 const mapStateToProps = state => ({
-  session_active: state.room.session_active,
+  sessionActive: state.room.session_active,
   roomAverageValue: state.room.session_average
 });
 
