@@ -20,8 +20,6 @@ const RoomSchema = new Schema({
   room_config: {
     type: { type: String },
     properties: {
-      min: String,
-      max: String,
       min_label: String,
       max_label: String
     }

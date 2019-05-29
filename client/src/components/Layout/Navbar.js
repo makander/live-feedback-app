@@ -2,22 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-
-const AuthLinks = () => {
-  return (
-    <div className="navbar-nav">
-      <Link className="nav-item nav-link text-white" to="/">
-        Dashboard
-      </Link>
-      <Link className="nav-item nav-link text-white" to="/my-sessions">
-        My Session
-      </Link>
-      <Link className="nav-item nav-link text-white" to="/new-session">
-        New Session
-      </Link>
-    </div>
-  );
-};
+import AuthLinks from "./AuthLinks";
 
 const Links = () => {
   return (

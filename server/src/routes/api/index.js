@@ -6,5 +6,4 @@ const routes = new Router();
 
 routes.use("/user", usersRoutes);
 routes.use("/my-session", mySessionRoutes);
-
 export default routes;
