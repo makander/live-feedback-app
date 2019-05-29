@@ -4,22 +4,6 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import AuthLinks from "./AuthLinks";
 
-// const AuthLinks = () => {
-//   return (
-//     <div className="navbar-nav">
-//       <Link className="nav-item nav-link text-white" to="/">
-//         Dashboard
-//       </Link>
-//       <Link className="nav-item nav-link text-white" to="/my-sessions">
-//         My Session
-//       </Link>
-//       <Link className="nav-item nav-link text-white" to="/new-session">
-//         New Session
-//       </Link>
-//     </div>
-//   );
-// };
-
 const Links = () => {
   return (
     <div className="navbar-nav">
