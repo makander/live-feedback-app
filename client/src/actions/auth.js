@@ -61,7 +61,7 @@ export const logoutUser = () => dispatch => {
     .get(`${process.env.REACT_APP_API_BASE_URL}/api/users/logout`)
     .then(res => {
       // this should be handled better
-      alert(res.data.msg);
+      console.log(res.data.msg);
     })
     .catch(err => {
       return dispatch({

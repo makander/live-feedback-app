@@ -17,8 +17,10 @@ class LiveSession extends React.Component {
   timerCallback = () => {
     const timeStamp = new Date().toLocaleTimeString();
     const { roomAverageValue, roomId } = this.props;
+    const roomIdNoSpaces = roomId.replace(new RegExp(' ', 'g'), "_");
+    console.log(roomIdNoSpaces);
     socket.emit("sendToDB", {
-      roomId,
+      roomId: roomIdNoSpaces,
       roomAverageValue,
       timeStamp
     });
@@ -41,18 +43,19 @@ class LiveSession extends React.Component {
       startSession,
       stopSession
     } = this.props;
-
+    const roomIdNoSpaces = roomId.replace(new RegExp(' ', 'g'), "_");
+  
     return (
       <div className="text-center p-5">
         <h2>Session Active in Room {roomName}</h2>
-        <p>Room ID: {roomId}</p>
+        <p>Room ID: {roomIdNoSpaces}</p>
         <div className="container bg-success">
-          <a
-            className="text-light"
-            rel="noopener noreferrer"
-            href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}
-            target="_blank"
-          >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
+        <a
+          className="text-light"
+          rel="noopener noreferrer"
+          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomIdNoSpaces}`}
+          target="_blank"
+        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomIdNoSpaces}`}</a>
         </div>
         {sessionActive ? <p>Session Active</p> : <p>Session Inactive</p>}
         {!sessionActive ? (
