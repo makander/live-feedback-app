@@ -185,7 +185,7 @@ class NewSession extends Component {
                   <ProgressBar />
                   <LiveSession
                     roomId={`${userId}-${room_name}`}
-                    room_name={room_name}
+                    roomName={room_name}
                   />
                 </div>
               )}
