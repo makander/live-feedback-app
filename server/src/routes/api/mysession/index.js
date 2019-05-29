@@ -8,5 +8,6 @@ const routes = new Router();
 // @desc Load Session Data from MongoDB
 // @access Private
 routes.get("/", MySessionController.getSessions);
+routes.delete("/:id", MySessionController.deleteSession);
 
 export default routes;
