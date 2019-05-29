@@ -67,12 +67,14 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
+    const sessionNameNoSpaces = sessionName.replace(' ', '_');
+
     socket.on("error", err => {
       console.log(err);
     });
 
     socket.emit("connectToNewSession", {
-      roomId: `${userId}-${sessionName}`,
+      roomId: `${userId}-${sessionNameNoSpaces}`,
       userId,
       xInput,
       yInput
