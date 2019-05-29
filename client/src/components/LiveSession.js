@@ -35,17 +35,19 @@ function LiveSession(props) {
     session_active,
     startSession
   } = props;
+  const roomIdNoSpaces = roomId.replace(' ', '_');
+  
   return (
     <div className="text-center p-5">
       <h2>Session Active in Room {room_name}</h2>
-      <p>Room ID: {roomId}</p>
+      <p>Room ID: {roomIdNoSpaces}</p>
       <div className="container bg-success">
         <a
           className="text-light"
           rel="noopener noreferrer"
-          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}
+          href={`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomIdNoSpaces}`}
           target="_blank"
-        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomId}`}</a>
+        >{`${process.env.REACT_APP_BASE_SHARE_LINK}/guest/${roomIdNoSpaces}`}</a>
       </div>
       {session_active ? <p>Session Active</p> : <p>Session Inactive</p>}
       {!session_active ? (
