@@ -14,7 +14,6 @@ function MySessions() {
         .get(`${process.env.REACT_APP_API_BASE_URL}/api/my-sessions`)
         .then(response => {
           setRenderState(response.data.data);
-          console.log(response.data.data);
         })
         .catch(error => {
           // handle error
@@ -37,13 +36,15 @@ function MySessions() {
           {renderState ? (
             <ul className="list-unstyled">
               {renderState.map(data => {
-                console.log(data);
                 return (
                   <li key={data._id} className="py-2">
                     <Link
-                      to={`/my-sessions/${data._id}`}
+                      to={{pathname: `/my-sessions/${data._id}`,
+                      sessionData: data
+                    }}
                       role="button"
                       className="btn btn-outline-primary btn"
+                      
                     >
                       {data.room_name.substring(25)}
                     </Link>

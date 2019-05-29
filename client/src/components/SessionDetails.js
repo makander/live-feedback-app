@@ -2,26 +2,17 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Line } from "react-chartjs-2";
 
-class SessionDetails extends Component {
-  constructor(props) {
-    super(props);
-  }
+function SessionDetails (props) {
 
-  render() {
-    const { sessionData } = this.props;
+  const { sessionData } = props.location;
 
     const xArray = [];
     const yArray = [];
-    sessionData.map(data => {
-      if (data.id === this.props.match.params.id) {
-        return data.room_data.map(roomdata => {
-          console.log("roomdata ", roomdata);
-          xArray.push(roomdata.x)
-          yArray.push(roomdata.y)
-        });
-      }
-    });
-
+    sessionData.room_data.forEach(coords => {
+          xArray.push(coords.x)
+          yArray.push(coords.y)
+      });
+    
     const lineData = {
     chartData: {
       labels: xArray,
@@ -41,13 +32,15 @@ class SessionDetails extends Component {
       <div className="d-flex justify-content-center pt-2">
         <div className="container">
           <h1 className="text-center">
-            Session: {this.props.match.params.id.split("-")[1]}
+            {sessionData.room_data.length === 0 
+            ? <h2>No Data Recorded For This Session</h2> 
+            : <Line data={lineData.chartData} />
+           }
           </h1>
-          <Line data={lineData.chartData} />
+          
         </div>
       </div>
     );
-  }
 }
 
 const mapStateToProps = state => ({
