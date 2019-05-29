@@ -9,36 +9,40 @@ class Guest extends Component {
     super(props);
     this.io = require("socket.io-client");
     this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    this.roomArray = [];
+    this.state = { userId: null };
   }
 
   componentDidMount() {
-    console.log(this.props.match.params.roomId);
     this.socket.emit("connectToNewSession", {
       roomId: this.props.match.params.roomId,
       role: "guest"
     });
+
     this.socket.on("ping", () => {
       console.log("PONG Sent");
       this.socket.emit("pong");
     });
 
     this.socket.on("joinedRoom", (userId, roomConfig) => {
+      console.log("user joined room");
       this.props.joinedRoom(userId, roomConfig);
-      localStorage.setItem("guest", userId);
-    });
-
-    this.socket.on("roomAverageValue", roomAverageValue => {
-      document.title = roomAverageValue;
     });
 
     window.addEventListener("beforeunload", ev => {
       ev.preventDefault();
-      this.socket.emit("feedbackSessionLeave", this.props.session_user_id);
+      this.socket.emit("feedbackSessionLeave", {
+        inputUserId: this.props.session_user_id,
+        roomId: this.props.match.params.roomId
+      });
     });
   }
 
   componentWillUnmount() {
-    this.socket.emit("feedbackSessionLeave", this.props.session_user_id);
+    this.socket.emit("feedbackSessionLeave", {
+      inputUserId: this.props.session_user_id,
+      roomId: this.props.match.params.roomId
+    });
   }
 
   render() {
@@ -56,6 +60,7 @@ class Guest extends Component {
               <h1 className="text-center">
                 Welcome To Room: {roomId.split("-")[1]}
               </h1>
+              <h3>{this.props.session_user_id}</h3>
 
               {this.props.isConnected ? (
                 <div>

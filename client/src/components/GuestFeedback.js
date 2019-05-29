@@ -68,7 +68,7 @@ GuestFeedback.propTypes = {
 };
 
 GuestFeedback.defaultProps = {
-  sliderValue: "5",
+  sliderValue: "50",
   session_user_id: ""
 };
 

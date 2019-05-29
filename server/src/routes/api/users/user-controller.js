@@ -29,7 +29,9 @@ export const login = async (req, res, next) => {
   return passport.authenticate("local", (err, user) => {
     if (err) return next(err);
     if (!user) {
-      return res.status(401).json({ ok: false, error: "You are not authorized" });
+      return res
+        .status(401)
+        .json({ ok: false, error: "You are not authorized" });
     }
     return res.json({ ok: true, data: user.toAuthJSON() });
   })(req, res, next);

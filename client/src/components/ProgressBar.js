@@ -6,13 +6,13 @@ class ProgressBar extends Component {
   componentDidMount() {}
 
   componentDidUpdate() {
-    const { roomAverageValue } = this.props;    
+    const { roomAverageValue } = this.props;
     const canvas = document.getElementById("averageCanvas");
     const ctx = canvas.getContext("2d");
-    const x = roomAverageValue/100;
+    const x = roomAverageValue / 100;
     ctx.fillStyle = "green";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillRect(0, 0, (canvas.width*x), 100);
+    ctx.fillRect(0, 0, canvas.width * x, canvas.height);
   }
 
   render() {
@@ -32,9 +32,8 @@ ProgressBar.propTypes = {
 };
 
 ProgressBar.defaultProps = {
-  roomAverageValue: "5"
+  roomAverageValue: "50"
 };
-
 
 const mapStateToProps = state => ({
   roomAverageValue: state.room.session_average
