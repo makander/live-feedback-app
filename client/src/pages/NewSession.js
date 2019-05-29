@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+import axios from "axios";
 import withAuth from "../hocs/withAuth";
 import { toggleLiveSession, setSessionAverage } from "../actions/room";
-
 // Components
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
@@ -54,18 +54,39 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
-    const sessionNameNoSpaces = sessionName.replace(new RegExp(' ', 'g'), "_");
+    const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
 
     socket.on("error", err => {
       console.log(err);
     });
 
-    socket.emit("connectToNewSession", {
-      roomId: `${userId}-${sessionNameNoSpaces}`,
-      userId,
-      xInput,
-      yInput
-    });
+    axios
+      .get(
+        `${
+          process.env.REACT_APP_API_BASE_URL
+        }/api/my-sessions/${userId}-${sessionNameNoSpaces}`
+      )
+      .then(response => {
+        if (response.data.data.room_name) {
+          console.log(response.data.data.room_name);
+          alert("room already exists");
+          console.log("existingroom equals true");
+        } else {
+          console.log("ELSE RUNNING");
+          socket.emit("connectToNewSession", {
+            roomId: `${userId}-${sessionNameNoSpaces}`,
+            userId,
+            xInput,
+            yInput
+          });
+        }
+      })
+      .catch(error => {
+        // handle error
+      })
+      .finally(() => {
+        // always executed
+      });
 
     socket.on("sessionCreationCheck", (success, roomData) => {
       if (success) {

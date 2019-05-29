@@ -5,7 +5,8 @@ import {
   SESSION_STARTED,
   SESSION_STOPPED,
   SESSION_DETAILS,
-  SET_SESSION_AVERAGE
+  SET_SESSION_AVERAGE,
+  CANCEL_SESSION
 } from "../actions/types";
 
 const initialState = {
@@ -23,6 +24,12 @@ const initialState = {
 export default function(state = initialState, action) {
   console.log("reducer running", action);
   switch (action.type) {
+    case CANCEL_SESSION:
+      return {
+        ...state,
+        room_name: null,
+        session_live: false
+      };
     case TOGGLE_LIVE_SESSION:
       return {
         ...state,
