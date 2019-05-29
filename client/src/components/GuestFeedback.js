@@ -50,6 +50,7 @@ const mapDispatchToProps = dispatch => ({
     const sliderValue = e.target.value;
     dispatch(sliderInput(sliderValue));
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
+    console.log(room_id);
     socket.emit("changeSlider", sliderValue, room_id, session_user_id);
   }
 });
