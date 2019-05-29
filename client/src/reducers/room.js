@@ -18,8 +18,8 @@ const initialState = {
   session_active: false,
   session_user_id: null,
   session_details: false,
-  session_average: null,
-  voting_input: null
+  voting_input: null,
+  session_average: "50"
 };
 
 export default function(state = initialState, action) {

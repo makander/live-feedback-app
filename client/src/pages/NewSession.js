@@ -15,11 +15,11 @@ import ProgressBar from "../components/ProgressBar";
 import Voting from "../components/Roomtypes/Voting";
 import BreakTime from "../components/Roomtypes/Break";
 
+// Average calc - client side roomarray
+
 class NewSession extends Component {
   constructor(props) {
     super(props);
-    this.io = require("socket.io-client");
-    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
 
     this.state = {
       sessionName: "",
@@ -27,9 +27,19 @@ class NewSession extends Component {
       xInput: null,
       voting: false,
       labels: false,
-      breakTime: false,
-      roomConfig: []
+      breakTime: false
     };
+
+    this.roomArray = [];
+  }
+
+  componentDidMount() {
+    const io = require("socket.io-client");
+    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    socket.on("newUserJoinedRoom", newUser => {
+      this.roomArray.push(newUser);
+      console.log("roomarray", this.roomArray);
+    });
   }
 
   voting = () => {
@@ -60,7 +70,7 @@ class NewSession extends Component {
       setSessionAverage,
       voting_input
     } = this.props;
-    const { sessionName, xInput, yInput, roomConfig } = this.state;
+    const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
     const token = localStorage.getItem("jwtToken").substring(4);
@@ -70,54 +80,83 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
-    /* const rooms = [
-      { type: "lectureSpeed", xInput, yInput },
-      { type: "voting", params: voting_input }
-    ]; */
-    console.log("xinput", xInput);
+    console.log("state", this.state);
 
-    const test =
-      xInput !== undefined
-        ? this.setState({
-            roomConfig: [
-              ...roomConfig,
-              { type: "lectureSpeed", xInput, yInput }
-            ]
-          })
-        : null;
-    console.log("test", test);
-    /*
+    const roomConfig = [];
+
     if (voting_input) {
-      this.setState({
-        roomConfig: [...roomConfig, { type: "voting", params: voting_input }]
-      });
-    } */
+      roomConfig.push({ type: "voting", params: [voting_input] });
+      /* roomConfig.voting = { params: voting_input }; */
+    }
+
+    if (xInput) {
+      roomConfig.push({ type: "lectureSpeed", xInput, yInput });
+      /* roomConfig.lectureSpeed = { xInput, yInput }; */
+    }
+    console.log("rooms", roomConfig);
 
     console.log("state", this.state);
     console.log(roomConfig);
-
+    const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
     socket.on("error", err => {
       console.log(err);
     });
 
     socket.emit("connectToNewSession", {
-      roomId: `${userId}-${sessionName}`,
+      roomId: `${userId}-${sessionNameNoSpaces}`,
       userId,
-      roomConfig,
-      test
+      roomConfig
     });
 
-    socket.on("sessionCreationCheck", success => {
+    socket.on("sessionCreationCheck", (success, roomData) => {
       if (success) {
         toggleLiveSession(sessionName);
+        console.log("creationCheck", roomData);
       } else {
         console.log("failed");
       }
     });
 
-    socket.on("roomAverageValue", inputRoomAverageValue => {
-      document.title = inputRoomAverageValue;
-      setSessionAverage(inputRoomAverageValue);
+    socket.on("userLeftRoom", data => {
+      console.log("userLeftRoom running", this.roomArray, "data", data);
+      this.roomArray = this.roomArray.filter(user => user.userId !== data);
+
+      console.log("userLeftRoom roomArray after filter", this.roomArray);
+    });
+
+    socket.on("roomAverageValue", data => {
+      const { sliderValue, userId: sliderUserId } = data;
+      this.roomArray = this.roomArray.map(user => {
+        if (user.userId === sliderUserId) {
+          const loser = user;
+          loser.value = sliderValue;
+          console.log(loser);
+          return loser;
+        }
+        return user;
+      });
+
+      const arrayToSum = [];
+
+      this.roomArray.forEach(user => {
+        arrayToSum.push(parseInt(user.value, 10));
+      });
+      const userCount = arrayToSum.length;
+      if (arrayToSum.length) {
+        const reducer = (accumulator, currentValue) =>
+          accumulator + currentValue;
+        const valueArrayTot = arrayToSum.reduce(reducer);
+        const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
+        arrayToSum.splice(0);
+
+        document.title = roomAverageValue;
+        setSessionAverage(roomAverageValue);
+      }
+    });
+
+    socket.on("newUserJoinedRoom", newUser => {
+      this.roomArray.push(newUser);
+      console.log(this.roomArray);
     });
   };
 
@@ -208,7 +247,7 @@ class NewSession extends Component {
                   <ProgressBar />
                   <LiveSession
                     roomId={`${userId}-${room_name}`}
-                    room_name={room_name}
+                    roomName={room_name}
                   />
                 </div>
               )}

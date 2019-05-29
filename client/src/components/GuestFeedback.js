@@ -21,17 +21,19 @@ function GuestFeedback(props) {
           <div className="col-sm-8 p-2 mx-auto d-flex">
             <div className="p-2 mx-2">
               {/* Render component types here  */}
-              <h1>Notifcation here</h1>
 
-              {room_config ? room_config.properties.min : 0}
+              {/* {console.log(Object.keys(room_config))} */}
+              {console.log("here may", room_config[1])}
+              {console.log("here may", room_config[1].lectureSpeed)}
+              {room_config[1].xInput ? room_config[1].xInput : 0}
             </div>
             <input
               name="feedback-slider"
               onChange={e => handleSlider(e, session_user_id, room_id)}
               id="feedback-slider"
               type="range"
-              max={room_config ? room_config.properties.max : 7}
-              min={room_config ? room_config.properties.min : 0}
+              max={room_config[1].xInput ? room_config[1].xInput : 7}
+              min={room_config[1].yInput ? room_config[1].yInput : 0}
               value={sliderValue}
               className="form-control"
             />
@@ -41,7 +43,7 @@ function GuestFeedback(props) {
               value={{ session_user_id, room_id }}
             />
             <div className="p-2 mx-2">
-              {room_config ? room_config.properties.max : 10}
+              {room_config[1].yInput ? room_config[1].yInput : 10}
             </div>
           </div>
         </div>
@@ -55,6 +57,7 @@ const mapDispatchToProps = dispatch => ({
     const sliderValue = e.target.value;
     dispatch(sliderInput(sliderValue));
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
+    console.log(room_id);
     socket.emit("changeSlider", sliderValue, room_id, session_user_id);
   }
 });
@@ -73,7 +76,7 @@ GuestFeedback.propTypes = {
 };
 
 GuestFeedback.defaultProps = {
-  sliderValue: "5",
+  sliderValue: "50",
   session_user_id: ""
 };
 

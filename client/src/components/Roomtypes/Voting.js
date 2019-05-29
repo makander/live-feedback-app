@@ -26,9 +26,7 @@ class Voting extends Component {
 
   handleOnSubmitOptions = e => {
     e.preventDefault();
-    console.log(e.target.options.value);
     const options = Array(parseInt(e.target.options.value, 10)).fill(1);
-    console.log("options", options, options.length);
     this.setState({
       numberOfOptions: options
     });

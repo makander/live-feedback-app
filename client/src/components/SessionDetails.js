@@ -1,54 +1,68 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { Line } from "react-chartjs-2";
+import { Link } from "react-router-dom";
+import { PropTypes } from "prop-types";
 
-class SessionDetails extends Component {
-  constructor(props) {
-    super(props);
-  }
+function SessionDetails(props) {
+  const { location } = props;
 
-  render() {
-    const { sessionData } = this.props;
+  const xArray = [];
+  const yArray = [];
+  location.sessionData.room_data.forEach(coords => {
+    xArray.push(coords.x);
+    yArray.push(coords.y);
+  });
 
-    const xArray = [];
-    const yArray = [];
-    sessionData.map(data => {
-      if (data.id === this.props.match.params.id) {
-        return data.room_data.map(roomdata => {
-          console.log("roomdata ", roomdata);
-          xArray.push(roomdata.x)
-          yArray.push(roomdata.y)
-        });
-      }
-    });
-
-    const lineData = {
-    chartData: {
-      labels: xArray,
-      datasets: [
-        {
-          label: "Score",
-          data: yArray,
-          borderColor: "CadetBlue",
-          backgroundColor: "AliceBlue"
-          
-        }
-      ]
+  const options = {
+    legend: {
+      display: true,
+      position: "bottom"
     }
-  }
+  };
 
-    return (
-      <div className="d-flex justify-content-center pt-2">
-        <div className="container">
-          <h1 className="text-center">
-            Session: {this.props.match.params.id.split("-")[1]}
-          </h1>
-          <Line data={lineData.chartData} />
+  const chartData = {
+    labels: xArray,
+    datasets: [
+      {
+        label: "Y-axis: Lecture Spped (50 being normal tempo)",
+        data: yArray,
+        borderColor: "CadetBlue",
+        backgroundColor: "AliceBlue"
+      }
+    ]
+  };
+
+  return (
+    <div className="d-flex justify-content-center pt-2">
+      <div className="container">
+        <div className="text-center">
+          {location.sessionData.room_data.length === 0 ? (
+            <h2 className="jumbotron bg-danger">
+              No Data Recorded For This Session
+            </h2>
+          ) : (
+            <Line data={chartData} options={options} />
+          )}
+        </div>
+
+        <div className="d-flex justify-content-center pb-3">
+          <Link
+            to="/my-sessions"
+            role="button"
+            className="btn btn-outline-secondary"
+          >
+            Back
+          </Link>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+SessionDetails.propTypes = {
+  location: PropTypes.object.isRequired
+};
 
 const mapStateToProps = state => ({
   sessionData: state.auth.user.session_data
