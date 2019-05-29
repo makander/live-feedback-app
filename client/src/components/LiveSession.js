@@ -17,7 +17,7 @@ class LiveSession extends React.Component {
   componentWillUnmount() {
     const { unmountSession } = this.props;
     unmountSession();
-    this.timer(false);
+    this.timer(true);
   }
 
   timerCallback = () => {
@@ -32,7 +32,7 @@ class LiveSession extends React.Component {
   };
 
   timer = active => {
-    if (active) {
+    if (!active) {
       this.counter = setInterval(this.timerCallback, 2000);
       return;
     }
@@ -96,9 +96,9 @@ class LiveSession extends React.Component {
             className="btn btn-outline-warning"
             type="button"
             onClick={e => {
-              stopSession(e);
-              this.timer(sessionActive);
               cancel(e);
+              stopSession(e);
+              this.timer(true);
             }}
           >
             Cancel
@@ -117,6 +117,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   stopSession: e => {
     e.preventDefault();
+    console.log("STANNA SESSION");
     socket.emit("sessionStop", ownProps.roomId);
     dispatch(sessionStopped(ownProps.roomName));
   },
@@ -146,7 +147,7 @@ LiveSession.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  sessionActive: state.room.session_active,
+  sessionActive: state.room.session_live,
   roomAverageValue: state.room.session_average
 });
 

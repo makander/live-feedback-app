@@ -1,16 +1,16 @@
 import {
-  TOGGLE_LIVE_SESSION,
   GUEST_JOINED_ROOM,
   CHANGE_SLIDER,
   SESSION_STARTED,
   SESSION_STOPPED,
   SESSION_DETAILS,
   SET_SESSION_AVERAGE,
-  CANCEL_SESSION
+  CANCEL_SESSION,
+  CREATE_ROOM
 } from "./types";
 
-export const toggleLiveSession = roomName => ({
-  type: TOGGLE_LIVE_SESSION,
+export const roomCreated = roomName => ({
+  type: CREATE_ROOM,
   value: roomName
 });
 export const joinedRoom = (userId, roomConfig) => ({

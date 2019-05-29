@@ -38,7 +38,7 @@ export const getSession = async function(req, res, next) {
           if (!error) {
             return docs;
           }
-          return false;
+          throw error;
         }
       );
       return res.json({ ok: true, data: result });
