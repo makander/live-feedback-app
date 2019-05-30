@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
+import axios from "axios";
 import withAuth from "../hocs/withAuth";
 import {
-  toggleLiveSession,
+  roomCreated,
   setSessionAverage,
   handleVotingInput
 } from "../actions/room";
-
 // Components
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
@@ -64,12 +64,8 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    const {
-      userId,
-      toggleLiveSession,
-      setSessionAverage,
-      voting_input
-    } = this.props;
+
+    const { userId, createRoom, setSessionAverage, voting_input } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
@@ -80,7 +76,7 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
-    console.log("state", this.state);
+    const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
 
     const roomConfig = [];
 
@@ -102,15 +98,37 @@ class NewSession extends Component {
       console.log(err);
     });
 
-    socket.emit("connectToNewSession", {
-      roomId: `${userId}-${sessionNameNoSpaces}`,
-      userId,
-      roomConfig
-    });
+    axios
+      .get(
+        `${
+          process.env.REACT_APP_API_BASE_URL
+        }/api/my-sessions/${userId}-${sessionNameNoSpaces}`
+      )
+      .then(response => {
+        console.log(response);
+        if (response.data.data) {
+          console.log(response.data.data.room_name);
+          alert("room already exists");
+          console.log("existingroom equals true");
+        } else {
+          console.log("ELSE RUNNING");
+          socket.emit("connectToNewSession", {
+            roomId: `${userId}-${sessionNameNoSpaces}`,
+            userId,
+            roomConfig
+          });
+        }
+      })
+      .catch(error => {
+        // handle error
+      })
+      .finally(() => {
+        // always executed
+      });
 
     socket.on("sessionCreationCheck", (success, roomData) => {
       if (success) {
-        toggleLiveSession(sessionName);
+        createRoom(sessionName);
         console.log("creationCheck", roomData);
       } else {
         console.log("failed");
@@ -162,8 +180,9 @@ class NewSession extends Component {
 
   render() {
     const {
-      session_live: SessionLive,
+      session_live: sessionLive,
       room_name,
+      roomCreated,
       handleInputChange,
       userId,
       roomAverageValue
@@ -187,7 +206,7 @@ class NewSession extends Component {
         >
           <div className="container p-2 justify-content-center ">
             <div className="d-flex justify-content-center p-4">
-              {!this.props.session_live ? (
+              {!roomCreated ? (
                 <div>
                   <h1>Create your lecture by adding components below</h1>
                   <button type="button" onClick={this.voting}>
@@ -262,11 +281,12 @@ class NewSession extends Component {
 const mapDispatchToProps = dispatch => ({
   setSessionAverage: roomAverageValue =>
     dispatch(setSessionAverage(roomAverageValue)),
-  toggleLiveSession: sessionName => dispatch(toggleLiveSession(sessionName))
+  createRoom: sessionName => dispatch(roomCreated(sessionName))
 });
 
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
+  roomCreated: state.room.room_created,
   room_name: state.room.room_name,
   userId: state.auth.user._id,
   roomAverageValue: state.room.session_average,

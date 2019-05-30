@@ -143,12 +143,6 @@ io.on("connection", socket => {
         role
       });
 
-      /* data.lectureSpeed.xInput ? () : ()
-      data.room_config.map(data => {
-        data.types === "voting" ? roomConfigs.push(data) : null
-        data.types === "lecture" =
-      }) */
-
       // @IDEA: Make this completely configurable from the client side
       /* const roomConfig = {
         type: "voting",
@@ -180,6 +174,7 @@ io.on("connection", socket => {
             console.log("Room already exists");
             return null;
           }
+          socket.join(roomId);
           const mongoRoom = new Room({
             room_name: roomId,
             author_id: ObjectId(userId),
