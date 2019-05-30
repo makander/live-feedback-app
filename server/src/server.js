@@ -130,7 +130,6 @@ io.on("connection", socket => {
 
     if (role === "admin") {
       console.log("Teacher created room");
-      socket.join(roomId);
 
       // @IDEA: Make this completely configurable from the client side
       const roomConfig = {
@@ -158,6 +157,7 @@ io.on("connection", socket => {
             console.log("Room already exists");
             return null;
           }
+          socket.join(roomId);
           const mongoRoom = new Room({
             room_name: roomId,
             author_id: ObjectId(userId),
