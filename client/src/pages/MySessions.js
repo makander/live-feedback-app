@@ -7,21 +7,29 @@ import { sessionDetails } from "../actions/room";
 import withAuth from "../hocs/withAuth";
 
 function MySessions() {
-  const [renderState, setRenderState] = useState();
+  const [renderState, setRenderState] = useState([]);
+  const [errorState, setErrorState] = useState(null);
+
   const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
-  const getSessions = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/api/my-sessions`)
-      .then(response => {
-        setRenderState(response.data.data);
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      })
-      .finally(() => {
-        // always executed
-      });
+  const errorOrNoSessions = errorState ? (
+    <div>
+      <h5>Your sessions could not be found, there was an error...</h5>
+    </div>
+  ) : (
+    <p>You have no saved sessions</p>
+  );
+  const getSessions = async () => {
+    try {
+      const result = await axios(
+        `${process.env.REACT_APP_API_BASE_URL}/api/my-sessions`
+      );
+      console.table(result);
+      setRenderState(result.data.data);
+    } catch (err) {
+      setErrorState(err.response.statusText);
+      console.log(errorState);
+      //  dispatch an error msg and render to the client
+    }
   };
 
   useEffect(() => {
@@ -63,7 +71,7 @@ function MySessions() {
         style={{ marginBottom: "8rem" }}
       >
         <div className="p-2 container">
-          {renderState ? (
+          {renderState.length ? (
             <table className="table class table-hover">
               <thead className="thead-dark">
                 <tr>
@@ -105,7 +113,7 @@ function MySessions() {
                             <button
                               className="btn btn-danger btn ml-1"
                               type="button"
-                              onClick={e => deleteSession(`${room._id}`)}
+                              onClick={() => deleteSession(`${room._id}`)}
                             >
                               X
                             </button>
@@ -118,7 +126,7 @@ function MySessions() {
               </tbody>
             </table>
           ) : (
-            <p>You have no saved sessions</p>
+            errorOrNoSessions
           )}
           <div className="d-flex justify-content-center pb-3">
             <Link
