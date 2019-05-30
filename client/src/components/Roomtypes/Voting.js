@@ -38,7 +38,7 @@ class Voting extends Component {
 
     return (
       <div>
-        <h1>Voting</h1>
+        <h2>Voting Component added</h2>
         <p>Allow participants to vote for topics specified below</p>
         <form onSubmit={e => this.handleOnSubmitOptions(e)}>
           <input type="number" name="options" min="1" max="5" />
@@ -60,7 +60,6 @@ class Voting extends Component {
                     name={`value${index}`}
                     placeholder={`#options${index}`}
                     onChange={this.handleInputChange}
-                    required
                   />
                 );
               })}
