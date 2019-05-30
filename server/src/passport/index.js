@@ -17,10 +17,10 @@ const localLogin = new LocalStrategy(
     try {
       const user = await User.findOne({ email });
       if (!user) {
-        return done(null, false);
+        return done(null, false, { message: "No user with that email" });
       }
       if (!user._comparePassword(password)) {
-        return done(null, false);
+        return done({ message: "Incorrect password" }, false);
       }
       return done(null, user);
     } catch (error) {

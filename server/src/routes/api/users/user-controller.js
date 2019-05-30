@@ -26,12 +26,19 @@ export const register = async function(req, res, next) {
 };
 
 export const login = async (req, res, next) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   return passport.authenticate("local", (err, user) => {
-    if (err) return next(err);
+    if (err) {
+      return res.status(401).json({ ok: false, error: "Incorrect password" });
+    }
+
     if (!user) {
-      return res
-        .status(401)
-        .json({ ok: false, error: "You are not authorized" });
+      return res.status(401).json({ ok: false, error: "User not found" });
     }
     return res.json({ ok: true, data: user.toAuthJSON() });
   })(req, res, next);

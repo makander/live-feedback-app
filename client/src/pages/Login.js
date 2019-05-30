@@ -87,7 +87,7 @@ class Login extends Component {
                     autoComplete="email"
                     placeholder="Enter email"
                   />
-                  <span className="red-text">
+                  <span className="text-danger">
                     {errors.email}
                     {errors.emailnotfound}
                   </span>
@@ -114,16 +114,19 @@ class Login extends Component {
                     autoComplete="password"
                     placeholder="Enter password"
                   />
+                  <span className="text-danger">
+                    {errors.password}
+                    {errors.passwordincorrect}
+                  </span>
                 </label>
               </div>
             </div>
             <div>
-              <span className="red-text">
-                {errors.password}
-                {errors.passwordincorrect}
-              </span>
             </div>
-            <div style={{ marginTop: `3rem` }}>
+            <div className="d-flex flex-column mt-4">
+              <span className="text-danger text-center mb-3">
+                  {errors.error}
+              </span>
               <button
                 type="submit"
                 className="btn btn-primary btn-lg btn-block"

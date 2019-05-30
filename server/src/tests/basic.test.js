@@ -150,7 +150,7 @@ describe("Database tests", function() {
         });
     });
 
-    it("should fail when logging in with incorrect credentials", function(done) {
+    it("should respond with user not found when wrong email", function(done) {
       request(testServer)
         .post("/api/users/login")
         .send({ email: "bla@bla.com", password: "hejhej" })
@@ -159,6 +159,21 @@ describe("Database tests", function() {
           if (err) return done(err);
           should.exist(res.body);
           res.body.ok.should.equal(false);
+          res.body.error.should.equal("User not found");
+          done();
+        });
+    });
+
+    it("should respond with incorrect password when wrong password", function(done) {
+      request(testServer)
+        .post("/api/users/login")
+        .send({ email: newUser.email, password: "hejhej" })
+        .expect(401)
+        .end(function(err, res) {
+          if (err) return done(err);
+          should.exist(res.body);
+          res.body.ok.should.equal(false);
+          res.body.error.should.equal("Incorrect password");
           done();
         });
     });
