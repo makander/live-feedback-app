@@ -52,28 +52,23 @@ class Guest extends Component {
     return (
       <div className="d-flex justify-content-center pt-2 container-fluid">
         {roomId !== undefined ? (
-          <div
-            className="border border-info px-5 pt-5"
-            style={{ marginBottom: `${8}rem` }}
-          >
+          <div className="border border-info py-5" style={{ width: "30rem" }}>
             <div>
-              <h1 className="text-center">
-                Welcome To Room: {roomId.split("-")[1]}
-              </h1>
-              <h3>{this.props.session_user_id}</h3>
+              <h2 className="text-center px-2">
+                Welcome To Room: <br /> {roomId.split("-")[1]}
+              </h2>
 
               {this.props.isConnected ? (
                 <div>
-                  <h3 className="text-center bg-primary">JOINED ROOM</h3>
-                  <p>
-                    Pull the slider to get affect the score. For demo purposes
-                    it will be rendered in the document title. So keep track of
-                    your tab.
+                  <p className="text-center">
+                    Pull the slider to get affect the score.
                   </p>
                 </div>
               ) : (
                 <div>
-                  <h3 className="text-center bg-danger">ROOM DOES NOT EXIST</h3>
+                  <h3 className="text-center bg-danger">
+                    Something went wrong!
+                  </h3>
                   <p>
                     Maybe something went wrong on the other side or the link was
                     just plain wrong. Either which way, this room does not
