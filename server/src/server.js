@@ -173,7 +173,7 @@ io.on("connection", socket => {
           await mongoRoom.save();
 
           roomArrays.push(newRoom);
-          io.to(roomId).emit("sessionCreationCheck", true, newRoom);
+          io.to(roomId).emit("sessionCreationCheck", true);
           return null;
         } catch (err) {
           io.to(roomId).emit("databaseError", err);
