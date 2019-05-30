@@ -6,7 +6,7 @@ import axios from "axios";
 import io from "socket.io-client";
 import withAuth from "../hocs/withAuth";
 import { roomCreated, setSessionAverage } from "../actions/room";
-import { GET_ERRORS } from "../actions/types";
+import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
@@ -43,7 +43,7 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    const { userId, createRoom, sessionAverageSetter, getErrors } = this.props;
+    const { userId, createRoom, sessionAverageSetter, getErrors, clearErrors } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
@@ -84,6 +84,7 @@ class NewSession extends Component {
     socket.on("sessionCreationCheck", (success) => {
       if (success) {
         createRoom(sessionName);
+        clearErrors()
       } else {
         getErrors({room: "Failed to create room"})
       }
@@ -211,12 +212,16 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: GET_ERRORS,
       payload: error
+    }),
+  clearErrors: () =>
+    dispatch({
+      type: CLEAR_ERRORS
     })
 });
 
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
-  roomCreated: state.room.room_created,
+  roomCreatedConditional: state.room.room_created,
   roomName: state.room.room_name,
   // eslint-disable-next-line no-underscore-dangle
   userId: state.auth.user._id,
@@ -231,6 +236,7 @@ NewSession.propTypes = {
   roomCreatedConditional: PropTypes.bool,
   userId: PropTypes.string,
   getErrors: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired,
   error: PropTypes.object
 };
 
