@@ -26,18 +26,14 @@ export const getSessions = async function(req, res, next) {
 };
 
 export const deleteSession = async function(req, res) {
-  console.log("this is req", req);
   try {
-    const result = await Room.findByIdAndRemove(
-      { _id: req.params.id },
-      function(error, docs) {
-        if (!error) {
-          return docs;
-        }
-        throw error;
+    await Room.findByIdAndRemove({ _id: req.params.id }, function(error, docs) {
+      if (!error) {
+        return docs;
       }
-    );
-    return res.status(200).json({ ok: true, data: result });
+      throw error;
+    });
+    return res.status(200).json({ ok: true, data: "Room has been deleted" });
   } catch (error) {
     return res.json(error);
   }

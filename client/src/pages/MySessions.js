@@ -46,9 +46,9 @@ function MySessions() {
       });
   };
 
-  const TimeConverter = date => {
-    const convertedDate = date.toLocaleTimeString("en-GB");
-    console.log(convertedDate);
+  const convertDate = data => {
+    const datum = new Date(data).toLocaleString();
+    return datum.substring(0, 16);
   };
 
   return (
@@ -68,9 +68,10 @@ function MySessions() {
               </thead>
               <tbody>
                 {renderState.map(data => {
+                  console.log(data);
                   return (
                     <tr key={data._id}>
-                      <td className="mx-auto">{TimeConverter(data.date)}</td>
+                      <td className="mx-auto">{convertDate(data.date)}</td>
                       <td className="py-2 mx-auto">
                         <div className="d-flex">
                           <Link
