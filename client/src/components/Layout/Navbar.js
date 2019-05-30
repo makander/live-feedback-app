@@ -6,16 +6,18 @@ import AuthLinks from "./AuthLinks";
 
 const Links = () => {
   return (
-    <div className="navbar-nav">
-      <Link className="nav-item nav-link text-white" to="/">
-        Home
-      </Link>
-      <Link className="nav-item nav-link text-white" to="/register">
-        Register
-      </Link>
-      <Link className="nav-item nav-link text-white" to="/login">
-        Login
-      </Link>
+    <div className="fullwidth">
+      <div className="navbar-nav">
+        <Link className="nav-item nav-link text-white" to="/">
+          Home
+        </Link>
+        <Link className="nav-item nav-link text-white" to="/register">
+          Register
+        </Link>
+        <Link className="nav-item nav-link text-white" to="/login">
+          Login
+        </Link>
+      </div>
     </div>
   );
 };
