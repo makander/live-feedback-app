@@ -19,10 +19,10 @@ class Guest extends Component {
       role: "guest"
     });
 
-    this.socket.on("ping", () => {
-      console.log("PONG Sent");
-      this.socket.emit("pong");
-    });
+    // this.socket.on("ping", () => {
+    //   console.log("PONG");
+    //   this.socket.emit("pong");
+    // });
 
     this.socket.on("joinedRoom", (userId, roomConfig) => {
       console.log("user joined room");

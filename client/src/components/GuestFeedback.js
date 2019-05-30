@@ -26,6 +26,7 @@ function GuestFeedback(props) {
             min={room_config ? room_config.properties.min : 0}
             value={sliderValue}
             className="slider"
+            step="10"
           />
           <input
             type="hidden"
