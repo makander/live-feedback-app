@@ -26,12 +26,6 @@ export default function ioInit(io, socket, role, db) {
         }
       };
 
-      const newRoom = {
-        id: roomId,
-        users: [],
-        room_data: [],
-        room_config: roomConfig
-      };
       // Check if room exists in database Room collection
       // if no matching room is found push new room to User (as a ref)
       // and Room collections. Upon completion emit a sessionCreated event
@@ -58,7 +52,7 @@ export default function ioInit(io, socket, role, db) {
           await updatedUser.save();
           await mongoRoom.save();
 
-          io.to(roomId).emit("sessionCreationCheck", true, newRoom);
+          io.to(roomId).emit("sessionCreationCheck", true);
           return null;
         } catch (err) {
           io.to(roomId).emit("databaseError", err);
@@ -119,7 +113,6 @@ export default function ioInit(io, socket, role, db) {
   // and saves room data for specicied room, on an interval
   socket.on("sendToDB", data => {
     const { roomId, roomAverageValue, timeStamp } = data;
-
     const dbz = db;
     mongoose
       .connect(dbz, { useNewUrlParser: true })

@@ -6,10 +6,9 @@ import axios from "axios";
 import io from "socket.io-client";
 import withAuth from "../hocs/withAuth";
 import { roomCreated, setSessionAverage } from "../actions/room";
-import { GET_ERRORS } from "../actions/types";
+import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
-import ProgressBar from "../components/ProgressBar";
 
 // Average calc - client side roomarray
 
@@ -43,7 +42,7 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    const { userId, createRoom, sessionAverageSetter, getErrors } = this.props;
+    const { userId, createRoom, sessionAverageSetter, getErrors, clearErrors } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
@@ -56,7 +55,7 @@ class NewSession extends Component {
     const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
 
     socket.on("error", err => {
-      console.log(err);
+      getErrors({room: err})
     });
 
     axios
@@ -79,25 +78,19 @@ class NewSession extends Component {
       })
       .catch(error => {
         getErrors(error);
-      })
-      .finally(() => {
-        // always executed
       });
 
-    socket.on("sessionCreationCheck", (success, roomData) => {
+    socket.on("sessionCreationCheck", (success) => {
       if (success) {
         createRoom(sessionName);
-        console.log("creationCheck", roomData);
+        clearErrors()
       } else {
-        console.log("failed");
+        getErrors({room: "Failed to create room"})
       }
     });
 
     socket.on("userLeftRoom", data => {
-      console.log("userLeftRoom running", this.roomArray, "data", data);
       this.roomArray = this.roomArray.filter(user => user.userId !== data);
-
-      console.log("userLeftRoom roomArray after filter", this.roomArray);
     });
 
     socket.on("roomAverageValue", data => {
@@ -106,7 +99,6 @@ class NewSession extends Component {
         if (user.userId === sliderUserId) {
           const loser = user;
           loser.value = sliderValue;
-          console.log(loser);
           return loser;
         }
         return user;
@@ -132,7 +124,6 @@ class NewSession extends Component {
 
     socket.on("newUserJoinedRoom", newUser => {
       this.roomArray.push(newUser);
-      console.log(this.roomArray);
     });
   };
 
@@ -141,16 +132,19 @@ class NewSession extends Component {
     const { sessionName, xInput, yInput } = this.state;
     return (
       <div className="d-flex justify-content-center pt-2">
-        {error ? <h3 className="jumbotron bg-warning ">{error.room}</h3> : null}
+        
         <div
           className="border border-info px-5 pt-5"
-          style={{ marginBottom: "8rem" }}
+          style={{ marginBottom: "3rem" }}
         >
           <div className="container p-2 justify-content-center ">
             <div className="d-flex justify-content-center p-4">
               {!roomCreatedConditional ? (
                 <div>
+                  <div className="mb-2">
                   <h3 className="mx-auto">Create New Session</h3>
+                  <span className="lead text-danger">{error.room}</span>
+                  </div>
                   <form
                     className="form-inline"
                     onSubmit={e => this.handleClickNewSession(e)}
@@ -194,7 +188,6 @@ class NewSession extends Component {
                 </div>
               ) : (
                 <div>
-                  <ProgressBar />
                   <LiveSession
                     roomId={`${userId}-${roomName}`}
                     roomName={roomName}
@@ -217,16 +210,21 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: GET_ERRORS,
       payload: error
+    }),
+  clearErrors: () =>
+    dispatch({
+      type: CLEAR_ERRORS
     })
 });
 
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
-  roomCreated: state.room.room_created,
+  roomCreatedConditional: state.room.room_created,
   roomName: state.room.room_name,
   // eslint-disable-next-line no-underscore-dangle
   userId: state.auth.user._id,
-  error: state.errors
+  error: state.errors,
+  roomAverageValue: state.room.session_average,
 });
 
 NewSession.propTypes = {
@@ -236,6 +234,7 @@ NewSession.propTypes = {
   roomCreatedConditional: PropTypes.bool,
   userId: PropTypes.string,
   getErrors: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired,
   error: PropTypes.object
 };
 
