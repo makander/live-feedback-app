@@ -42,3 +42,26 @@ export const deleteSession = async function(req, res) {
     return res.json(error);
   }
 };
+
+export const getSession = async function(req, res, next) {
+  return passport.authenticate("jwt", async (err, user) => {
+    if (err) return next(err);
+    if (!user) {
+      return res.json({ ok: false, error: "Token is invalid" });
+    }
+    try {
+      const result = await Room.findOne(
+        { room_name: req.params.id },
+        (error, docs) => {
+          if (!error) {
+            return docs;
+          }
+          throw error;
+        }
+      );
+      return res.json({ ok: true, data: result });
+    } catch (error) {
+      return res.json({ ok: false, data: error });
+    }
+  })(req, res, next);
+};

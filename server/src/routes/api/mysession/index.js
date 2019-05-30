@@ -9,5 +9,6 @@ const routes = new Router();
 // @access Private
 routes.get("/", MySessionController.getSessions);
 routes.delete("/:id", MySessionController.deleteSession);
+routes.get("/:id", MySessionController.getSession);
 
 export default routes;

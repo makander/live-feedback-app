@@ -46,6 +46,11 @@ function MySessions() {
       });
   };
 
+  const TimeConverter = date => {
+    const convertedDate = date.toLocaleTimeString("en-GB");
+    console.log(convertedDate);
+  };
+
   return (
     <div className="d-flex justify-content-center pt-2">
       <div
@@ -65,7 +70,7 @@ function MySessions() {
                 {renderState.map(data => {
                   return (
                     <tr key={data._id}>
-                      <td className="mx-auto">{data.date}</td>
+                      <td className="mx-auto">{TimeConverter(data.date)}</td>
                       <td className="py-2 mx-auto">
                         <div className="d-flex">
                           <Link
