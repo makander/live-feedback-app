@@ -10,7 +10,7 @@ In the root directory run step 1-5:
 
 ## Using the mongodb admin
 
-1. Go to http://localhost:1234
+1. Go to <http://localhost:1234>
 2. Input the following string into the "Connection string" input:
    `mongodb://admin:password@database:27017/database?authMechanism=SCRAM-SHA-1&authSource=admin`
 
