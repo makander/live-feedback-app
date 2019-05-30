@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import withAuth from "../hocs/withAuth";
 import { roomCreated, setSessionAverage } from "../actions/room";
+import {GET_ERRORS} from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
@@ -43,7 +44,7 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    const { userId, createRoom, setSessionAverage } = this.props;
+    const { userId, createRoom, setSessionAverage, getErrors } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
@@ -66,14 +67,11 @@ class NewSession extends Component {
           process.env.REACT_APP_API_BASE_URL
         }/api/my-sessions/${userId}-${sessionNameNoSpaces}`
       )
-      .then(response => {
-        console.log(response);
+      .then((response) => {
         if (response.data.data) {
-          console.log(response.data.data.room_name);
-          alert("room already exists");
-          console.log("existingroom equals true");
+          getErrors({room:"Room Already Exists"})
         } else {
-          console.log("ELSE RUNNING");
+          
           socket.emit("connectToNewSession", {
             roomId: `${userId}-${sessionNameNoSpaces}`,
             userId,
@@ -83,7 +81,7 @@ class NewSession extends Component {
         }
       })
       .catch(error => {
-        // handle error
+        getErrors(error)
       })
       .finally(() => {
         // always executed
@@ -148,13 +146,16 @@ class NewSession extends Component {
       roomCreated,
       handleInputChange,
       userId,
-      roomAverageValue
+      roomAverageValue,
+      error
     } = this.props;
 
     const { sessionName, xInput, yInput } = this.state;
-
     return (
       <div className="d-flex justify-content-center pt-2">
+        {error
+        ? <h3 className="jumbotron bg-warning ">{error.room}</h3>
+        : null}
         <div
           className="border border-info px-5 pt-5"
           style={{ marginBottom: "8rem" }}
@@ -225,7 +226,11 @@ class NewSession extends Component {
 const mapDispatchToProps = dispatch => ({
   setSessionAverage: roomAverageValue =>
     dispatch(setSessionAverage(roomAverageValue)),
-  createRoom: sessionName => dispatch(roomCreated(sessionName))
+  createRoom: sessionName => dispatch(roomCreated(sessionName)),
+  getErrors: error => dispatch({
+    type: GET_ERRORS,
+    payload: error
+  })
 });
 
 const mapStateToProps = state => ({
@@ -233,7 +238,8 @@ const mapStateToProps = state => ({
   roomCreated: state.room.room_created,
   room_name: state.room.room_name,
   userId: state.auth.user._id,
-  roomAverageValue: state.room.session_average
+  roomAverageValue: state.room.session_average,
+  error: state.errors
 });
 
 NewSession.propTypes = {
