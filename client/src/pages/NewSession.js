@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
+import io from "socket.io-client";
 import withAuth from "../hocs/withAuth";
 import { roomCreated, setSessionAverage } from "../actions/room";
+import { GET_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
-import ProgressBar from "../components/ProgressBar";
 
 // Average calc - client side roomarray
 
@@ -27,11 +28,9 @@ class NewSession extends Component {
   }
 
   componentDidMount() {
-    const io = require("socket.io-client");
     const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     socket.on("newUserJoinedRoom", newUser => {
       this.roomArray.push(newUser);
-      console.log("roomarray", this.roomArray);
     });
   }
 
@@ -43,12 +42,11 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    const { userId, createRoom, setSessionAverage } = this.props;
+    const { userId, createRoom, sessionAverageSetter, getErrors } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
     const token = localStorage.getItem("jwtToken").substring(4);
-    const io = require("socket.io-client");
 
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {
       query: `auth_token=${token}`
@@ -67,13 +65,9 @@ class NewSession extends Component {
         }/api/my-sessions/${userId}-${sessionNameNoSpaces}`
       )
       .then(response => {
-        console.log(response);
         if (response.data.data) {
-          console.log(response.data.data.room_name);
-          alert("room already exists");
-          console.log("existingroom equals true");
+          getErrors({ room: "Room Already Exists" });
         } else {
-          console.log("ELSE RUNNING");
           socket.emit("connectToNewSession", {
             roomId: `${userId}-${sessionNameNoSpaces}`,
             userId,
@@ -83,7 +77,7 @@ class NewSession extends Component {
         }
       })
       .catch(error => {
-        // handle error
+        getErrors(error);
       })
       .finally(() => {
         // always executed
@@ -131,7 +125,7 @@ class NewSession extends Component {
         arrayToSum.splice(0);
 
         document.title = roomAverageValue;
-        setSessionAverage(roomAverageValue);
+        sessionAverageSetter(roomAverageValue);
       }
     });
 
@@ -142,26 +136,18 @@ class NewSession extends Component {
   };
 
   render() {
-    const {
-      session_live: sessionLive,
-      room_name,
-      roomCreated,
-      handleInputChange,
-      userId,
-      roomAverageValue
-    } = this.props;
-
+    const { roomName, roomCreatedConditional, userId, error } = this.props;
     const { sessionName, xInput, yInput } = this.state;
-
     return (
       <div className="d-flex justify-content-center pt-2">
+        {error ? <h3 className="jumbotron bg-warning ">{error.room}</h3> : null}
         <div
           className="border border-info px-5 pt-5"
           style={{ marginBottom: "3rem" }}
         >
           <div className="container p-2 justify-content-center ">
-            <div className="d-flex justify-content-center pb-4">
-              {!roomCreated ? (
+            <div className="d-flex justify-content-center p-4">
+              {!roomCreatedConditional ? (
                 <div>
                   <h3 className="mx-auto">Create New Session</h3>
                   <form
@@ -208,8 +194,8 @@ class NewSession extends Component {
               ) : (
                 <div>
                   <LiveSession
-                    roomId={`${userId}-${room_name}`}
-                    roomName={room_name}
+                    roomId={`${userId}-${roomName}`}
+                    roomName={roomName}
                   />
                 </div>
               )}
@@ -222,29 +208,40 @@ class NewSession extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  setSessionAverage: roomAverageValue =>
+  sessionAverageSetter: roomAverageValue =>
     dispatch(setSessionAverage(roomAverageValue)),
-  createRoom: sessionName => dispatch(roomCreated(sessionName))
+  createRoom: sessionName => dispatch(roomCreated(sessionName)),
+  getErrors: error =>
+    dispatch({
+      type: GET_ERRORS,
+      payload: error
+    })
 });
 
 const mapStateToProps = state => ({
   session_live: state.room.session_live,
-  roomCreated: state.room.room_created,
-  room_name: state.room.room_name,
+  roomCreatedConditional: state.room.room_created,
+  roomName: state.room.room_name,
+  // eslint-disable-next-line no-underscore-dangle
   userId: state.auth.user._id,
-  roomAverageValue: state.room.session_average
+  error: state.errors
 });
 
 NewSession.propTypes = {
-  session_live: PropTypes.bool,
-  room_name: PropTypes.string,
-  userId: PropTypes.string
+  createRoom: PropTypes.func.isRequired,
+  roomName: PropTypes.string,
+  sessionAverageSetter: PropTypes.func.isRequired,
+  roomCreatedConditional: PropTypes.bool,
+  userId: PropTypes.string,
+  getErrors: PropTypes.func.isRequired,
+  error: PropTypes.object
 };
 
 NewSession.defaultProps = {
   userId: null,
-  session_live: false,
-  room_name: ""
+  roomName: "",
+  roomCreatedConditional: false,
+  error: null
 };
 
 export default connect(
