@@ -9,7 +9,6 @@ import { roomCreated, setSessionAverage } from "../actions/room";
 import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
-import ProgressBar from "../components/ProgressBar";
 
 // Average calc - client side roomarray
 
@@ -136,7 +135,7 @@ class NewSession extends Component {
         
         <div
           className="border border-info px-5 pt-5"
-          style={{ marginBottom: "8rem" }}
+          style={{ marginBottom: "3rem" }}
         >
           <div className="container p-2 justify-content-center ">
             <div className="d-flex justify-content-center p-4">
@@ -189,7 +188,6 @@ class NewSession extends Component {
                 </div>
               ) : (
                 <div>
-                  <ProgressBar />
                   <LiveSession
                     roomId={`${userId}-${roomName}`}
                     roomName={roomName}
