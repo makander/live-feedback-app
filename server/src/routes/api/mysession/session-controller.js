@@ -25,6 +25,20 @@ export const getSessions = async function(req, res, next) {
   })(req, res, next);
 };
 
+export const deleteSession = async function(req, res) {
+  try {
+    await Room.findByIdAndRemove({ _id: req.params.id }, function(error, docs) {
+      if (!error) {
+        return docs;
+      }
+      throw error;
+    });
+    return res.status(200).json({ ok: true, data: "Room has been deleted" });
+  } catch (error) {
+    return res.json(error);
+  }
+};
+
 export const getSession = async function(req, res, next) {
   return passport.authenticate("jwt", async (err, user) => {
     if (err) return next(err);
