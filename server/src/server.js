@@ -259,7 +259,7 @@ io.on("connection", socket => {
   socket.on("votingInput", (checkedItems, room_id) => {
     console.log("voting", checkedItems, room_id);
     /* socket.emit("votingInput", checkedItems, room_id); */
-    io.to(room_id).emit("votingInputs", checkedItems, room_id);
+    io.to(room_id).emit("votingInputs", "hej");
   });
 
   // When guest connected to room changes the slider users value property will updated

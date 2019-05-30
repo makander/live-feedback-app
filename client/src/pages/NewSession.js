@@ -148,11 +148,12 @@ class NewSession extends Component {
     });
 
     socket.on("votingInputs", data => {
-      console.log("hej", data);
+      console.log("hejda", data);
       setVotingInput(data);
     });
 
     socket.on("roomAverageValue", data => {
+      console.log("testar");
       const { sliderValue, userId: sliderUserId } = data;
       this.roomArray = this.roomArray.map(user => {
         if (user.userId === sliderUserId) {
