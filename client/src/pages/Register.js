@@ -41,7 +41,7 @@ class Register extends Component {
   onSubmit = e => {
     e.preventDefault();
     const { name, email, password, password2 } = this.state;
-    const { register, history } = this.props;
+    const { register } = this.props;
 
     const newUser = {
       name,
@@ -49,8 +49,7 @@ class Register extends Component {
       password,
       password2
     };
-
-    register(newUser, history);
+    register(newUser);
   };
 
   render() {
@@ -179,8 +178,8 @@ Register.propTypes = {
   errors: PropTypes.object.isRequired
 };
 
-const mapDispatchToProps = dispatch => ({
-  register: user => dispatch(registerUser(user))
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  register: user => dispatch(registerUser(user, ownProps.history))
 });
 
 const mapStateToProps = state => ({
