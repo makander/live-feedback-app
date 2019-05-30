@@ -2,7 +2,7 @@
 
 In the root directory run step 1-5:
 
-1. `cp .env.example .env && cp client/deploy/.env.dist cp client/deploy/.env && cp server/deploy/.env.dist server/deploy/.env`
+1. `cp .env.example .env && cp client/deploy/.env.dist client/deploy/.env && cp server/deploy/.env.dist server/deploy/.env`
 2. `cd client && npm i`
 3. `cd ../server && npm i`
 4. `docker-compose up` - Grab a coffee -...
