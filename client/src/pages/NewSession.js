@@ -7,11 +7,13 @@ import withAuth from "../hocs/withAuth";
 import {
   roomCreated,
   setSessionAverage,
-  handleVotingInput
+  handleVotingInput,
+  setVotingInput
 } from "../actions/room";
 // Components
 import LiveSession from "../components/LiveSession";
 import ProgressBar from "../components/ProgressBar";
+import VotingChart from "../components/VotingChart";
 import Voting from "../components/Roomtypes/Voting";
 import BreakTime from "../components/Roomtypes/Break";
 
@@ -76,8 +78,6 @@ class NewSession extends Component {
       query: `auth_token=${token}`
     });
 
-    const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
-
     const roomConfig = [];
 
     if (voting_input) {
@@ -89,16 +89,21 @@ class NewSession extends Component {
       roomConfig.push({ type: "lectureSpeed", xInput, yInput });
       /* roomConfig.lectureSpeed = { xInput, yInput }; */
     }
-    console.log("rooms", roomConfig);
+    /* console.log("rooms", roomConfig);
 
     console.log("state", this.state);
-    console.log(roomConfig);
+    console.log(roomConfig); */
     const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
     socket.on("error", err => {
       console.log(err);
     });
+    socket.emit("connectToNewSession", {
+      roomId: `${userId}-${sessionNameNoSpaces}`,
+      userId,
+      roomConfig
+    });
 
-    axios
+    /* axios
       .get(
         `${
           process.env.REACT_APP_API_BASE_URL
@@ -124,7 +129,7 @@ class NewSession extends Component {
       })
       .finally(() => {
         // always executed
-      });
+      }); */
 
     socket.on("sessionCreationCheck", (success, roomData) => {
       if (success) {
@@ -140,6 +145,11 @@ class NewSession extends Component {
       this.roomArray = this.roomArray.filter(user => user.userId !== data);
 
       console.log("userLeftRoom roomArray after filter", this.roomArray);
+    });
+
+    socket.on("votingInputs", data => {
+      console.log("hej", data);
+      setVotingInput(data);
     });
 
     socket.on("roomAverageValue", data => {
@@ -264,6 +274,7 @@ class NewSession extends Component {
               ) : (
                 <div>
                   <ProgressBar />
+                  <VotingChart />
                   <LiveSession
                     roomId={`${userId}-${room_name}`}
                     roomName={room_name}
@@ -281,7 +292,8 @@ class NewSession extends Component {
 const mapDispatchToProps = dispatch => ({
   setSessionAverage: roomAverageValue =>
     dispatch(setSessionAverage(roomAverageValue)),
-  createRoom: sessionName => dispatch(roomCreated(sessionName))
+  createRoom: sessionName => dispatch(roomCreated(sessionName)),
+  setVotingInput: data => dispatch(setVotingInput(data))
 });
 
 const mapStateToProps = state => ({

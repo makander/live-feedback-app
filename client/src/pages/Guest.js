@@ -4,7 +4,7 @@ import { joinedRoom } from "../actions/room";
 
 // Components
 import GuestFeedback from "../components/GuestFeedback";
-import Voting from "../components/voting";
+import Voting from "../components/UserVoting";
 
 class Guest extends Component {
   constructor(props) {
@@ -98,7 +98,7 @@ class Guest extends Component {
 
             {/* Conditional rendering of voting config params */}
             {session_room_config ? (
-              <Voting voting_params={session_room_config[0]} />
+              <Voting room_id={roomId} voting_params={session_room_config[0]} />
             ) : null}
           </div>
         ) : (

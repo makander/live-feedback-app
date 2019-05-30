@@ -14,6 +14,13 @@ class LiveSession extends React.Component {
     this.counter = null;
   }
 
+  componentDidMount() {
+    socket.on("newUserJoinedRoom", newUser => {
+      this.roomArray.push(newUser);
+      console.log("roomarray", this.roomArray);
+    });
+  }
+
   componentWillUnmount() {
     const { unmountSession } = this.props;
     unmountSession();

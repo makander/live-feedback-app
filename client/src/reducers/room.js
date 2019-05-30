@@ -7,7 +7,8 @@ import {
   SESSION_DETAILS,
   SET_SESSION_AVERAGE,
   VOTING_INPUT,
-  CANCEL_SESSION
+  CANCEL_SESSION,
+  SET_VOTING_INPUT
 } from "../actions/types";
 
 const initialState = {
@@ -19,12 +20,18 @@ const initialState = {
   session_user_id: null,
   session_details: false,
   voting_input: null,
-  session_average: "50"
+  session_average: "50",
+  voting_input_average: null
 };
 
 export default function(state = initialState, action) {
   console.log("reducer running", action);
   switch (action.type) {
+    case SET_VOTING_INPUT:
+      return {
+        ...state,
+        voting_input_average: [...state.voting_input_average, action.value]
+      };
     case CANCEL_SESSION:
       return {
         ...state,

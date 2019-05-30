@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint 'src/**/*.js' --fix; exit 0",
     "format": "prettier-eslint 'server/**/*.{js,json}' --write",
-    "test": "\"./node_modules/mocha/bin/mocha\" --require @babel/register --timeout 5000 --exit \"./src/tests/basic.test.js\"",
+    "test": "\"./node_modules/mocha/bin/mocha\" --require @babel/register --timeout 5005 --exit \"./src/tests/basic.test.js\"",
     "clean": "rm -rf build && mkdir build",
     "build-babel": "babel ./src -d build",
     "build": "npm run clean && npm run build-babel",

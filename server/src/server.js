@@ -256,6 +256,12 @@ io.on("connection", socket => {
     return null;
   };
 
+  socket.on("votingInput", (checkedItems, room_id) => {
+    console.log("voting", checkedItems, room_id);
+    /* socket.emit("votingInput", checkedItems, room_id); */
+    io.to(room_id).emit("votingInputs", checkedItems, room_id);
+  });
+
   // When guest connected to room changes the slider users value property will updated
   socket.on("changeSlider", (sliderValue, roomId, userId) => {
     // console.log(Object.keys(io.nsps["/"].adapter.rooms));

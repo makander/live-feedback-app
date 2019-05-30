@@ -7,7 +7,8 @@ import {
   SET_SESSION_AVERAGE,
   CANCEL_SESSION,
   CREATE_ROOM,
-  VOTING_INPUT
+  VOTING_INPUT,
+  SET_VOTING_INPUT
 } from "./types";
 
 export const roomCreated = roomName => ({
@@ -37,3 +38,4 @@ export const setSessionAverage = roomAverageValue => ({
 export const sessionDetails = () => ({ type: SESSION_DETAILS });
 export const handleVotingInput = data => ({ type: VOTING_INPUT, value: data });
 export const cancelSession = () => ({ type: CANCEL_SESSION });
+export const setVotingInput = data => ({ type: SET_VOTING_INPUT, value: data });

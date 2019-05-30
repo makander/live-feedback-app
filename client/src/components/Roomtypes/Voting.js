@@ -47,7 +47,7 @@ class Voting extends Component {
         {numberOfOptions ? (
           <form
             className="form-inline"
-            onSubmit={e => handleVotingInput(e, this.state)}
+            onSubmit={e => handleVotingInput(e, this.state, this.props.room_id)}
           >
             <div className="form-group">
               {console.log(numberOfOptions)}

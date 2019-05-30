@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import PropTypes from "prop-types";
-import Voting from "./voting";
+import Voting from "./UserVoting";
 import { sliderInput } from "../actions/room";
 
 function GuestFeedback(props) {
@@ -20,11 +20,6 @@ function GuestFeedback(props) {
         <div className="form-group row" style={{ marginTop: "3rem" }}>
           <div className="col-sm-8 p-2 mx-auto d-flex">
             <div className="p-2 mx-2">
-              {/* Render component types here  */}
-
-              {/* {console.log(Object.keys(room_config))} */}
-              {console.log("here may", room_config[1])}
-              {console.log("here may", room_config[1].lectureSpeed)}
               {room_config[1].xInput ? room_config[1].xInput : 0}
             </div>
             <input
