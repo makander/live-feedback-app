@@ -157,10 +157,10 @@ class NewSession extends Component {
       <div className="d-flex justify-content-center pt-2">
         <div
           className="border border-info px-5 pt-5"
-          style={{ marginBottom: "8rem" }}
+          style={{ marginBottom: "3rem" }}
         >
           <div className="container p-2 justify-content-center ">
-            <div className="d-flex justify-content-center p-4">
+            <div className="d-flex justify-content-center pb-4">
               {!roomCreated ? (
                 <div>
                   <h3 className="mx-auto">Create New Session</h3>
@@ -207,7 +207,6 @@ class NewSession extends Component {
                 </div>
               ) : (
                 <div>
-                  <ProgressBar />
                   <LiveSession
                     roomId={`${userId}-${room_name}`}
                     roomName={room_name}
