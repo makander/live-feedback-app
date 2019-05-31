@@ -46,26 +46,26 @@ export default class UserVoting extends Component {
       votingParams !== undefined ? Object.values(votingParams.params[0]) : null;
 
     return (
-      <div>
-        <form className="form-inline" onSubmit={e => this.handleVotingInput(e)}>
+      <div className="d-flex justify-content-center mt-5">
+        <form onSubmit={e => this.handleVotingInput(e)}>
           <div className="form-group">
             {/* <input type="text" name="question" /> */}
             {votingOptions.map(option => {
               return (
-                <div key={option}>
+                <div className="form-check form-check-inline">
                   <input
-                    className="form-control form-control"
+                    className="form-check-input"
                     type="checkbox"
                     name={option}
-                    placeholder={option}
                     onChange={this.handleInputChange}
-                  />{" "}
-                  {option} <br />
+                  />
+                  <label className="form-check-label">{option}</label>
                 </div>
               );
             })}
-
-            <button type="submit" className="btn btn-outline-primary btn mx-2">
+          </div>
+          <div className="text-center">
+            <button type="submit" className="btn btn-outline-primary btn">
               Vote
             </button>
           </div>
