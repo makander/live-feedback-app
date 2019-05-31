@@ -46,14 +46,12 @@ class NewSession extends Component {
   }
 
   voting = () => {
-    console.log(this.state);
     this.setState(prevState => ({
       voting: !prevState.voting
     }));
   };
 
   breakTime = () => {
-    console.log(this.state);
     this.setState(prevState => ({
       breakTime: !prevState.breakTime
     }));

@@ -21,14 +21,14 @@ const initialState = {
   session_details: false,
   session_average: "50",
   room_created: false,
-  voting_input_average: null
+  voting_input_average: []
 };
 
 export default function(state = initialState, action) {
   console.log("reducer running", action);
   switch (action.type) {
     case SET_VOTING_INPUT:
-      return state;
+      return { ...state, voting_input_average: [...action.value] };
 
     case VOTING_INPUT:
       return {
