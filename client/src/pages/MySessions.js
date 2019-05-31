@@ -2,32 +2,39 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { withRouter, Link } from "react-router-dom";
 import axios from "axios";
+import cx from "classnames";
 import { sessionDetails } from "../actions/room";
 import withAuth from "../hocs/withAuth";
 
 function MySessions() {
-  const [renderState, setRenderState] = useState();
+  const [renderState, setRenderState] = useState([]);
+  const [errorState, setErrorState] = useState(null);
 
-  const getSessions = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/api/my-sessions`)
-      .then(response => {
-        setRenderState(response.data.data);
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      })
-      .finally(() => {
-        // always executed
-      });
+  const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
+  const errorOrNoSessions = errorState ? (
+    <div>
+      <h5>Your sessions could not be found, there was an error...</h5>
+    </div>
+  ) : (
+    <p>You have no saved sessions</p>
+  );
+  const getSessions = async () => {
+    try {
+      const result = await axios(
+        `${process.env.REACT_APP_API_BASE_URL}/api/my-sessions`
+      );
+      console.table(result);
+      setRenderState(result.data.data);
+    } catch (err) {
+      setErrorState(err.response.statusText);
+      console.log(errorState);
+      //  dispatch an error msg and render to the client
+    }
   };
 
   useEffect(() => {
-    if (typeof renderState !== `object`) {
-      getSessions();
-    }
-  });
+    getSessions();
+  }, []);
 
   const deleteSession = sessionId => {
     console.log("Delete");
@@ -47,48 +54,66 @@ function MySessions() {
   };
 
   const convertDate = data => {
-    const datum = new Date(data).toLocaleString();
-    return datum.substring(0, 16);
+    const datum = new Date(data).toLocaleString("sv-SE");
+    return datum;
   };
 
+  window.addEventListener("resize", () => {
+    const currentViewPortWidth = window.innerWidth;
+    if (currentViewPortWidth) {
+      setViewPortWidth(currentViewPortWidth);
+    }
+  });
   return (
     <div className="d-flex justify-content-center pt-2">
       <div
         className="border border-info px-5 pt-5"
         style={{ marginBottom: "8rem" }}
       >
-        <div className="p-2">
-          {renderState ? (
+        <div className="p-2 container">
+          {renderState.length ? (
             <table className="table class table-hover">
               <thead className="thead-dark">
                 <tr>
-                  <th scope="col">Date</th>
+                  <th
+                    scope="col"
+                    className={cx({
+                      "d-none": viewPortWidth < 360
+                    })}
+                  >
+                    Date
+                  </th>
                   <th scope="col">Session Name</th>
                 </tr>
               </thead>
               <tbody>
-                {renderState.map(data => {
-                  console.log(data);
+                {renderState.map(room => {
                   return (
-                    <tr key={data._id}>
-                      <td className="mx-auto">{convertDate(data.date)}</td>
+                    <tr key={room._id}>
+                      <td
+                        className={cx("mx-auto", {
+                          "d-none": viewPortWidth < 360
+                        })}
+                      >
+                        {convertDate(room.date)}
+                      </td>
                       <td className="py-2 mx-auto">
                         <div className="d-flex">
                           <Link
                             to={{
-                              pathname: `/my-sessions/${data._id}`,
-                              sessionData: data
+                              pathname: `/my-sessions/${room._id}`,
+                              sessionData: room
                             }}
                             role="button"
                             className="btn btn-outline-primary btn"
                           >
-                            {data.room_name.substring(25)}
+                            {room.room_name.substring(25)}
                           </Link>
                           <form>
                             <button
                               className="btn btn-danger btn ml-1"
                               type="button"
-                              onClick={e => deleteSession(`${data._id}`)}
+                              onClick={() => deleteSession(`${room._id}`)}
                             >
                               X
                             </button>
@@ -101,7 +126,7 @@ function MySessions() {
               </tbody>
             </table>
           ) : (
-            <p>You have no saved sessions</p>
+            errorOrNoSessions
           )}
           <div className="d-flex justify-content-center pb-3">
             <Link

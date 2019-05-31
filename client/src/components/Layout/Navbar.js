@@ -25,27 +25,24 @@ export const Links = () => {
 export function Navbar(props) {
   const { auth } = props;
   return (
-    <div>
-      <h2>Welcome to React</h2>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNavAltMarkup"
-          aria-controls="navbarNavAltMarkup"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div className="navbar-nav">
-            {auth.isAuthenticated ? <AuthLinks /> : <Links />}
-          </div>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span className="navbar-toggler-icon" />
+      </button>
+      <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div className="navbar-nav">
+          {auth.isAuthenticated ? <AuthLinks /> : <Links />}
         </div>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }
 
