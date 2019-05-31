@@ -73,7 +73,8 @@ class NewSession extends Component {
       sessionAverageSetter,
       getErrors,
       clearErrors,
-      voting_input
+      voting_input,
+      setVotingInput
     } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
@@ -138,7 +139,6 @@ class NewSession extends Component {
 
     // Recieves the emitted votinginput from a user
     socket.on("votingInputs", data => {
-      console.log("hejda", data);
       setVotingInput(data);
     });
 
@@ -276,11 +276,6 @@ const mapDispatchToProps = dispatch => ({
       type: CLEAR_ERRORS
     }),
   setVotingInput: data => dispatch(setVotingInput(data))
-  /* setVotingInput: data =>
-    dispatch({
-      type: SET_VOTING_INPUT,
-      payload: { roomConfig: { value: data } }
-    }) */
 });
 
 const mapStateToProps = state => ({
@@ -302,7 +297,8 @@ NewSession.propTypes = {
   userId: PropTypes.string,
   getErrors: PropTypes.func.isRequired,
   clearErrors: PropTypes.func.isRequired,
-  error: PropTypes.object
+  error: PropTypes.object,
+  setVotingInput: PropTypes.func.isRequired
 };
 
 NewSession.defaultProps = {
