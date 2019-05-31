@@ -1,53 +1,62 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import io from "socket.io-client";
 import { joinedRoom } from "../actions/room";
-
 import GuestFeedback from "../components/GuestFeedback";
 
 class Guest extends Component {
   constructor(props) {
     super(props);
-    this.io = require("socket.io-client");
-    this.socket = this.io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
+    this.socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
     this.roomArray = [];
-    this.state = { userId: null };
+
+    const {
+      match: {
+        params: { roomId }
+      },
+      sessionUserId
+    } = this.props;
+
+    this.roomId = roomId;
+    this.sessionUserId = sessionUserId;
   }
 
   componentDidMount() {
     this.socket.emit("connectToNewSession", {
-      roomId: this.props.match.params.roomId,
+      roomId: this.roomId,
       role: "guest"
     });
 
-    this.socket.on("ping", () => {
-      console.log("PONG Sent");
-      this.socket.emit("pong");
-    });
-
     this.socket.on("joinedRoom", (userId, roomConfig) => {
-      console.log("user joined room");
-      this.props.joinedRoom(userId, roomConfig);
+      const { joinedRoomDispatch } = this.props;
+      joinedRoomDispatch(userId, roomConfig);
     });
 
     window.addEventListener("beforeunload", ev => {
       ev.preventDefault();
       this.socket.emit("feedbackSessionLeave", {
-        inputUserId: this.props.session_user_id,
-        roomId: this.props.match.params.roomId
+        inputUserId: this.sessionUserId,
+        roomId: this.roomId
       });
     });
   }
 
   componentWillUnmount() {
     this.socket.emit("feedbackSessionLeave", {
-      inputUserId: this.props.session_user_id,
-      roomId: this.props.match.params.roomId
+      inputUserId: this.sessionUserId,
+      roomId: this.roomId
     });
   }
 
   render() {
-    const { roomId } = this.props.match.params;
-    const { session_room_config } = this.props;
+    const {
+      match: {
+        params: { roomId }
+      },
+      sessionRoomConfig,
+      isConnected
+    } = this.props;
 
     return (
       <div className="d-flex justify-content-center pt-2 container-fluid">
@@ -58,7 +67,7 @@ class Guest extends Component {
                 Welcome To Room: <br /> {roomId.split("-")[1]}
               </h2>
 
-              {this.props.isConnected ? (
+              {isConnected ? (
                 <div>
                   <p className="text-center">
                     Pull the slider to get affect the score.
@@ -77,11 +86,7 @@ class Guest extends Component {
                 </div>
               )}
             </div>
-            {/* {this.props.lectureStarted ? ( */}
-            <GuestFeedback room_id={roomId} room_config={session_room_config} />
-            {/*  ) : (
-              <p>Lecture have not yet started</p>
-            )} */}
+            <GuestFeedback roomId={roomId} roomConfig={sessionRoomConfig} />
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>
@@ -92,16 +97,30 @@ class Guest extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  joinedRoom: (userId, roomConfig) => {
+  joinedRoomDispatch: (userId, roomConfig) => {
     dispatch(joinedRoom(userId, roomConfig));
   }
 });
 
 const mapStateToProps = state => ({
   isConnected: state.room.joined_room,
-  session_user_id: state.room.session_user_id,
-  session_room_config: state.room.session_room_config
+  sessionUserId: state.room.session_user_id,
+  sessionRoomConfig: state.room.session_room_config
 });
+
+Guest.propTypes = {
+  isConnected: PropTypes.bool,
+  sessionUserId: PropTypes.string,
+  sessionRoomConfig: PropTypes.object,
+  match: PropTypes.object.isRequired,
+  joinedRoomDispatch: PropTypes.func.isRequired
+};
+
+Guest.defaultProps = {
+  isConnected: false,
+  sessionUserId: "",
+  sessionRoomConfig: {}
+};
 
 export default connect(
   mapStateToProps,

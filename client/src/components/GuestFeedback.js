@@ -9,31 +9,32 @@ function GuestFeedback(props) {
   const {
     sliderValue,
     handleSlider,
-    session_user_id,
-    room_id,
-    room_config
+    sessionUserId,
+    roomId,
+    roomConfig
   } = props;
   return (
     <div className="d-flex justify-content-center">
       <form>
         <div className="form-group" style={{ marginTop: "3rem" }}>
-          <div className="">{room_config ? room_config.properties.min : 0}</div>
+          <div className="">{roomConfig ? roomConfig.properties.min : 0}</div>
           <input
             name="slider"
-            onChange={e => handleSlider(e, session_user_id, room_id)}
+            onChange={e => handleSlider(e, sessionUserId, roomId)}
             type="range"
-            max={room_config ? room_config.properties.max : 7}
-            min={room_config ? room_config.properties.min : 0}
+            max={roomConfig ? roomConfig.properties.max : 100}
+            min={roomConfig ? roomConfig.properties.min : 0}
             value={sliderValue}
             className="slider"
+            step="10"
           />
           <input
             type="hidden"
             style={{ visible: "none" }}
             name="socket_data"
-            value={{ session_user_id, room_id }}
+            value={{ sessionUserId, roomId }}
           />
-          {room_config ? room_config.properties.max : 10}
+          {roomConfig ? roomConfig.properties.max : 10}
         </div>
       </form>
     </div>
@@ -41,31 +42,31 @@ function GuestFeedback(props) {
 }
 
 const mapDispatchToProps = dispatch => ({
-  handleSlider: (e, session_user_id, room_id) => {
+  handleSlider: (e, sessionUserId, roomId) => {
     const sliderValue = e.target.value;
     dispatch(sliderInput(sliderValue));
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
-    console.log(room_id);
-    socket.emit("changeSlider", sliderValue, room_id, session_user_id);
+    socket.emit("changeSlider", sliderValue, roomId, sessionUserId);
   }
 });
 
 const mapStateToProps = state => ({
   sliderValue: state.room.slider_value,
-  session_user_id: state.room.session_user_id
+  sessionUserId: state.room.session_user_id
 });
 
 GuestFeedback.propTypes = {
   sliderValue: PropTypes.string,
   handleSlider: PropTypes.func.isRequired,
-  session_user_id: PropTypes.string,
-  room_id: PropTypes.string.isRequired,
-  room_config: PropTypes.object.isRequired
+  sessionUserId: PropTypes.string,
+  roomId: PropTypes.string.isRequired,
+  roomConfig: PropTypes.object
 };
 
 GuestFeedback.defaultProps = {
   sliderValue: "50",
-  session_user_id: ""
+  sessionUserId: "",
+  roomConfig: {}
 };
 
 export default connect(

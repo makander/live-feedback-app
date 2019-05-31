@@ -17,7 +17,9 @@ function Landing(props) {
       <div style={{ height: "75vh" }} className="container valign-wrapper">
         <div className="col s12 center-align">
           <header>
-            <h1 className="display-2">Feedback App - Team Impostrious BIG</h1>
+            <h1 className="display-7 text-center">
+              Feedback App - Team Impostrious BIG
+            </h1>
           </header>
           <main>
             <section>
