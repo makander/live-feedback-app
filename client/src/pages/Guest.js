@@ -61,7 +61,10 @@ class Guest extends Component {
     return (
       <div className="d-flex justify-content-center pt-2 container-fluid">
         {roomId !== undefined ? (
-          <div className="border border-info py-5" style={{ width: "30rem" }}>
+          <div
+            className="border border-info py-5 shadow-sm"
+            style={{ width: "30rem" }}
+          >
             <div>
               <h2 className="text-center px-2">
                 Welcome To Room: <br /> {roomId.split("-")[1]}
