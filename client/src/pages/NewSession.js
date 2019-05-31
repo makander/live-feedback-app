@@ -15,8 +15,8 @@ import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
 import VotingChart from "../components/VotingChart";
-import Voting from "../components/Roomtypes/Voting";
-import BreakTime from "../components/Roomtypes/Break";
+import Voting from "../components/RoomTypes/Voting";
+import BreakTime from "../components/RoomTypes/Break";
 
 // Average calc - client side roomarray
 
@@ -251,10 +251,6 @@ class NewSession extends Component {
                     roomId={`${userId}-${roomName}`}
                     roomName={roomName}
                   />
-                  <LiveSession
-                    roomId={`${userId}-${roomName}`}
-                    roomName={roomName}
-                  />
                 </div>
               )}
             </div>
@@ -288,7 +284,8 @@ const mapStateToProps = state => ({
   // eslint-disable-next-line no-underscore-dangle
   userId: state.auth.user._id,
   error: state.errors,
-  roomAverageValue: state.room.session_average
+  roomAverageValue: state.room.session_average,
+  voting_input: state.room.voting_input
 });
 
 NewSession.propTypes = {

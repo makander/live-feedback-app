@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { joinedRoom } from "../actions/room";
 
 import GuestFeedback from "../components/GuestFeedback";
+import Voting from "../components/UserVoting";
 
 class Guest extends Component {
   constructor(props) {
@@ -77,11 +78,18 @@ class Guest extends Component {
                 </div>
               )}
             </div>
-            {/* {this.props.lectureStarted ? ( */}
-            <GuestFeedback room_id={roomId} room_config={session_room_config} />
-            {/*  ) : (
-              <p>Lecture have not yet started</p>
-            )} */}
+            {/* Conditional rendering of x- yInput config params */}
+            {session_room_config ? (
+              <GuestFeedback
+                room_id={roomId}
+                room_config={session_room_config}
+              />
+            ) : null}
+
+            {/* Conditional rendering of voting config params */}
+            {session_room_config ? (
+              <Voting room_id={roomId} voting_params={session_room_config[0]} />
+            ) : null}
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>

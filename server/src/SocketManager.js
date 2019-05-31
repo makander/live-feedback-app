@@ -12,19 +12,10 @@ export default function ioInit(io, socket, role, db) {
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", data => {
-    const { roomId, userId, xInput, yInput } = data;
-
+    const { roomId, userId, roomConfig } = data;
+    console.log(roomConfig);
     if (role === "admin") {
       // @IDEA: Make this completely configurable from the client side
-      const roomConfig = {
-        type: "voting",
-        properties: {
-          min: xInput,
-          max: yInput,
-          min_label: "Label för minsta här",
-          max_label: "Label för högsta värdet här"
-        }
-      };
 
       // Check if room exists in database Room collection
       // if no matching room is found push new room to User (as a ref)
@@ -39,12 +30,13 @@ export default function ioInit(io, socket, role, db) {
           }
           socket.join(roomId);
           const mongoRoom = new Room({
+            hej: "hej",
             room_name: roomId,
             author_id: ObjectId(userId),
             room_data: [],
             room_config: roomConfig
           });
-
+          console.log("mongorooom", mongoRoom);
           const updatedUser = await User.findOne({
             _id: ObjectId(userId)
           });
@@ -70,6 +62,7 @@ export default function ioInit(io, socket, role, db) {
             return null;
           }
           // emits to guest
+          console.log("existingroom", existingRoom.room_config);
           socket.emit("joinedRoom", socket.id, existingRoom.room_config);
           return null;
         } catch (err) {
