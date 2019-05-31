@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import iphone_50 from "../components/Layout/iphone_75.png";
 
 function Landing(props) {
   const { auth, history } = props;
@@ -13,28 +14,26 @@ function Landing(props) {
   });
 
   return (
-    <div className="d-flex justify-content-center pt-2">
-      <div style={{ height: "75vh" }} className="container valign-wrapper">
-        <div className="col s12 center-align">
-          <main>
-            <section className="d-flex">
-              <div>
-                <h1>The easisest way to interact with your audience</h1>
-                <p>
-                  Feedback App is the solution that presenters seek to better
-                  pace their lectures.
-                </p>
-                <p>
-                  We provide your participants with an easy to use feedback
-                  interface that collects and presents their data in realtime.
-                  The data can also be archived and presented in a easy to read
-                  diagram.
-                </p>
-              </div>
+    <div className="container">
+      <div className="row">
+        <div className="col-sm offset-sm-1 mt-4">
+          <h1 className="pb-2">Welcome to Tempo</h1>
+          <h4 className="pb-2">
+            <em>The easiest way to interact with your audience</em>
+          </h4>
+          <p className="pt-4">
+            Tempo is <em>the</em> solution that presenters seek to better pace
+            their lectures.
+          </p>
+          <p className="pt-2">
+            We provide your participants with an easy to use feedback interface
+            that collects and presents their data in realtime. The data can also
+            be archived and presented in a easy to read diagram.
+          </p>
+        </div>
 
-              <div>Image</div>
-            </section>
-          </main>
+        <div className="col-sm mt-4 d-none d-md-block">
+          <img src={iphone_50} className="hidden-md-down" />
         </div>
       </div>
     </div>

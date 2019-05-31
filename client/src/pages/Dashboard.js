@@ -30,7 +30,7 @@ class Dashboard extends Component {
                 <h4>
                   <b>Hey there,</b> {user.name.split(" ")[0]}
                   <p>
-                    You are logged into Feedplx!
+                    You are logged into Tempo!
                     <span role="img" aria-label="clap-emoji">
                       👏
                     </span>
