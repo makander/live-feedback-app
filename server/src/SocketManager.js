@@ -9,6 +9,11 @@ const { ObjectId } = mongoose.Types.ObjectId;
  */
 
 export default function ioInit(io, socket, role, db) {
+  const disconnectHelper = socketToClose => {
+    setTimeout(() => {
+      socketToClose.disconnect();
+    }, 3000);
+  };
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", data => {
@@ -96,13 +101,15 @@ export default function ioInit(io, socket, role, db) {
   socket.on("feedbackSessionLeave", data => {
     const { inputUserId, roomId } = data;
     io.to(roomId).emit("userLeftRoom", inputUserId);
+    disconnectHelper(socket);
   });
 
   // When a guest connected to the room changes the slider the new value along with the
   // user id will be passed to the host of the room
   socket.on("changeSlider", (sliderValue, roomId, userId) => {
     io.to(roomId).emit("roomAverageValue", { sliderValue, userId });
-    socket.disconnect();
+    // Waiting 500ms before closing the socket connection saves us from console-errors
+    disconnectHelper(socket);
   });
 
   // General disconnect event
@@ -122,8 +129,8 @@ export default function ioInit(io, socket, role, db) {
 
     dbs.on("error", console.error.bind(console, "connection error:"));
 
-    dbs.once("open", function() {
-      Room.update(
+    dbs.once("open", () => {
+      Room.findOneAndUpdate(
         { room_name: roomId },
         {
           $push: {
@@ -136,5 +143,8 @@ export default function ioInit(io, socket, role, db) {
         () => console.log("one room found and updated")
       );
     });
+    disconnectHelper(socket);
+
+    // dbs.close();
   });
 }

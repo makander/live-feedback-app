@@ -26,8 +26,8 @@ class NewSession extends Component {
 
     this.state = {
       sessionName: "",
-      yInput: null,
-      xInput: null,
+      yInput: "",
+      xInput: "",
       voting: false,
       labels: false,
       breakTime: false
@@ -73,8 +73,8 @@ class NewSession extends Component {
       sessionAverageSetter,
       getErrors,
       clearErrors,
-      voting_input,
-      setVotingInput
+      votingInput,
+      setVotingInputDispatch
     } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
@@ -87,9 +87,9 @@ class NewSession extends Component {
 
     const roomConfig = [];
 
-    if (voting_input) {
-      roomConfig.push({ type: "voting", params: [voting_input] });
-      /* roomConfig.voting = { params: voting_input }; */
+    if (votingInput) {
+      roomConfig.push({ type: "voting", params: [votingInput] });
+      /* roomConfig.voting = { params: votingInput }; */
     }
 
     if (xInput) {
@@ -139,7 +139,7 @@ class NewSession extends Component {
 
     // Recieves the emitted votinginput from a user
     socket.on("votingInputs", data => {
-      setVotingInput(data);
+      setVotingInputDispatch(data);
     });
 
     socket.on("roomAverageValue", data => {
@@ -275,7 +275,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: CLEAR_ERRORS
     }),
-  setVotingInput: data => dispatch(setVotingInput(data))
+  setVotingInputDispatch: data => dispatch(setVotingInput(data))
 });
 
 const mapStateToProps = state => ({
@@ -286,7 +286,7 @@ const mapStateToProps = state => ({
   userId: state.auth.user._id,
   error: state.errors,
   roomAverageValue: state.room.session_average,
-  voting_input: state.room.voting_input
+  votingInput: state.room.voting_input
 });
 
 NewSession.propTypes = {
@@ -298,14 +298,16 @@ NewSession.propTypes = {
   getErrors: PropTypes.func.isRequired,
   clearErrors: PropTypes.func.isRequired,
   error: PropTypes.object,
-  setVotingInput: PropTypes.func.isRequired
+  setVotingInputDispatch: PropTypes.func.isRequired,
+  votingInput: PropTypes.object
 };
 
 NewSession.defaultProps = {
   userId: null,
   roomName: "",
   roomCreatedConditional: false,
-  error: null
+  error: null,
+  votingInput: null
 };
 
 export default connect(

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
+import uuid from "uuid/v4";
+import PropTypes from "prop-types";
 import { handleVotingInput } from "../../actions/room";
 
 class Voting extends Component {
@@ -8,33 +9,45 @@ class Voting extends Component {
     super(props);
 
     this.state = {
-      numberOfOptions: null
+      numberOfOptions: [],
+      valuesToDisplay: {}
     };
   }
 
   createForm = e => {
-    console.log(this.props);
     e.preventDefault();
   };
 
   handleInputChange = e => {
+    e.preventDefault();
+    const { valuesToDisplay } = this.state;
+
     this.setState({
-      [e.target.name]: e.target.value
+      valuesToDisplay: {
+        ...valuesToDisplay,
+        [e.target.name]: e.target.value
+      }
     });
-    console.log("state", this.state);
   };
 
   handleOnSubmitOptions = e => {
     e.preventDefault();
+
     const options = Array(parseInt(e.target.options.value, 10)).fill(1);
+    const uuidArray = [];
+
+    options.forEach(() => {
+      uuidArray.push(uuid());
+    });
+
     this.setState({
-      numberOfOptions: options
+      numberOfOptions: uuidArray
     });
   };
 
   render() {
     const { numberOfOptions } = this.state;
-    const { handleVotingInput } = this.props;
+    const { handleVotingInputDispatch } = this.props;
 
     return (
       <div>
@@ -44,22 +57,28 @@ class Voting extends Component {
           <input type="number" name="options" min="1" max="5" />
           <button type="submit">Number of options</button>
         </form>
-        {numberOfOptions ? (
+        {numberOfOptions.length ? (
           <form
             className="form-inline"
-            onSubmit={e => handleVotingInput(e, this.state, this.props.room_id)}
+            onSubmit={e => {
+              handleVotingInputDispatch(e, this.state);
+            }}
           >
             <div className="form-group">
-              {console.log(numberOfOptions)}
               {/* <input type="text" name="question" /> */}
-              {numberOfOptions.map((option, index) => {
+              {numberOfOptions.map(optionKey => {
+                const {
+                  valuesToDisplay: { option }
+                } = this.state;
                 return (
                   <input
                     className="form-control form-control"
                     type="text"
-                    name={`value${index}`}
-                    placeholder={`#options${index}`}
+                    name={optionKey}
+                    value={option}
+                    placeholder="Enter an option" // use this for label?
                     onChange={this.handleInputChange}
+                    key={optionKey}
                   />
                 );
               })}
@@ -78,14 +97,15 @@ class Voting extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  handleVotingInput: (e, state) => {
+  handleVotingInputDispatch: (e, state) => {
     e.preventDefault();
-    console.log(state);
-    delete state.numberOfOptions;
-    console.log(state);
-    dispatch(handleVotingInput(state));
+    dispatch(handleVotingInput(state.valuesToDisplay));
   }
 });
+
+Voting.propTypes = {
+  handleVotingInputDispatch: PropTypes.func.isRequired
+};
 
 export default connect(
   null,
