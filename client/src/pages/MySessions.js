@@ -61,7 +61,7 @@ function MySessions() {
   return (
     <div className="d-flex justify-content-center pt-2">
       <div
-        className="border border-info px-5 pt-5"
+        className="border border-info px-5 pt-5 shadow-sm"
         style={{ marginBottom: "8rem" }}
       >
         <div className="p-2 container">

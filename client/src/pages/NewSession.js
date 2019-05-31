@@ -185,7 +185,7 @@ class NewSession extends Component {
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
-          className="border border-info px-5 pt-5"
+          className="border border-info px-5 pt-5 shadow-sm"
           style={{ marginBottom: "3rem" }}
         >
           <div className="container p-2 justify-content-center ">
