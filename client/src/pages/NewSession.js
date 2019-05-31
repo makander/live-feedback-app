@@ -11,7 +11,7 @@ import {
   handleVotingInput,
   setVotingInput
 } from "../actions/room";
-import { GET_ERRORS, CLEAR_ERRORS, SET_VOTING_INPUT } from "../actions/types";
+import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
 import VotingChart from "../components/VotingChart";
@@ -275,12 +275,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: CLEAR_ERRORS
     }),
-  /* setVotingInput: data => dispatch(setVotingInput(data)) */
-  setVotingInput: data =>
+  setVotingInput: data => dispatch(setVotingInput(data))
+  /* setVotingInput: data =>
     dispatch({
       type: SET_VOTING_INPUT,
-      payload: { roomConfig: { value: roomConfig } }
-    })
+      payload: { roomConfig: { value: data } }
+    }) */
 });
 
 const mapStateToProps = state => ({
