@@ -137,9 +137,14 @@ class NewSession extends Component {
       this.roomArray = this.roomArray.filter(user => user.userId !== data);
     });
 
+    const { votingInputAverage } = this.props
+    const newData = votingInputAverage
+
     // Recieves the emitted votinginput from a user
     socket.on("votingInputs", data => {
-      setVotingInputDispatch(data);
+      newData.push(data)
+      setVotingInputDispatch(newData);
+      
     });
 
     socket.on("roomAverageValue", data => {
@@ -286,7 +291,8 @@ const mapStateToProps = state => ({
   userId: state.auth.user._id,
   error: state.errors,
   roomAverageValue: state.room.session_average,
-  votingInput: state.room.voting_input
+  votingInput: state.room.voting_input,
+  votingInputAverage: state.room.voting_input_average
 });
 
 NewSession.propTypes = {
@@ -299,7 +305,8 @@ NewSession.propTypes = {
   clearErrors: PropTypes.func.isRequired,
   error: PropTypes.object,
   setVotingInputDispatch: PropTypes.func.isRequired,
-  votingInput: PropTypes.object
+  votingInput: PropTypes.object,
+  votingInputAverage: PropTypes.object
 };
 
 NewSession.defaultProps = {
@@ -307,7 +314,8 @@ NewSession.defaultProps = {
   roomName: "",
   roomCreatedConditional: false,
   error: null,
-  votingInput: null
+  votingInput: null,
+  votingInputAverage: null
 };
 
 export default connect(
