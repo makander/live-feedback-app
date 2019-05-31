@@ -11,7 +11,7 @@ import {
   handleVotingInput,
   setVotingInput
 } from "../actions/room";
-import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
+import { GET_ERRORS, CLEAR_ERRORS, SET_VOTING_INPUT } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
 import VotingChart from "../components/VotingChart";
@@ -136,6 +136,7 @@ class NewSession extends Component {
       this.roomArray = this.roomArray.filter(user => user.userId !== data);
     });
 
+    // Recieves the emitted votinginput from a user
     socket.on("votingInputs", data => {
       console.log("hejda", data);
       setVotingInput(data);
@@ -274,7 +275,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: CLEAR_ERRORS
     }),
-  setVotingInput: data => dispatch(setVotingInput(data))
+  /* setVotingInput: data => dispatch(setVotingInput(data)) */
+  setVotingInput: data =>
+    dispatch({
+      type: SET_VOTING_INPUT,
+      payload: { roomConfig: { value: roomConfig } }
+    })
 });
 
 const mapStateToProps = state => ({

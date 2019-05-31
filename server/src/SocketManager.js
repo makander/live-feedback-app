@@ -85,6 +85,14 @@ export default function ioInit(io, socket, role, db) {
     }
   });
 
+  // When a quests submits his voting options this function will recieve it
+  // and emit it to the admin of the room
+  socket.on("votingInput", (checkedItems, room_id) => {
+    console.log("voting", checkedItems, room_id);
+    /* socket.emit("votingInput", checkedItems, room_id); */
+    io.to(room_id).emit("votingInputs", "hej");
+  });
+
   // When guest leaves room emit and event to host with user id
   // to remove this user from the average score calculation
   socket.on("feedbackSessionLeave", data => {

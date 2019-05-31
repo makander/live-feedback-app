@@ -49,7 +49,7 @@ class Guest extends Component {
   render() {
     const { roomId } = this.props.match.params;
     const { session_room_config } = this.props;
-
+    console.log("roomid", roomId);
     return (
       <div className="d-flex justify-content-center pt-2 container-fluid">
         {roomId !== undefined ? (

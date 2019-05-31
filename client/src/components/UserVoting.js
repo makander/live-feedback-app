@@ -20,7 +20,7 @@ export default class UserVoting extends Component {
   handleVotingInput = e => {
     e.preventDefault();
 
-    const { room_id } = this.props.room_id;
+    const { room_id } = this.props;
     console.log(e.target);
     const checkedItems = Array.from(this.state.checkedItems, ([key, value]) => {
       return value === true ? key : null;
