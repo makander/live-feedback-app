@@ -14,13 +14,13 @@ function GuestFeedback(props) {
     roomConfig
   } = props;
   return (
-    <div className="d-flex justify-content-center">
-      <form>
-        <div className="form-group row" style={{ marginTop: "3rem" }}>
-          <div className="col-sm-8 p-2 mx-auto d-flex">
-            <div className="p-2 mx-2">
-              {roomConfig[1].xInput ? roomConfig[1].xInput : 0}
-            </div>
+    <div>
+      <div className="d-flex justify-content-center">
+        {roomConfig[1].xInput ? roomConfig[1].xInput : 0}
+      </div>
+      <div className="d-flex justify-content-center">
+        <form>
+          <div className="form-group row" style={{ marginTop: "3rem" }}>
             <input
               name="feedback-slider"
               onChange={e => handleSlider(e, sessionUserId, roomId)}
@@ -37,12 +37,12 @@ function GuestFeedback(props) {
               name="socket_data"
               value={{ sessionUserId, roomId }}
             />
-            <div className="p-2 mx-2">
-              {roomConfig[1].yInput ? roomConfig[1].yInput : 10}
-            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div className="d-flex justify-content-center">
+        {roomConfig[1].yInput ? roomConfig[1].yInput : 10}
+      </div>
     </div>
   );
 }
