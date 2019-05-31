@@ -248,8 +248,8 @@ class NewSession extends Component {
                 <div>
                   <VotingChart />
                   <LiveSession
-                    roomId={`${userId}-${room_name}`}
-                    roomName={room_name}
+                    roomId={`${userId}-${roomName}`}
+                    roomName={roomName}
                   />
                   <LiveSession
                     roomId={`${userId}-${roomName}`}
