@@ -63,7 +63,7 @@ class Login extends Component {
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
-          className="border border-info px-5 pt-5"
+          className="border border-info px-5 pt-5 shadow-sm"
           style={{ marginBottom: "8rem", width: "75vh" }}
         >
           <div>
@@ -121,11 +121,10 @@ class Login extends Component {
                 </label>
               </div>
             </div>
-            <div>
-            </div>
+            <div />
             <div className="d-flex flex-column mt-4">
               <span className="text-danger text-center mb-3">
-                  {errors.error}
+                {errors.error}
               </span>
               <button
                 type="submit"

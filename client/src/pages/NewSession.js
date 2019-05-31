@@ -42,7 +42,13 @@ class NewSession extends Component {
 
   handleClickNewSession = e => {
     e.preventDefault();
-    const { userId, createRoom, sessionAverageSetter, getErrors, clearErrors } = this.props;
+    const {
+      userId,
+      createRoom,
+      sessionAverageSetter,
+      getErrors,
+      clearErrors
+    } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
     // TOKEN VERIFICATION ON BACKEND WHEN CONNECTING
@@ -55,7 +61,7 @@ class NewSession extends Component {
     const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
 
     socket.on("error", err => {
-      getErrors({room: err})
+      getErrors({ room: err });
     });
 
     axios
@@ -80,12 +86,12 @@ class NewSession extends Component {
         getErrors(error);
       });
 
-    socket.on("sessionCreationCheck", (success) => {
+    socket.on("sessionCreationCheck", success => {
       if (success) {
         createRoom(sessionName);
-        clearErrors()
+        clearErrors();
       } else {
-        getErrors({room: "Failed to create room"})
+        getErrors({ room: "Failed to create room" });
       }
     });
 
@@ -132,9 +138,8 @@ class NewSession extends Component {
     const { sessionName, xInput, yInput } = this.state;
     return (
       <div className="d-flex justify-content-center pt-2">
-        
         <div
-          className="border border-info px-5 pt-5"
+          className="border border-info px-5 pt-5 shadow-sm"
           style={{ marginBottom: "3rem" }}
         >
           <div className="container p-2 justify-content-center ">
@@ -142,8 +147,8 @@ class NewSession extends Component {
               {!roomCreatedConditional ? (
                 <div>
                   <div className="mb-2">
-                  <h3 className="mx-auto">Create New Session</h3>
-                  <span className="lead text-danger">{error.room}</span>
+                    <h3 className="mx-auto">Create New Session</h3>
+                    <span className="lead text-danger">{error.room}</span>
                   </div>
                   <form
                     className="form-inline"
@@ -224,7 +229,7 @@ const mapStateToProps = state => ({
   // eslint-disable-next-line no-underscore-dangle
   userId: state.auth.user._id,
   error: state.errors,
-  roomAverageValue: state.room.session_average,
+  roomAverageValue: state.room.session_average
 });
 
 NewSession.propTypes = {

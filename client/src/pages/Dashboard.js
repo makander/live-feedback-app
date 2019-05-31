@@ -20,7 +20,7 @@ class Dashboard extends Component {
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
-          className="border border-info p-5"
+          className="border border-info p-5 shadow-sm"
           style={{ marginBottom: "3rem" }}
         >
           <div>
