@@ -5,10 +5,18 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import io from "socket.io-client";
 import withAuth from "../hocs/withAuth";
-import { roomCreated, setSessionAverage } from "../actions/room";
+import {
+  roomCreated,
+  setSessionAverage,
+  handleVotingInput,
+  setVotingInput
+} from "../actions/room";
 import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
+import VotingChart from "../components/VotingChart";
+import Voting from "../components/Roomtypes/Voting";
+import BreakTime from "../components/Roomtypes/Break";
 
 // Average calc - client side roomarray
 
@@ -169,14 +177,7 @@ class NewSession extends Component {
 
   render() {
     const { roomName, roomCreatedConditional, userId, error } = this.props;
-    const {
-      sessionName,
-      xInput,
-      yInput,
-      voting,
-      breakTime,
-      handleVotingInput
-    } = this.state;
+    const { sessionName, xInput, yInput, voting, breakTime } = this.state;
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
@@ -245,7 +246,6 @@ class NewSession extends Component {
                 </div>
               ) : (
                 <div>
-                  <ProgressBar />
                   <VotingChart />
                   <LiveSession
                     roomId={`${userId}-${room_name}`}
