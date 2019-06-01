@@ -21,7 +21,8 @@ describe("Login Component", () => {
 
   describe("When the logout button is pressed", () => {
     it("should call the mock logout function", () => {
-      wrapper.find("a.nav-item").simulate('click', {preventDefault() {}});
+      const Logout = wrapper.find('Link[children="Logout"]')
+      Logout.simulate('click', {preventDefault() {}});
       expect(mockLogout.mock.calls.length).toEqual(1)
     });
   });
