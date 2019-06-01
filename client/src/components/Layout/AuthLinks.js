@@ -14,22 +14,18 @@ class AuthLinks extends Component {
   render() {
     return (
       <div className="navbar-nav">
-        <Link className="nav-item nav-link text-white" to="/">
+        <Link className="nav-item nav-link text-dark" to="/">
           Dashboard
         </Link>
-        <Link className="nav-item nav-link text-white" to="/my-sessions">
+        <Link className="nav-item nav-link text-dark" to="/my-sessions">
           My Session
         </Link>
-        <Link className="nav-item nav-link text-white" to="/new-session">
+        <Link className="nav-item nav-link text-dark" to="/new-session">
           New Session
         </Link>
-        <a
-          className="nav-item nav-link text-white"
-          href="#"
-          onClick={this.onLogoutClick}
-        >
+        <Link className="nav-item nav-link" to="/" onClick={this.onLogoutClick}>
           Logout
-        </a>
+        </Link>
       </div>
     );
   }
