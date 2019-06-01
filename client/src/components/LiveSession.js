@@ -5,6 +5,7 @@ import ProgressBar from "../components/ProgressBar";
 
 import PropTypes from "prop-types";
 import { sessionStarted, sessionStopped, cancelSession } from "../actions/room";
+import StopWatch from "./StopWatch";
 
 const io = require("socket.io-client");
 
@@ -14,6 +15,9 @@ class LiveSession extends React.Component {
   constructor(props) {
     super(props);
     this.counter = null;
+    this.state = {
+      startTime: null
+    }
   }
 
   componentWillUnmount() {
@@ -52,6 +56,7 @@ class LiveSession extends React.Component {
       cancel
     } = this.props;
     const roomIdNoSpaces = roomId.replace(new RegExp(" ", "g"), "_");
+    const { startTime } = this.state;
 
     return (
       <div className="d-flex">
@@ -88,6 +93,7 @@ class LiveSession extends React.Component {
                 onClick={e => {
                   startSession(e);
                   this.timer(sessionActive, roomAverageValue, roomId);
+                  this.setState({ startTime: new Date() })
                 }}
               >
                 Start Session
@@ -105,6 +111,7 @@ class LiveSession extends React.Component {
               </button>
             )}
           </div>
+          <StopWatch timerActive={sessionActive} startTime={startTime} />
         </div>
       </div>
     );
