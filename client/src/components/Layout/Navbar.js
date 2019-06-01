@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import AuthLinks from "./AuthLinks";
 
-const Links = () => {
+export const Links = () => {
   return (
     <div className="fullwidth">
       <div className="navbar-nav">
@@ -22,7 +22,7 @@ const Links = () => {
   );
 };
 
-function Navbar(props) {
+export function Navbar(props) {
   const { auth } = props;
   return (
     <nav className="navbar navbar-expand-lg navbar-light shadow-sm">
@@ -54,4 +54,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps)(Navbar);
+export default connect(mapStateToProps, null)(Navbar);

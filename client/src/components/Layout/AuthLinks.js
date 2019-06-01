@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { logoutUser } from "../../actions/auth";
 
-class AuthLinks extends Component {
+export class AuthLinks extends Component {
   onLogoutClick = e => {
     e.preventDefault();
     const { logout } = this.props;
