@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import PrivateRoute from "./PrivateRoute";
 import Adapter from "enzyme-adapter-react-16";
+import PrivateRoute from "./PrivateRoute";
 
 configure({adapter: new Adapter()});
 
@@ -12,6 +13,4 @@ describe('PrivateRoute', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
-  
 });

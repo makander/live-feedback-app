@@ -2,14 +2,14 @@
 import React from "react";
 import  { configure, shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
-import App from "./App";
+import StopWatch from "./StopWatch";
 
 configure({adapter: new Adapter()});
 
-describe('App', () => {
+describe('StopWatch', () => {
   
   test("renders", () => {
-    const wrapper =shallow(<App />);
+    const wrapper =shallow(<StopWatch />);
     expect(wrapper.exists()).toBe(true);
   });
 

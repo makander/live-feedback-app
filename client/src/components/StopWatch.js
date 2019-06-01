@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from "prop-types";
 
-export default function StopWatch({ timerActive, startTime }) {
+export default function StopWatch({ timerActive }) {
 
   const [minutes, setMinutes] = useState(0);
   const [hours, setHours] = useState(0);
   let timerInterval;
 
   useEffect(() => {
-    console.log("Effect used");
     if (timerActive === true && !timerInterval) {
-      console.log("Timer if triggered");
       timerInterval = setInterval(() => {
         if (minutes <= 58) {
-          console.log("Increase minutes")
           setMinutes(minutes + 1);
         }
         if (minutes >= 59) {
-          console.log("Increase Hours");
           setMinutes(0);
           setHours(hours + 1);
         }
@@ -25,7 +21,6 @@ export default function StopWatch({ timerActive, startTime }) {
     };
   
     return(() => {
-      console.log("Clear interval");
       clearInterval(timerInterval);
     });
 
@@ -38,10 +33,8 @@ export default function StopWatch({ timerActive, startTime }) {
 
 StopWatch.propTypes = {
   timerActive: PropTypes.bool,
-  startTime: PropTypes.object
 };
 
 StopWatch.defaultProps = {
   timerActive: false,
-  startTime: new Date()
 };

@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import GuestFeedback from "./GuestFeedback";
 import Adapter from "enzyme-adapter-react-16";
+import GuestFeedback from "./GuestFeedback";
 
 configure({adapter: new Adapter()});
 
@@ -12,6 +13,4 @@ describe('GuestFeedback', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
-  
 });
