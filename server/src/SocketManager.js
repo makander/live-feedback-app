@@ -8,12 +8,7 @@ const { ObjectId } = mongoose.Types.ObjectId;
  * Iniate the socket listeners.
  */
 
-export default function ioInit(io, socket, role, db) {
-  const disconnectHelper = socketToClose => {
-    setTimeout(() => {
-      socketToClose.disconnect();
-    }, 3000);
-  };
+export default function ioInit(io, socket, role) {
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", data => {
@@ -41,7 +36,6 @@ export default function ioInit(io, socket, role, db) {
             room_data: [],
             room_config: roomConfig
           });
-          console.log("mongorooom", mongoRoom);
           const updatedUser = await User.findOne({
             _id: ObjectId(userId)
           });
@@ -101,7 +95,6 @@ export default function ioInit(io, socket, role, db) {
   socket.on("feedbackSessionLeave", data => {
     const { inputUserId, roomId } = data;
     io.to(roomId).emit("userLeftRoom", inputUserId);
-    disconnectHelper(socket);
   });
 
   // When a guest connected to the room changes the slider the new value along with the
@@ -109,7 +102,6 @@ export default function ioInit(io, socket, role, db) {
   socket.on("changeSlider", (sliderValue, roomId, userId) => {
     io.to(roomId).emit("roomAverageValue", { sliderValue, userId });
     // Waiting 500ms before closing the socket connection saves us from console-errors
-    disconnectHelper(socket);
   });
 
   // General disconnect event
@@ -119,18 +111,8 @@ export default function ioInit(io, socket, role, db) {
   // and saves room data for specicied room, on an interval
   socket.on("sendToDB", data => {
     const { roomId, roomAverageValue, timeStamp } = data;
-    const dbz = db;
-    mongoose
-      .connect(dbz, { useNewUrlParser: true })
-      .then(() => console.log("MongoDB connected!"))
-      .catch(err => console.log(err));
-
-    const dbs = mongoose.connection;
-
-    dbs.on("error", console.error.bind(console, "connection error:"));
-
-    dbs.once("open", () => {
-      Room.findOneAndUpdate(
+    const updateRoom = async () => {
+      const room = await Room.findOneAndUpdate(
         { room_name: roomId },
         {
           $push: {
@@ -139,12 +121,10 @@ export default function ioInit(io, socket, role, db) {
               y: roomAverageValue
             }
           }
-        },
-        () => console.log("one room found and updated")
+        }
       );
-    });
-    disconnectHelper(socket);
-
-    // dbs.close();
+      room.save();
+    };
+    updateRoom();
   });
 }

@@ -116,7 +116,7 @@ io.use(
 
 io.on("connection", socket => {
   const role = socket.request.user.logged_in ? "admin" : "guest";
-  ioInit(io, socket, role, db);
+  ioInit(io, socket, role);
 });
 
 module.exports = server;
