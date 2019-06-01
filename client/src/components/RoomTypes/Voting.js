@@ -10,7 +10,7 @@ class Voting extends Component {
 
     this.state = {
       numberOfOptions: [],
-      valuesToDisplay: {}
+      valuesToDisplay: []
     };
   }
 
@@ -99,7 +99,8 @@ class Voting extends Component {
 const mapDispatchToProps = dispatch => ({
   handleVotingInputDispatch: (e, state) => {
     e.preventDefault();
-    dispatch(handleVotingInput(state.valuesToDisplay));
+    const reducedArray = [...new Set(Object.values(state.valuesToDisplay))];
+    dispatch(handleVotingInput(reducedArray));
   }
 });
 

@@ -6,11 +6,11 @@ import { Bar } from "react-chartjs-2";
 class VotingChart extends Component {
   constructor(props) {
     super(props);
-    const { labels } = this.props
-    this.labels = labels
+    const { labels } = this.props;
+    this.labels = labels;
     this.data = {
       data: {
-        labels: Object.values(labels),
+        labels: labels || [],
         datasets: [
           {
             label: "Voting",
@@ -25,13 +25,13 @@ class VotingChart extends Component {
 
   componentWillReceiveProps() {
     const { labels, values } = this.props;
-    const labelArray = Object.values(labels);
-    const result = Array(parseInt(Object.values(labelArray).length, 10)).fill(0);
-    labelArray.forEach(label => {
+
+    const result = Array(parseInt(labels.length, 10)).fill(0);
+    labels.forEach(label => {
       values.forEach(valueStillArray => {
         valueStillArray.forEach(value => {
           if (value === label) {
-            const index = labelArray.indexOf(label);
+            const index = labels.indexOf(label);
             // eslint-disable-next-line no-plusplus
             result[index]++;
           }
@@ -41,7 +41,7 @@ class VotingChart extends Component {
 
     this.data = {
       data: {
-        labels: Object.values(labels),
+        labels,
         datasets: [
           {
             label: "Voting",
@@ -55,30 +55,34 @@ class VotingChart extends Component {
   }
 
   render() {
-    return (
-      <div className="justify-content-center">
-        <Bar
-          data={this.data.data}
-          width="500px"
-          height="500px"
-          options={{
-            maintainAspectRatio: false,
-            scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
-          }}
-          redraw
-        />
-      </div>
-    );
+    if (this.data.data.labels.length) {
+      return (
+        <div className="justify-content-center">
+          <Bar
+            data={this.data.data}
+            width={500}
+            height={500}
+            options={{
+              maintainAspectRatio: false,
+              scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+            }}
+            redraw
+          />
+        </div>
+      );
+    }
+    return null;
   }
 }
 
 VotingChart.propTypes = {
-  labels: PropTypes.array.isRequired,
+  labels: PropTypes.array,
   values: PropTypes.array
 };
 
 VotingChart.defaultProps = {
-  values: null
+  values: null,
+  labels: []
 };
 
 const mapStateToProps = state => ({
