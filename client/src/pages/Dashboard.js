@@ -20,7 +20,7 @@ class Dashboard extends Component {
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
-          className="border border-info p-5"
+          className="border border-info p-5 shadow-sm"
           style={{ marginBottom: "3rem" }}
         >
           <div>
@@ -30,7 +30,7 @@ class Dashboard extends Component {
                 <h4>
                   <b>Hey there,</b> {user.name.split(" ")[0]}
                   <p>
-                    You are logged into Feedplx!
+                    You are logged into Tempo!
                     <span role="img" aria-label="clap-emoji">
                       👏
                     </span>

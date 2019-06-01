@@ -8,13 +8,13 @@ export const Links = () => {
   return (
     <div className="fullwidth">
       <div className="navbar-nav">
-        <Link className="nav-item nav-link text-white" to="/">
+        <Link className="nav-item nav-link text-dark" to="/">
           Home
         </Link>
-        <Link className="nav-item nav-link text-white" to="/register">
+        <Link className="nav-item nav-link text-dark" to="/register">
           Register
         </Link>
-        <Link className="nav-item nav-link text-white" to="/login">
+        <Link className="nav-item nav-link text-dark" to="/login">
           Login
         </Link>
       </div>
@@ -25,7 +25,7 @@ export const Links = () => {
 export function Navbar(props) {
   const { auth } = props;
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-lg navbar-light shadow-sm">
       <button
         className="navbar-toggler"
         type="button"
