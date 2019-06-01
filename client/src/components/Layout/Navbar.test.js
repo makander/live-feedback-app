@@ -1,17 +1,26 @@
 import React from "react";
-import  { configure, shallow } from "enzyme";
-import Navbar from "./Navbar";
-import Adapter from "enzyme-adapter-react-16";
+import { shallow } from "enzyme";
+import configureStore from "redux-mock-store";
+import { Navbar } from "./Navbar";
 
-configure({adapter: new Adapter()});
+const initialState = {
+  isAuthenticated: false
+};
+const mockStore = configureStore();;
+let store;
 
-describe('Navbar', () => {
-  
-  test("renders", () => {
-    const wrapper =shallow(<Navbar />);
-    expect(wrapper.exists()).toBe(true);
+describe("Navbar Component", () => {
+  let wrapper;
+
+    beforeEach(() => {
+      store = mockStore(initialState);
+      wrapper = shallow(<Navbar store={store} auth={{"isAuthenticated":false}}/>)
+    });
+
+  describe("When the user is logged out", () => {
+    it("should render the Links component", () => {
+    
+      expect(wrapper.find("Links").length).toBe(1)
+    });
   });
-
-
-  
 });
