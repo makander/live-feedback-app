@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import ProgressBar from "./ProgressBar";
 
 import { sessionStarted, sessionStopped, cancelSession } from "../actions/room";
+import StopWatch from "./StopWatch";
 
 const io = require("socket.io-client");
 
@@ -105,6 +106,7 @@ class LiveSession extends React.Component {
               </button>
             )}
           </div>
+          <StopWatch timerActive={sessionActive} />
         </div>
       </div>
     );
@@ -119,7 +121,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   stopSession: e => {
     e.preventDefault();
-    console.log("STANNA SESSION");
     socket.emit("sessionStop", ownProps.roomId);
     dispatch(sessionStopped(ownProps.roomName));
   },
