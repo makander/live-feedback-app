@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import ProgressBar from "./ProgressBar";
 import Adapter from "enzyme-adapter-react-16";
+import ProgressBar from "./ProgressBar";
 
 configure({adapter: new Adapter()});
 
@@ -12,6 +13,4 @@ describe('ProgressBar', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
-  
 });

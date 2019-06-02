@@ -12,3 +12,18 @@ h5,
 h6 {
   font-family: "Lato", sans-serif;
 }
+
+.blinking {
+	animation: 1s blinkingText step-end infinite;
+}
+
+@keyframes blinkingText{
+	0% { color: #fff;	}
+	50% {	color: transparent;	}
+	100% { color: #fff;	}
+}
+
+.timer {
+  font-size: 1.5rem;
+  
+}

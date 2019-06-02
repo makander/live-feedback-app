@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import LiveSession from "./LiveSession";
 import Adapter from "enzyme-adapter-react-16";
+import LiveSession from "./LiveSession";
 
 configure({adapter: new Adapter()});
 
@@ -12,6 +13,4 @@ describe('LiveSession', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
-  
 });
