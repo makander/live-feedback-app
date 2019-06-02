@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import PublicRoute from "./PublicRoute";
 import Adapter from "enzyme-adapter-react-16";
+import PublicRoute from "./PublicRoute";
 
 configure({adapter: new Adapter()});
 
@@ -12,6 +13,4 @@ describe('PublicRoute', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
-  
 });

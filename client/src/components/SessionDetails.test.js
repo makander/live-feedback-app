@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import SessionDetails from "./SessionDetails";
 import Adapter from "enzyme-adapter-react-16";
+import SessionDetails from "./SessionDetails";
 
 configure({adapter: new Adapter()});
 
@@ -12,6 +13,4 @@ describe('SessionDetails', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-
-  
 });
