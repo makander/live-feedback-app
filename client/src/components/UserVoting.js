@@ -11,12 +11,13 @@ export default class UserVoting extends Component {
     };
   }
 
-  /*   handleInputChange = e => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-    console.log(this.state);
-  }; */
+  handleInputChange = e => {
+    const item = e.target.name;
+    const isChecked = e.target.checked;
+    this.setState(prevState => ({
+      checkedItems: prevState.checkedItems.set(item, isChecked)
+    }));
+  };
 
   handleVotingInput = e => {
     e.preventDefault();
@@ -27,17 +28,8 @@ export default class UserVoting extends Component {
     });
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("votingInput", checkedItemsArray, roomId);
+    e.target.querySelector(".vote-btn").disabled = true;
   };
-
-  handleInputChange = e => {
-    const item = e.target.name;
-    const isChecked = e.target.checked;
-    this.setState(prevState => ({
-      checkedItems: prevState.checkedItems.set(item, isChecked)
-    }));
-  };
-
-  componentDidMount = () => {};
 
   render() {
     const { votingParams } = this.props;
@@ -49,23 +41,31 @@ export default class UserVoting extends Component {
       <div className="d-flex justify-content-center mt-5">
         <form onSubmit={e => this.handleVotingInput(e)}>
           <div className="form-group">
-            {/* <input type="text" name="question" /> */}
             {votingOptions.map(option => {
               return (
                 <div className="form-check form-check-inline">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    name={option}
-                    onChange={this.handleInputChange}
-                  />
-                  <label className="form-check-label">{option}</label>
+                  <label
+                    id={`label-${option}`}
+                    htmlFor={option}
+                    className="form-check-label"
+                  >
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name={option}
+                      onChange={this.handleInputChange}
+                    />
+                    {option}
+                  </label>
                 </div>
               );
             })}
           </div>
           <div className="text-center">
-            <button type="submit" className="btn btn-outline-primary btn">
+            <button
+              type="submit"
+              className="btn btn-outline-primary btn vote-btn"
+            >
               Vote
             </button>
           </div>
