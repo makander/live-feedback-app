@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import iphone_50 from "../components/Layout/iphone_75.png";
+import iphone50 from "../components/Layout/iphone_75.png";
 
 function Landing(props) {
   const { auth, history } = props;
@@ -33,7 +33,11 @@ function Landing(props) {
         </div>
 
         <div className="col-sm mt-4 d-none d-md-block">
-          <img src={iphone_50} className="hidden-md-down" />
+          <img
+            src={iphone50}
+            className="hidden-md-down"
+            alt="mobile view preview"
+          />
         </div>
       </div>
     </div>

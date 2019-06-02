@@ -8,28 +8,14 @@ const { ObjectId } = mongoose.Types.ObjectId;
  * Iniate the socket listeners.
  */
 
-export default function ioInit(io, socket, role, db) {
-  const disconnectHelper = socketToClose => {
-    setTimeout(() => {
-      socketToClose.disconnect();
-    }, 3000);
-  };
+export default function ioInit(io, socket, role) {
   // Connect to session - if authenticated via JWT as admin Create room
   // if not authenticated join room as guest, if room exists
   socket.on("connectToNewSession", data => {
-    const { roomId, userId, xInput, yInput } = data;
-
+    const { roomId, userId, roomConfig } = data;
+    console.log(roomConfig);
     if (role === "admin") {
       // @IDEA: Make this completely configurable from the client side
-      const roomConfig = {
-        type: "voting",
-        properties: {
-          min: xInput,
-          max: yInput,
-          min_label: "Label för minsta här",
-          max_label: "Label för högsta värdet här"
-        }
-      };
 
       // Check if room exists in database Room collection
       // if no matching room is found push new room to User (as a ref)
@@ -44,12 +30,12 @@ export default function ioInit(io, socket, role, db) {
           }
           socket.join(roomId);
           const mongoRoom = new Room({
+            hej: "hej",
             room_name: roomId,
             author_id: ObjectId(userId),
             room_data: [],
             room_config: roomConfig
           });
-
           const updatedUser = await User.findOne({
             _id: ObjectId(userId)
           });
@@ -75,6 +61,7 @@ export default function ioInit(io, socket, role, db) {
             return null;
           }
           // emits to guest
+          console.log("existingroom", existingRoom.room_config);
           socket.emit("joinedRoom", socket.id, existingRoom.room_config);
           return null;
         } catch (err) {
@@ -97,12 +84,17 @@ export default function ioInit(io, socket, role, db) {
     }
   });
 
+  // When a quests submits his voting options this function will recieve it
+  // and emit it to the admin of the room
+  socket.on("votingInput", (checkedItems, roomId) => {
+    io.to(roomId).emit("votingInputs", checkedItems);
+  });
+
   // When guest leaves room emit and event to host with user id
   // to remove this user from the average score calculation
   socket.on("feedbackSessionLeave", data => {
     const { inputUserId, roomId } = data;
     io.to(roomId).emit("userLeftRoom", inputUserId);
-    disconnectHelper(socket);
   });
 
   // When a guest connected to the room changes the slider the new value along with the
@@ -110,7 +102,6 @@ export default function ioInit(io, socket, role, db) {
   socket.on("changeSlider", (sliderValue, roomId, userId) => {
     io.to(roomId).emit("roomAverageValue", { sliderValue, userId });
     // Waiting 500ms before closing the socket connection saves us from console-errors
-    disconnectHelper(socket);
   });
 
   // General disconnect event
@@ -120,18 +111,8 @@ export default function ioInit(io, socket, role, db) {
   // and saves room data for specicied room, on an interval
   socket.on("sendToDB", data => {
     const { roomId, roomAverageValue, timeStamp } = data;
-    const dbz = db;
-    mongoose
-      .connect(dbz, { useNewUrlParser: true })
-      .then(() => console.log("MongoDB connected!"))
-      .catch(err => console.log(err));
-
-    const dbs = mongoose.connection;
-
-    dbs.on("error", console.error.bind(console, "connection error:"));
-
-    dbs.once("open", () => {
-      Room.findOneAndUpdate(
+    const updateRoom = async () => {
+      const room = await Room.findOneAndUpdate(
         { room_name: roomId },
         {
           $push: {
@@ -140,12 +121,10 @@ export default function ioInit(io, socket, role, db) {
               y: roomAverageValue
             }
           }
-        },
-        () => console.log("one room found and updated")
+        }
       );
-    });
-    disconnectHelper(socket);
-
-    // dbs.close();
+      room.save();
+    };
+    updateRoom();
   });
 }

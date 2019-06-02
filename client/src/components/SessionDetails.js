@@ -25,7 +25,7 @@ function SessionDetails(props) {
     labels: xArray,
     datasets: [
       {
-        label: "Y-axis: Lecture Spped (50 being normal tempo)",
+        label: "Lecture Spped (50 being normal tempo)",
         data: yArray,
         borderColor: "CadetBlue",
         backgroundColor: "AliceBlue"

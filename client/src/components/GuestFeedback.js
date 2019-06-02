@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import PropTypes from "prop-types";
@@ -13,37 +13,48 @@ function GuestFeedback(props) {
     roomId,
     roomConfig
   } = props;
+
+  useEffect(() => {
+    handleSlider(null, sessionUserId, roomId);
+  }, []);
+
   return (
-    <div className="d-flex justify-content-center">
-      <form>
-        <div className="form-group" style={{ marginTop: "3rem" }}>
-          <div className="">{roomConfig ? roomConfig.properties.min : 0}</div>
-          <input
-            name="slider"
-            onChange={e => handleSlider(e, sessionUserId, roomId)}
-            type="range"
-            max={roomConfig ? roomConfig.properties.max : 100}
-            min={roomConfig ? roomConfig.properties.min : 0}
-            value={sliderValue}
-            className="slider"
-            step="10"
-          />
-          <input
-            type="hidden"
-            style={{ visible: "none" }}
-            name="socket_data"
-            value={{ sessionUserId, roomId }}
-          />
-          {roomConfig ? roomConfig.properties.max : 10}
-        </div>
-      </form>
+    <div>
+      <div className="d-flex justify-content-center">
+        {roomConfig[1].xInput ? roomConfig[1].xInput : 0}
+      </div>
+      <div className="d-flex justify-content-center">
+        <form>
+          <div className="form-group row" style={{ marginTop: "3rem" }}>
+            <input
+              name="feedback-slider"
+              onChange={e => handleSlider(e, sessionUserId, roomId)}
+              id="feedback-slider"
+              type="range"
+              max={100}
+              min={0}
+              value={sliderValue}
+              className="slider"
+              step="10"
+            />
+            <input
+              type="hidden"
+              name="socket_data"
+              value={{ sessionUserId, roomId }}
+            />
+          </div>
+        </form>
+      </div>
+      <div className="d-flex justify-content-center">
+        {roomConfig[1].yInput ? roomConfig[1].yInput : 10}
+      </div>
     </div>
   );
 }
 
 const mapDispatchToProps = dispatch => ({
   handleSlider: (e, sessionUserId, roomId) => {
-    const sliderValue = e.target.value;
+    const sliderValue = e ? e.target.value : 50;
     dispatch(sliderInput(sliderValue));
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("changeSlider", sliderValue, roomId, sessionUserId);
@@ -60,7 +71,7 @@ GuestFeedback.propTypes = {
   handleSlider: PropTypes.func.isRequired,
   sessionUserId: PropTypes.string,
   roomId: PropTypes.string.isRequired,
-  roomConfig: PropTypes.object
+  roomConfig: PropTypes.array
 };
 
 GuestFeedback.defaultProps = {

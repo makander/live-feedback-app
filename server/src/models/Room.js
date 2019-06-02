@@ -17,13 +17,7 @@ const RoomSchema = new Schema({
       y: String
     }
   ],
-  room_config: {
-    type: { type: String },
-    properties: {
-      min_label: String,
-      max_label: String
-    }
-  },
+  room_config: [],
   date: {
     type: Date,
     default: Date.now

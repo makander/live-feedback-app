@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import io from "socket.io-client";
 import { joinedRoom } from "../actions/room";
 import GuestFeedback from "../components/GuestFeedback";
+import Voting from "../components/UserVoting";
 
 class Guest extends Component {
   constructor(props) {
@@ -89,7 +90,15 @@ class Guest extends Component {
                 </div>
               )}
             </div>
-            <GuestFeedback roomId={roomId} roomConfig={sessionRoomConfig} />
+            {/* Conditional rendering of x- yInput config params */}
+            {sessionRoomConfig ? (
+              <GuestFeedback roomId={roomId} roomConfig={sessionRoomConfig} />
+            ) : null}
+
+            {/* Conditional rendering of voting config params */}
+            {sessionRoomConfig ? (
+              <Voting roomId={roomId} votingParams={sessionRoomConfig[0]} />
+            ) : null}
           </div>
         ) : (
           <h1 className="jumbotron">URL parameters missing</h1>
@@ -114,7 +123,7 @@ const mapStateToProps = state => ({
 Guest.propTypes = {
   isConnected: PropTypes.bool,
   sessionUserId: PropTypes.string,
-  sessionRoomConfig: PropTypes.object,
+  sessionRoomConfig: PropTypes.array,
   match: PropTypes.object.isRequired,
   joinedRoomDispatch: PropTypes.func.isRequired
 };

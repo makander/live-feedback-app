@@ -5,10 +5,18 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import io from "socket.io-client";
 import withAuth from "../hocs/withAuth";
-import { roomCreated, setSessionAverage } from "../actions/room";
+import {
+  roomCreated,
+  setSessionAverage,
+  handleVotingInput,
+  setVotingInput
+} from "../actions/room";
 import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
+import VotingChart from "../components/VotingChart";
+import Voting from "../components/RoomTypes/Voting";
+import BreakTime from "../components/RoomTypes/Break";
 
 // Average calc - client side roomarray
 
@@ -19,7 +27,10 @@ class NewSession extends Component {
     this.state = {
       sessionName: "",
       yInput: "",
-      xInput: ""
+      xInput: "",
+      voting: false,
+      labels: false,
+      breakTime: false
     };
 
     this.roomArray = [];
@@ -34,6 +45,18 @@ class NewSession extends Component {
     });
   }
 
+  voting = () => {
+    this.setState(prevState => ({
+      voting: !prevState.voting
+    }));
+  };
+
+  breakTime = () => {
+    this.setState(prevState => ({
+      breakTime: !prevState.breakTime
+    }));
+  };
+
   handleInputChange = e => {
     this.setState({
       [e.target.name]: e.target.value
@@ -47,7 +70,9 @@ class NewSession extends Component {
       createRoom,
       sessionAverageSetter,
       getErrors,
-      clearErrors
+      clearErrors,
+      votingInput,
+      setVotingInputDispatch
     } = this.props;
     const { sessionName, xInput, yInput } = this.state;
 
@@ -57,6 +82,18 @@ class NewSession extends Component {
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION, {
       query: `auth_token=${token}`
     });
+
+    const roomConfig = [];
+
+    if (votingInput) {
+      roomConfig.push({ type: "voting", params: [votingInput] });
+      /* roomConfig.voting = { params: votingInput }; */
+    }
+
+    if (xInput) {
+      roomConfig.push({ type: "lectureSpeed", xInput, yInput });
+      /* roomConfig.lectureSpeed = { xInput, yInput }; */
+    }
 
     const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
 
@@ -77,8 +114,7 @@ class NewSession extends Component {
           socket.emit("connectToNewSession", {
             roomId: `${userId}-${sessionNameNoSpaces}`,
             userId,
-            xInput,
-            yInput
+            roomConfig
           });
         }
       })
@@ -97,6 +133,15 @@ class NewSession extends Component {
 
     socket.on("userLeftRoom", data => {
       this.roomArray = this.roomArray.filter(user => user.userId !== data);
+    });
+
+    const { votingInputAverage } = this.props;
+    const newData = votingInputAverage;
+
+    // Recieves the emitted votinginput from a user
+    socket.on("votingInputs", data => {
+      newData.push(data);
+      setVotingInputDispatch(newData);
     });
 
     socket.on("roomAverageValue", data => {
@@ -135,7 +180,7 @@ class NewSession extends Component {
 
   render() {
     const { roomName, roomCreatedConditional, userId, error } = this.props;
-    const { sessionName, xInput, yInput } = this.state;
+    const { sessionName, xInput, yInput, voting, breakTime } = this.state;
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
@@ -147,6 +192,17 @@ class NewSession extends Component {
               {!roomCreatedConditional ? (
                 <div>
                   <div className="mb-2">
+                    <h1>Create your lecture by adding components below</h1>
+                    <button type="button" onClick={this.voting}>
+                      Voting
+                    </button>
+                    <button type="button" onClick={this.breakTime}>
+                      Break
+                    </button>
+                    {voting ? (
+                      <Voting handleVotingInput={handleVotingInput} />
+                    ) : null}
+                    {breakTime ? <BreakTime /> : null}
                     <h3 className="mx-auto">Create New Session</h3>
                     <span className="lead text-danger">{error.room}</span>
                   </div>
@@ -193,6 +249,7 @@ class NewSession extends Component {
                 </div>
               ) : (
                 <div>
+                  <VotingChart />
                   <LiveSession
                     roomId={`${userId}-${roomName}`}
                     roomName={roomName}
@@ -219,7 +276,8 @@ const mapDispatchToProps = dispatch => ({
   clearErrors: () =>
     dispatch({
       type: CLEAR_ERRORS
-    })
+    }),
+  setVotingInputDispatch: data => dispatch(setVotingInput(data))
 });
 
 const mapStateToProps = state => ({
@@ -229,7 +287,9 @@ const mapStateToProps = state => ({
   // eslint-disable-next-line no-underscore-dangle
   userId: state.auth.user._id,
   error: state.errors,
-  roomAverageValue: state.room.session_average
+  roomAverageValue: state.room.session_average,
+  votingInput: state.room.voting_input,
+  votingInputAverage: state.room.voting_input_average
 });
 
 NewSession.propTypes = {
@@ -240,14 +300,19 @@ NewSession.propTypes = {
   userId: PropTypes.string,
   getErrors: PropTypes.func.isRequired,
   clearErrors: PropTypes.func.isRequired,
-  error: PropTypes.object
+  error: PropTypes.object,
+  setVotingInputDispatch: PropTypes.func.isRequired,
+  votingInput: PropTypes.array,
+  votingInputAverage: PropTypes.array
 };
 
 NewSession.defaultProps = {
   userId: null,
   roomName: "",
   roomCreatedConditional: false,
-  error: null
+  error: null,
+  votingInput: [],
+  votingInputAverage: []
 };
 
 export default connect(

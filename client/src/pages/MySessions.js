@@ -23,12 +23,9 @@ function MySessions() {
       const result = await axios(
         `${process.env.REACT_APP_API_BASE_URL}/api/my-sessions`
       );
-      console.table(result);
       setRenderState(result.data.data);
     } catch (err) {
       setErrorState(err.response.statusText);
-      console.log(errorState);
-      //  dispatch an error msg and render to the client
     }
   };
 
@@ -37,16 +34,13 @@ function MySessions() {
   }, []);
 
   const deleteSession = sessionId => {
-    console.log("Delete");
     axios
       .delete(
         `${process.env.REACT_APP_API_BASE_URL}/api/my-sessions/${sessionId}`
       )
-      .then(res => {
-        console.log(res);
+      .then(() => {
         getSessions();
       })
-      .then()
       .catch(error => {
         // handle error
         console.log(error);
@@ -88,32 +82,33 @@ function MySessions() {
               </thead>
               <tbody>
                 {renderState.map(room => {
+                  const { _id: id, date, room_name: roomName } = room;
                   return (
-                    <tr key={room._id}>
+                    <tr key={id}>
                       <td
                         className={cx("mx-auto", {
                           "d-none": viewPortWidth < 360
                         })}
                       >
-                        {convertDate(room.date)}
+                        {convertDate(date)}
                       </td>
                       <td className="py-2 mx-auto">
                         <div className="d-flex">
                           <Link
                             to={{
-                              pathname: `/my-sessions/${room._id}`,
+                              pathname: `/my-sessions/${id}`,
                               sessionData: room
                             }}
                             role="button"
                             className="btn btn-outline-primary btn"
                           >
-                            {room.room_name.substring(25)}
+                            {roomName.substring(25)}
                           </Link>
-                          <form>
+                          <form className="ml-auto">
                             <button
                               className="btn btn-danger btn ml-1"
                               type="button"
-                              onClick={() => deleteSession(`${room._id}`)}
+                              onClick={() => deleteSession(`${id}`)}
                             >
                               X
                             </button>

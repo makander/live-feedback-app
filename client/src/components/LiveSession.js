@@ -55,7 +55,7 @@ class LiveSession extends React.Component {
 
     return (
       <div className="d-flex">
-        <div className="text-center">
+        <div className="text-center w-100">
           <h2 className="pb-4">
             Welcome to session: <br /> {roomName}
           </h2>

@@ -18,7 +18,7 @@ export class AuthLinks extends Component {
           Dashboard
         </Link>
         <Link className="nav-item nav-link text-dark" to="/my-sessions">
-          My Session
+          My Sessions
         </Link>
         <Link className="nav-item nav-link text-dark" to="/new-session">
           New Session
