@@ -33,16 +33,18 @@ class Voting extends Component {
   handleOnSubmitOptions = e => {
     e.preventDefault();
 
-    const options = Array(parseInt(e.target.options.value, 10)).fill(1);
-    const uuidArray = [];
+    if (e.target.options.value && e.target.options.value <= 5) {
+      const options = Array(parseInt(e.target.options.value, 10)).fill(1);
+      const uuidArray = [];
 
-    options.forEach(() => {
-      uuidArray.push(uuid());
-    });
+      options.forEach(() => {
+        uuidArray.push(uuid());
+      });
 
-    this.setState({
-      numberOfOptions: uuidArray
-    });
+      this.setState({
+        numberOfOptions: uuidArray
+      });
+    }
   };
 
   render() {

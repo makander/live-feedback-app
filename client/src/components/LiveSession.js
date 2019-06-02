@@ -1,9 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import ProgressBar from "../components/ProgressBar";
-
 import PropTypes from "prop-types";
+import ProgressBar from "./ProgressBar";
+
 import { sessionStarted, sessionStopped, cancelSession } from "../actions/room";
 
 const io = require("socket.io-client");
@@ -55,7 +55,7 @@ class LiveSession extends React.Component {
 
     return (
       <div className="d-flex">
-        <div className="text-center">
+        <div className="text-center w-100">
           <h2 className="pb-4">
             Welcome to session: <br /> {roomName}
           </h2>

@@ -104,7 +104,7 @@ function MySessions() {
                           >
                             {roomName.substring(25)}
                           </Link>
-                          <form>
+                          <form className="ml-auto">
                             <button
                               className="btn btn-danger btn ml-1"
                               type="button"

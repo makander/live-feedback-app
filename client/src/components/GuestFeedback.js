@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import io from "socket.io-client";
 import PropTypes from "prop-types";
@@ -13,6 +13,11 @@ function GuestFeedback(props) {
     roomId,
     roomConfig
   } = props;
+
+  useEffect(() => {
+    handleSlider(null, sessionUserId, roomId);
+  }, []);
+
   return (
     <div>
       <div className="d-flex justify-content-center">
@@ -26,8 +31,8 @@ function GuestFeedback(props) {
               onChange={e => handleSlider(e, sessionUserId, roomId)}
               id="feedback-slider"
               type="range"
-              max={roomConfig[1].xInput ? roomConfig[1].xInput : 100}
-              min={roomConfig[1].yInput ? roomConfig[1].yInput : 0}
+              max={100}
+              min={0}
               value={sliderValue}
               className="slider"
               step="10"
@@ -49,7 +54,7 @@ function GuestFeedback(props) {
 
 const mapDispatchToProps = dispatch => ({
   handleSlider: (e, sessionUserId, roomId) => {
-    const sliderValue = e.target.value;
+    const sliderValue = e ? e.target.value : 50;
     dispatch(sliderInput(sliderValue));
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("changeSlider", sliderValue, roomId, sessionUserId);
