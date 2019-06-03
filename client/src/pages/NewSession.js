@@ -15,7 +15,7 @@ import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 // Components
 import LiveSession from "../components/LiveSession";
 import VotingChart from "../components/VotingChart";
-import Voting from "../components/RoomTypes/Voting";
+import VotingOptions from "../components/RoomTypes/VotingOptions";
 import BreakTime from "../components/RoomTypes/Break";
 
 // Average calc - client side roomarray
@@ -200,7 +200,7 @@ class NewSession extends Component {
                       Break
                     </button>
                     {voting ? (
-                      <Voting handleVotingInput={handleVotingInput} />
+                      <VotingOptions handleVotingInput={handleVotingInput} />
                     ) : null}
                     {breakTime ? <BreakTime /> : null}
                     <h3 className="mx-auto">Create New Session</h3>

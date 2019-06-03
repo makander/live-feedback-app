@@ -4,7 +4,7 @@ import uuid from "uuid/v4";
 import PropTypes from "prop-types";
 import { handleVotingInput } from "../../actions/room";
 
-class Voting extends Component {
+class VotingOptions extends Component {
   constructor(props) {
     super(props);
 
@@ -106,11 +106,11 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-Voting.propTypes = {
+VotingOptions.propTypes = {
   handleVotingInputDispatch: PropTypes.func.isRequired
 };
 
 export default connect(
   null,
   mapDispatchToProps
-)(Voting);
+)(VotingOptions);

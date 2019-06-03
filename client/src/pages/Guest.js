@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import io from "socket.io-client";
 import { joinedRoom } from "../actions/room";
 import GuestFeedback from "../components/GuestFeedback";
-import Voting from "../components/UserVoting";
+import UserVoting from "../components/UserVoting";
 
 class Guest extends Component {
   constructor(props) {
@@ -90,14 +90,12 @@ class Guest extends Component {
                 </div>
               )}
             </div>
-            {/* Conditional rendering of x- yInput config params */}
+            
             {sessionRoomConfig ? (
+              <div>
               <GuestFeedback roomId={roomId} roomConfig={sessionRoomConfig} />
-            ) : null}
-
-            {/* Conditional rendering of voting config params */}
-            {sessionRoomConfig ? (
-              <Voting roomId={roomId} votingParams={sessionRoomConfig[0]} />
+              <UserVoting roomId={roomId} votingParams={sessionRoomConfig[0]} />
+              </div>
             ) : null}
           </div>
         ) : (
