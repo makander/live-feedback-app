@@ -67,7 +67,6 @@ class VotingOptions extends Component {
             }}
           >
             <div className="form-group">
-              {/* <input type="text" name="question" /> */}
               {numberOfOptions.map(optionKey => {
                 const {
                   valuesToDisplay: { option }
@@ -78,7 +77,7 @@ class VotingOptions extends Component {
                     type="text"
                     name={optionKey}
                     value={option}
-                    placeholder="Enter an option" // use this for label?
+                    placeholder="Enter an option" 
                     onChange={this.handleInputChange}
                     key={optionKey}
                   />
