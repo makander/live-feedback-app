@@ -190,22 +190,10 @@ class NewSession extends Component {
           <div className="container p-2 justify-content-center ">
             <div className="d-flex justify-content-center p-4">
               {!roomCreatedConditional ? (
+                
                 <div>
-                  <div className="mb-2">
-                    <h1>Create your lecture by adding components below</h1>
-                    <button type="button" onClick={this.voting}>
-                      Voting
-                    </button>
-                    <button type="button" onClick={this.breakTime}>
-                      Break
-                    </button>
-                    {voting ? (
-                      <VotingOptions handleVotingInput={handleVotingInput} />
-                    ) : null}
-                    {breakTime ? <BreakTime /> : null}
-                    <h3 className="mx-auto">Create New Session</h3>
+                <h1 className="mx-auto">Create New Session</h1>
                     <span className="lead text-danger">{error.room}</span>
-                  </div>
                   <form
                     className="form-inline"
                     onSubmit={e => this.handleClickNewSession(e)}
@@ -246,6 +234,20 @@ class NewSession extends Component {
                       </button>
                     </div>
                   </form>
+                  <div className="mb-2">
+                    <h3>Optional Settings</h3>
+                    <button type="button" onClick={this.voting}>
+                      Voting
+                    </button>
+                    <button type="button" onClick={this.breakTime}>
+                      Break
+                    </button>
+                    {voting ? (
+                      <VotingOptions handleVotingInput={handleVotingInput} />
+                    ) : null}
+                    {breakTime ? <BreakTime /> : null}
+                   
+                  </div>
                 </div>
               ) : (
                 <div>
