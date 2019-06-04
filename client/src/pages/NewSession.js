@@ -234,12 +234,12 @@ class NewSession extends Component {
                       </button>
                     </div>
                   </form>
-                  <div className="mb-2">
+                  <div className="my-2">
                     <h3>Optional Settings</h3>
-                    <button type="button" onClick={this.voting}>
+                    <button className="btn btn-outline-primary btn mx-2" type="button" onClick={this.voting}>
                       Voting
                     </button>
-                    <button type="button" onClick={this.breakTime}>
+                    <button className="btn btn-outline-primary btn mx-2" type="button" onClick={this.breakTime}>
                       Break
                     </button>
                     {voting ? (

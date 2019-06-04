@@ -53,11 +53,10 @@ class VotingOptions extends Component {
 
     return (
       <div>
-        <h2>Voting Component added</h2>
         <p>Allow participants to vote for topics specified below</p>
-        <form onSubmit={e => this.handleOnSubmitOptions(e)}>
-          <input type="number" name="options" min="1" max="5" />
-          <button type="submit">Number of options</button>
+        <form className="form-inline" onSubmit={e => this.handleOnSubmitOptions(e)}>
+          <input className="form-control"type="number" name="options" min="1" max="5" />
+          <button className="btn btn-outline-primary btn mx-2" type="submit">Number of options</button>
         </form>
         {numberOfOptions.length ? (
           <form
