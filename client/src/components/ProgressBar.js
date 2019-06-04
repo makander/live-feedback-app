@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 class ProgressBar extends Component {
-  componentDidMount() {}
 
   componentDidUpdate() {
     const { roomAverageValue } = this.props;
@@ -35,8 +33,5 @@ ProgressBar.defaultProps = {
   roomAverageValue: "50"
 };
 
-const mapStateToProps = state => ({
-  roomAverageValue: state.room.session_average
-});
 
-export default connect(mapStateToProps)(ProgressBar);
+export default ProgressBar;

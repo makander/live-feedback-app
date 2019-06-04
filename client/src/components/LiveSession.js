@@ -59,7 +59,7 @@ class LiveSession extends React.Component {
           <h2 className="pb-4">
             Welcome to session: <br /> {roomName}
           </h2>
-          <ProgressBar />
+          <ProgressBar roomAverageValue={roomAverageValue}/>
           <div className="pt-2">
             <button
               className="btn btn-outline-warning m-1"
