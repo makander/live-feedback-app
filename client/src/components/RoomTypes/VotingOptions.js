@@ -4,7 +4,7 @@ import uuid from "uuid/v4";
 import PropTypes from "prop-types";
 import { handleVotingInput } from "../../actions/room";
 
-class Voting extends Component {
+class VotingOptions extends Component {
   constructor(props) {
     super(props);
 
@@ -67,7 +67,6 @@ class Voting extends Component {
             }}
           >
             <div className="form-group">
-              {/* <input type="text" name="question" /> */}
               {numberOfOptions.map(optionKey => {
                 const {
                   valuesToDisplay: { option }
@@ -78,7 +77,7 @@ class Voting extends Component {
                     type="text"
                     name={optionKey}
                     value={option}
-                    placeholder="Enter an option" // use this for label?
+                    placeholder="Enter an option" 
                     onChange={this.handleInputChange}
                     key={optionKey}
                   />
@@ -106,11 +105,11 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-Voting.propTypes = {
+VotingOptions.propTypes = {
   handleVotingInputDispatch: PropTypes.func.isRequired
 };
 
 export default connect(
   null,
   mapDispatchToProps
-)(Voting);
+)(VotingOptions);
