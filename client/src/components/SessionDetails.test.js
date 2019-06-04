@@ -1,16 +1,30 @@
-/* eslint-disable no-undef */
 import React from "react";
-import  { configure, shallow } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-import SessionDetails from "./SessionDetails";
+import { shallow } from "enzyme";
+import SessionDetails from "./SessionDetails"
+import { listenerCount } from "cluster";
 
-configure({adapter: new Adapter()});
 
-describe('SessionDetails', () => {
-  
-  test("renders", () => {
-    const wrapper =shallow(<SessionDetails />);
-    expect(wrapper.exists()).toBe(true);
+describe("SessionDetails Component", () => {
+  let wrapper;
+  const location = {sessionData: {
+    room_data: [
+      {_id:
+        "xxxxxxxxxxxxxxxxxxxxxxxx",
+        x:
+        "00:00:00",
+        y:
+        "50"}
+    ]
+  }}
+
+    beforeEach(() => {
+      wrapper = shallow(<SessionDetails  location={location}/>);
+    });
+    
+    describe("If session data is available", () => {
+      it("should render a Line graph component", () => {
+      const Line = wrapper.find('Line')
+      expect(Line.length).toEqual(1)
+    });
   });
-
 });
