@@ -1,12 +1,14 @@
 import React from "react";
-import { connect } from "react-redux";
 import { Line } from "react-chartjs-2";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
+// SESSION DATA IS PASSED DOWN AS A LINK PROP
+// IN MY SESSIONS
+
+
 function SessionDetails(props) {
   const { location } = props;
-
   const xArray = [];
   const yArray = [];
   location.sessionData.room_data.forEach(coords => {
@@ -64,11 +66,4 @@ SessionDetails.propTypes = {
   location: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({
-  sessionData: state.auth.user.session_data
-});
-
-export default connect(
-  mapStateToProps,
-  null
-)(SessionDetails);
+export default SessionDetails
