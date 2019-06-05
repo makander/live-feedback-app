@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import MySessions from "./MySessions";
 import Adapter from "enzyme-adapter-react-16";
+import MySessions from "./MySessions";
 
 configure({adapter: new Adapter()});
 

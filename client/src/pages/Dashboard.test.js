@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import Dashboard from "./Dashboard";
 import Adapter from "enzyme-adapter-react-16";
+import Dashboard from "./Dashboard";
 
 configure({adapter: new Adapter()});
 

@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import Guest from "./Guest";
 import Adapter from "enzyme-adapter-react-16";
+import Guest from "./Guest";
 
 configure({adapter: new Adapter()});
 

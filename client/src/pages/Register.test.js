@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
 import React from "react";
 import  { configure, shallow } from "enzyme";
-import Register from "./Register";
 import Adapter from "enzyme-adapter-react-16";
+import Register from "./Register";
 
 configure({adapter: new Adapter()});
 

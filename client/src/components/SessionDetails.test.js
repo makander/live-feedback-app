@@ -1,7 +1,7 @@
+/* eslint-disable no-undef */
 import React from "react";
 import { shallow } from "enzyme";
 import SessionDetails from "./SessionDetails"
-import { listenerCount } from "cluster";
 
 
 describe("SessionDetails Component", () => {
