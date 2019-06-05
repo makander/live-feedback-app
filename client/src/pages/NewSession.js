@@ -87,12 +87,10 @@ class NewSession extends Component {
 
     if (votingInput) {
       roomConfig.push({ type: "voting", params: [votingInput] });
-      /* roomConfig.voting = { params: votingInput }; */
     }
 
     if (xInput) {
       roomConfig.push({ type: "lectureSpeed", xInput, yInput });
-      /* roomConfig.lectureSpeed = { xInput, yInput }; */
     }
 
     const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
@@ -192,18 +190,26 @@ class NewSession extends Component {
               {!roomCreatedConditional ? (
                 <div>
                   <div className="mb-2">
-                    <h1>Create your lecture by adding components below</h1>
-                    <button type="button" onClick={this.voting}>
+                    <h2>Create your session by adding components below</h2>
+                    <button
+                      type="button"
+                      className="btn btn-info m-1"
+                      onClick={this.voting}
+                    >
                       Voting
                     </button>
-                    <button type="button" onClick={this.breakTime}>
+                    <button
+                      type="button"
+                      className="btn btn-info m-1"
+                      onClick={this.breakTime}
+                    >
                       Break
                     </button>
                     {voting ? (
                       <VotingOptions handleVotingInput={handleVotingInput} />
                     ) : null}
                     {breakTime ? <BreakTime /> : null}
-                    <h3 className="mx-auto">Create New Session</h3>
+
                     <span className="lead text-danger">{error.room}</span>
                   </div>
                   <form
@@ -240,7 +246,7 @@ class NewSession extends Component {
                       />
                       <button
                         type="submit"
-                        className="btn btn-outline-primary btn mx-2"
+                        className="btn btn-primary btn mx-2"
                       >
                         New Session
                       </button>

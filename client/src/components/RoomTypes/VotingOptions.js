@@ -52,45 +52,47 @@ class VotingOptions extends Component {
     const { handleVotingInputDispatch } = this.props;
 
     return (
-      <div>
-        <h2>Voting Component added</h2>
-        <p>Allow participants to vote for topics specified below</p>
+      <div className="mt-1">
+        <h4>Voting Component added</h4>
+        <p>Select number the number of options available for voting (1-5)</p>
         <form onSubmit={e => this.handleOnSubmitOptions(e)}>
           <input type="number" name="options" min="1" max="5" />
-          <button type="submit">Number of options</button>
+          <button type="submit" className="btn btn-secondary ml-1">
+            Number of options
+          </button>
         </form>
         {numberOfOptions.length ? (
-          <form
-            className="form-inline"
-            onSubmit={e => {
-              handleVotingInputDispatch(e, this.state);
-            }}
-          >
-            <div className="form-group">
-              {numberOfOptions.map(optionKey => {
-                const {
-                  valuesToDisplay: { option }
-                } = this.state;
-                return (
-                  <input
-                    className="form-control form-control"
-                    type="text"
-                    name={optionKey}
-                    value={option}
-                    placeholder="Enter an option" 
-                    onChange={this.handleInputChange}
-                    key={optionKey}
-                  />
-                );
-              })}
-              <button
-                type="submit"
-                className="btn btn-outline-primary btn mx-2"
-              >
-                Allow voting
-              </button>
-            </div>
-          </form>
+          <div className="mt-1">
+            <h4>Specify the option labels below</h4>
+            <form
+              className="form-inline"
+              onSubmit={e => {
+                handleVotingInputDispatch(e, this.state);
+              }}
+            >
+              <div className="form-group">
+                {numberOfOptions.map(optionKey => {
+                  const {
+                    valuesToDisplay: { option }
+                  } = this.state;
+                  return (
+                    <input
+                      className="form-control form-control"
+                      type="text"
+                      name={optionKey}
+                      value={option}
+                      placeholder="Enter an option"
+                      onChange={this.handleInputChange}
+                      key={optionKey}
+                    />
+                  );
+                })}
+                <button type="submit" className="btn btn-secondary">
+                  Add Options
+                </button>
+              </div>
+            </form>
+          </div>
         ) : null}
       </div>
     );
