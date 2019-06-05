@@ -52,28 +52,29 @@ class VotingOptions extends Component {
     const { handleVotingInputDispatch } = this.props;
 
     return (
-      <div>
-        <h2>Voting Component added</h2>
-        <p>Allow participants to vote for topics specified below</p>
-        <form onSubmit={e => this.handleOnSubmitOptions(e)}>
-          <input type="number" name="options" min="1" max="5" />
-          <button type="submit">Number of options</button>
+      <div className="form-group">
+        <p className="pt-2">Add number of voting options below</p>
+        <form className="form-inline mt-2" onSubmit={e => this.handleOnSubmitOptions(e)}>
+          <input className="form-control"type="number" name="options" min="1" max="5" />
+          <button className="btn btn-outline-primary btn mx-2" type="submit">Number of options</button>
         </form>
         {numberOfOptions.length ? (
+         
           <form
-            className="form-inline"
+
+            className="form-inline mb-2"
             onSubmit={e => {
               handleVotingInputDispatch(e, this.state);
             }}
           >
-            <div className="form-group">
+            <div className="form-group pt-2">
               {numberOfOptions.map(optionKey => {
                 const {
                   valuesToDisplay: { option }
                 } = this.state;
                 return (
                   <input
-                    className="form-control form-control"
+                    className="form-control mr-1 -2"
                     type="text"
                     name={optionKey}
                     value={option}
@@ -85,12 +86,13 @@ class VotingOptions extends Component {
               })}
               <button
                 type="submit"
-                className="btn btn-outline-primary btn mx-2"
+                className="btn btn-outline-primary btn"
               >
-                Allow voting
+                Save options
               </button>
             </div>
           </form>
+
         ) : null}
       </div>
     );
