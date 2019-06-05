@@ -9,7 +9,6 @@ import users from "./routes/api/users";
 import mysession from "./routes/api/mysession";
 import { errorLogger, logger } from "./loggers";
 import User from "./models/User";
-
 import ioInit from "./SocketManager";
 
 config({ path: "./deploy/.env" });
@@ -27,13 +26,14 @@ if (db === undefined) {
 }
 
 app.use(logger);
-
+app.use(errorLogger);
 app.use(
   bodyParser.urlencoded({
     extended: false
   })
 );
 
+// CORS settings
 app.use(
   cors({
     origin: process.env.ALLOW_ORIGIN,
@@ -43,24 +43,16 @@ app.use(
     methods: "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   })
 );
-
 app.options("*", cors());
 
 app.use(bodyParser.json());
 
-mongoose.connect(db, { useNewUrlParser: true });
-mongoose.connection.on("error", error => console.log(error));
-mongoose.Promise = global.Promise;
-
+// Router settings
 app.use(router);
-
 // API Routes goes here
 router.use("/api/users", users);
-
 // Session Route
 router.use("/api/my-sessions", mysession);
-
-app.use(errorLogger);
 
 // eslint-disable-next-line no-unused-vars
 app.use(function(err, req, res, next) {
@@ -75,6 +67,11 @@ const port = process.env.PORT || 5005;
 const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
 );
+
+// Database connection
+mongoose.connect(db, { useNewUrlParser: true });
+mongoose.connection.on("error", error => console.log(error));
+mongoose.Promise = global.Promise;
 
 // ----------------SOCKET.IO------------------------
 // THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
