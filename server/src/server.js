@@ -25,6 +25,7 @@ if (db === undefined) {
   throw Error("No Mongo URI set");
 }
 
+// Loggers and bodyparser
 app.use(logger);
 app.use(errorLogger);
 app.use(
@@ -32,6 +33,7 @@ app.use(
     extended: false
   })
 );
+app.use(bodyParser.json());
 
 // CORS settings
 app.use(
@@ -45,13 +47,10 @@ app.use(
 );
 app.options("*", cors());
 
-app.use(bodyParser.json());
-
 // Router settings
 app.use(router);
-// API Routes goes here
+// API Routes
 router.use("/api/users", users);
-// Session Route
 router.use("/api/my-sessions", mysession);
 
 // eslint-disable-next-line no-unused-vars
@@ -74,7 +73,6 @@ mongoose.connection.on("error", error => console.log(error));
 mongoose.Promise = global.Promise;
 
 // ----------------SOCKET.IO------------------------
-// THIS SHOULD GO INTO A SEPARTE FILE FOR IMPORT
 
 const io = require("socket.io")(server);
 
@@ -116,4 +114,5 @@ io.on("connection", socket => {
   ioInit(io, socket, role);
 });
 
+// Export server for backend tests
 module.exports = server;
