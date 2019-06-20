@@ -29,20 +29,11 @@ class NewSession extends Component {
       yInput: "",
       xInput: "",
       voting: false,
-      labels: false,
-      breakTime: false
+      breakTime: false,
+      roomArray: []
     };
 
-    this.roomArray = [];
-
     // this.handleClickNewSession = this.handleClickNewSession.bind(this);
-  }
-
-  componentDidMount() {
-    const socket = io(`${process.env.REACT_APP_SOCKET_CONNECTION}`);
-    socket.on("newUserJoinedRoom", newUser => {
-      this.roomArray.push(newUser);
-    });
   }
 
   voting = () => {
@@ -97,6 +88,40 @@ class NewSession extends Component {
 
     const sessionNameNoSpaces = sessionName.replace(new RegExp(" ", "g"), "_");
 
+    const setRoomAverageValue = data => {
+      const { roomArray } = this.state;
+      if (data) {
+        const { sliderValue, userId: sliderUserId } = data;
+        const roomArrayTransfer = roomArray.map(user => {
+          if (user.userId === sliderUserId) {
+            const loser = user;
+            loser.value = sliderValue;
+            return loser;
+          }
+          return user;
+        });
+        this.setState({
+          roomArray: [...roomArrayTransfer]
+        });
+      }
+      const arrayToSum = [];
+
+      roomArray.forEach(user => {
+        arrayToSum.push(parseInt(user.value, 10));
+      });
+      const userCount = arrayToSum.length;
+      if (arrayToSum.length) {
+        const reducer = (accumulator, currentValue) =>
+          accumulator + currentValue;
+        const valueArrayTot = arrayToSum.reduce(reducer);
+        const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
+        arrayToSum.splice(0);
+
+        document.title = roomAverageValue;
+        sessionAverageSetter(roomAverageValue);
+      }
+    };
+
     socket.on("error", err => {
       getErrors({ room: err });
     });
@@ -132,7 +157,16 @@ class NewSession extends Component {
     });
 
     socket.on("userLeftRoom", data => {
-      this.roomArray = this.roomArray.filter(user => user.userId !== data);
+      const { roomArray } = this.state;
+      const filteredArray = roomArray.filter(user => user.userId !== data);
+      this.setState(
+        {
+          roomArray: [...filteredArray]
+        },
+        () => {
+          setRoomAverageValue(false);
+        }
+      );
     });
 
     const { votingInputAverage } = this.props;
@@ -145,42 +179,27 @@ class NewSession extends Component {
     });
 
     socket.on("roomAverageValue", data => {
-      const { sliderValue, userId: sliderUserId } = data;
-      this.roomArray = this.roomArray.map(user => {
-        if (user.userId === sliderUserId) {
-          const loser = user;
-          loser.value = sliderValue;
-          return loser;
-        }
-        return user;
-      });
-
-      const arrayToSum = [];
-
-      this.roomArray.forEach(user => {
-        arrayToSum.push(parseInt(user.value, 10));
-      });
-      const userCount = arrayToSum.length;
-      if (arrayToSum.length) {
-        const reducer = (accumulator, currentValue) =>
-          accumulator + currentValue;
-        const valueArrayTot = arrayToSum.reduce(reducer);
-        const roomAverageValue = (valueArrayTot / userCount).toFixed(1);
-        arrayToSum.splice(0);
-
-        document.title = roomAverageValue;
-        sessionAverageSetter(roomAverageValue);
-      }
+      setRoomAverageValue(data);
     });
 
     socket.on("newUserJoinedRoom", newUser => {
-      this.roomArray.push(newUser);
+      const { roomArray } = this.state;
+      this.setState({
+        roomArray: [...roomArray, newUser]
+      });
     });
   };
 
   render() {
     const { roomName, roomCreatedConditional, userId, error } = this.props;
-    const { sessionName, xInput, yInput, voting, breakTime } = this.state;
+    const {
+      sessionName,
+      xInput,
+      yInput,
+      voting,
+      breakTime,
+      roomArray
+    } = this.state;
     return (
       <div className="d-flex justify-content-center pt-2">
         <div
@@ -190,10 +209,9 @@ class NewSession extends Component {
           <div className="container p-2 justify-content-center ">
             <div className="d-flex justify-content-center p-4">
               {!roomCreatedConditional ? (
-                
                 <div>
-                <h1 className="mx-auto">Create New Session</h1>
-                    <span className="lead text-danger">{error.room}</span>
+                  <h1 className="mx-auto">Create New Session</h1>
+                  <span className="lead text-danger">{error.room}</span>
                   <form
                     className="form-inline"
                     onSubmit={e => this.handleClickNewSession(e)}
@@ -236,17 +254,24 @@ class NewSession extends Component {
                   </form>
                   <div className="my-2">
                     <h3>Optional Settings</h3>
-                    <button className="btn btn-outline-primary btn mx-2" type="button" onClick={this.voting}>
+                    <button
+                      className="btn btn-outline-primary btn mx-2"
+                      type="button"
+                      onClick={this.voting}
+                    >
                       Voting
                     </button>
-                    <button className="btn btn-outline-primary btn mx-2" type="button" onClick={this.breakTime}>
+                    <button
+                      className="btn btn-outline-primary btn mx-2"
+                      type="button"
+                      onClick={this.breakTime}
+                    >
                       Break
                     </button>
                     {voting ? (
                       <VotingOptions handleVotingInput={handleVotingInput} />
                     ) : null}
                     {breakTime ? <BreakTime /> : null}
-                   
                   </div>
                 </div>
               ) : (
@@ -255,6 +280,7 @@ class NewSession extends Component {
                   <LiveSession
                     roomId={`${userId}-${roomName}`}
                     roomName={roomName}
+                    roomParticipants={roomArray.length}
                   />
                 </div>
               )}

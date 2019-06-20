@@ -43,13 +43,14 @@ class LiveSession extends React.Component {
 
   render() {
     const {
-      roomName,
-      roomId,
+      cancel,
       roomAverageValue,
+      roomId,
+      roomName,
+      roomParticipants,
       sessionActive,
       startSession,
-      stopSession,
-      cancel
+      stopSession
     } = this.props;
     const roomIdNoSpaces = roomId.replace(new RegExp(" ", "g"), "_");
 
@@ -60,6 +61,10 @@ class LiveSession extends React.Component {
             Welcome to session: <br /> {roomName}
           </h2>
           <ProgressBar />
+          <h6 className="text-center">
+            {roomParticipants} {roomParticipants !== 1 ? "clients" : "client"}{" "}
+            connected
+          </h6>
           <div className="pt-2">
             <button
               className="btn btn-outline-warning m-1"
