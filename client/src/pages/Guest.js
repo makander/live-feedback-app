@@ -15,12 +15,10 @@ class Guest extends Component {
     const {
       match: {
         params: { roomId }
-      },
-      sessionUserId
+      }
     } = this.props;
 
     this.roomId = roomId;
-    this.sessionUserId = sessionUserId;
   }
 
   componentDidMount() {
@@ -36,16 +34,18 @@ class Guest extends Component {
 
     window.addEventListener("beforeunload", ev => {
       ev.preventDefault();
+      const { sessionUserId } = this.props;
       this.socket.emit("feedbackSessionLeave", {
-        inputUserId: this.sessionUserId,
+        inputUserId: sessionUserId,
         roomId: this.roomId
       });
     });
   }
 
   componentWillUnmount() {
+    const { sessionUserId } = this.props;
     this.socket.emit("feedbackSessionLeave", {
-      inputUserId: this.sessionUserId,
+      inputUserId: sessionUserId,
       roomId: this.roomId
     });
   }
@@ -90,11 +90,16 @@ class Guest extends Component {
                 </div>
               )}
             </div>
-            
+
             {sessionRoomConfig ? (
               <div>
-              <GuestFeedback roomId={roomId} roomConfig={sessionRoomConfig} />
-              <UserVoting roomId={roomId} votingParams={sessionRoomConfig[0]} />
+                <GuestFeedback roomId={roomId} roomConfig={sessionRoomConfig} />
+                {sessionRoomConfig[0].params[0].length !== 0 ? (
+                  <UserVoting
+                    roomId={roomId}
+                    votingParams={sessionRoomConfig[0]}
+                  />
+                ) : null}
               </div>
             ) : null}
           </div>

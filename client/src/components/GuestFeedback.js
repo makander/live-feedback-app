@@ -54,7 +54,7 @@ function GuestFeedback(props) {
 
 const mapDispatchToProps = dispatch => ({
   handleSlider: (e, sessionUserId, roomId) => {
-    const sliderValue = e ? e.target.value : 50;
+    const sliderValue = e ? e.target.value : "50";
     dispatch(sliderInput(sliderValue));
     const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
     socket.emit("changeSlider", sliderValue, roomId, sessionUserId);
