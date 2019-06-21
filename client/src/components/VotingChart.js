@@ -23,8 +23,8 @@ class VotingChart extends Component {
     };
   }
 
-  componentWillReceiveProps() {
-    const { labels, values } = this.props;
+  componentWillReceiveProps(props) {
+    const { labels, values } = props;
 
     const result = Array(parseInt(labels.length, 10)).fill(0);
     labels.forEach(label => {
