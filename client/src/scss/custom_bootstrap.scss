@@ -1,0 +1,9 @@
+// Bootstrap overrides
+$theme-colors: (
+  "success": #008600,
+  "primary": #0072ee,
+  "warning": #977000,
+  "info": #008295
+);
+
+@import '~bootstrap/scss/bootstrap.scss';

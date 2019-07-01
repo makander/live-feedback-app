@@ -23,7 +23,7 @@ export class AuthLinks extends Component {
         <Link className="nav-item nav-link text-dark" to="/new-session">
           New Session
         </Link>
-        <Link className="nav-item nav-link" to="/" onClick={this.onLogoutClick}>
+        <Link className="nav-item nav-link text-dark" to="/" onClick={this.onLogoutClick}>
           Logout
         </Link>
       </div>
