@@ -67,10 +67,25 @@ const server = app.listen(port, () =>
   console.log(`Server up and running on port ${port} test!`)
 );
 
-// Database connection
-mongoose.connect(db, { useNewUrlParser: true });
-mongoose.connection.on("error", error => console.log(error));
-mongoose.Promise = global.Promise;
+// Database connection: it is going to retry on fail, up to five times
+(function connectingToDB(count) {
+  if (count <= 5) {
+    mongoose.connect(db, { useNewUrlParser: true });
+    mongoose.connection.on("connected", () => {
+      console.info("Connected to MongoDB!");
+    });
+    mongoose.connection.on("error", error => {
+      console.log(error);
+      connectingToDB(count + 1);
+    });
+    mongoose.Promise = global.Promise;
+  } else {
+    console.log(
+      count,
+      `tries have been made to connect to MongoDB without success`
+    );
+  }
+})(1);
 
 // ----------------SOCKET.IO------------------------
 
