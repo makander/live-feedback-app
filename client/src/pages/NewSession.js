@@ -16,7 +16,7 @@ import { GET_ERRORS, CLEAR_ERRORS } from "../actions/types";
 import LiveSession from "../components/LiveSession";
 import VotingChart from "../components/VotingChart";
 import VotingOptions from "../components/RoomTypes/VotingOptions";
-import BreakTime from "../components/RoomTypes/Break";
+// import BreakTime from "../components/RoomTypes/Break";
 
 // Average calc - client side roomarray
 
@@ -197,7 +197,7 @@ class NewSession extends Component {
       xInput,
       yInput,
       voting,
-      breakTime,
+      // breakTime,
       roomArray
     } = this.state;
     return (
@@ -261,17 +261,17 @@ class NewSession extends Component {
                     >
                       Voting
                     </button>
-                    <button
+                    {/* <button
                       className="btn btn-outline-primary btn mx-2"
                       type="button"
                       onClick={this.breakTime}
                     >
                       Break
-                    </button>
+                    </button> */}
                     {voting ? (
                       <VotingOptions handleVotingInput={handleVotingInput} />
                     ) : null}
-                    {breakTime ? <BreakTime /> : null}
+                    {/* {breakTime ? <BreakTime /> : null} */}
                   </div>
                 </div>
               ) : (
